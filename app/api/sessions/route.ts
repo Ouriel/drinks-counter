@@ -82,14 +82,21 @@ export async function GET(req: NextRequest) {
   }
 
   let menuItems: string[] = [];
+  let barNameResult: string | null = null;
   if (session.barMenuId) {
     const [menu] = await db
       .select()
       .from(barMenus)
       .where(eq(barMenus.id, session.barMenuId))
       .limit(1);
-    if (menu) menuItems = menu.items;
+    if (menu) {
+      menuItems = menu.items;
+      barNameResult = menu.barName;
+    }
   }
 
-  return NextResponse.json({ session: { id: session.id, slug: session.slug }, menuItems });
+  return NextResponse.json({
+    session: { id: session.id, slug: session.slug, barName: barNameResult },
+    menuItems,
+  });
 }

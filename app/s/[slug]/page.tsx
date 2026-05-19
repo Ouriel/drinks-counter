@@ -17,6 +17,7 @@ export default function SessionPage() {
   const { slug } = useParams<{ slug: string }>();
   const [drinks, setDrinks] = useState<Drink[]>([]);
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [barName, setBarName] = useState("");
   const [showPicker, setShowPicker] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -48,6 +49,9 @@ export default function SessionPage() {
         const sessionData = await sessionRes.json();
         if (sessionData.menuItems?.length) {
           setMenuItems(sessionData.menuItems.map((name: string) => ({ name, category: "other" })));
+        }
+        if (sessionData.session?.barName) {
+          setBarName(sessionData.session.barName);
         }
       }
     }
@@ -86,23 +90,41 @@ export default function SessionPage() {
       ]);
     }
 
-    await fetch("/api/drinks", {
+    const res = await fetch("/api/drinks", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ slug, name, category }),
     });
 
-    const res = await fetch(`/api/drinks?slug=${slug}`);
-    const data = await res.json();
-    setDrinks(data.drinks);
+    if (!res.ok) {
+      fetchDrinks(); // Revert on failure
+      return;
+    }
 
-    const realDrink = (data.drinks as Drink[]).find((d) => d.name === name);
-    if (realDrink) {
+    // Only fetch to sync IDs for new drinks (needed for undo)
+    if (!existing) {
+      const data = await res.json();
+      if (data.drink) {
+        setDrinks((prev) =>
+          prev.map((d) =>
+            d.name === name && d.id.startsWith("temp") ? { ...d, id: data.drink.id } : d
+          )
+        );
+        showToastMsg(`${name} +1`, async () => {
+          await fetch("/api/drinks", {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ slug, drinkId: data.drink.id, delta: -1 }),
+          });
+          fetchDrinks();
+        });
+      }
+    } else {
       showToastMsg(`${name} +1`, async () => {
         await fetch("/api/drinks", {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ slug, drinkId: realDrink.id, delta: -1 }),
+          body: JSON.stringify({ slug, drinkId: existing.id, delta: -1 }),
         });
         fetchDrinks();
       });
@@ -112,12 +134,13 @@ export default function SessionPage() {
   async function increment(drink: Drink) {
     vibrate();
     setDrinks((prev) => prev.map((d) => (d.id === drink.id ? { ...d, count: d.count + 1 } : d)));
+
     await fetch("/api/drinks", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ slug, name: drink.name, category: drink.category }),
     });
-    fetchDrinks();
+
     showToastMsg(`${drink.name} +1`, async () => {
       await fetch("/api/drinks", {
         method: "PATCH",
@@ -135,16 +158,15 @@ export default function SessionPage() {
     } else {
       setDrinks((prev) => prev.map((d) => (d.id === drink.id ? { ...d, count: d.count - 1 } : d)));
     }
+
     await fetch("/api/drinks", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ slug, drinkId: drink.id, delta: -1 }),
     });
-    fetchDrinks();
   }
 
   const total = drinks.reduce((sum, d) => sum + d.count, 0);
-  const sortedDrinks = drinks;
 
   if (loading)
     return (
@@ -161,36 +183,40 @@ export default function SessionPage() {
     );
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white p-4 pb-24">
+    <div className="min-h-screen bg-gray-950 text-white p-4 pb-[calc(6rem+env(safe-area-inset-bottom))]">
       <div className="text-center mb-6">
         <h1 className="text-2xl font-bold">
           🍻 {total} drink{total !== 1 ? "s" : ""}
         </h1>
-        <p className="text-gray-400 text-sm mt-1">{slug}</p>
+        {barName && <p className="text-gray-300 text-sm mt-1">{barName}</p>}
+        <p className="text-gray-500 text-xs mt-0.5 font-mono">{slug}</p>
       </div>
 
-      {sortedDrinks.length === 0 ? (
+      {drinks.length === 0 ? (
         <div className="text-center text-gray-400 mt-12">
           <p className="text-lg">No drinks yet</p>
           <p className="text-sm mt-2">Tap + to add your first drink</p>
         </div>
       ) : (
-        <div className="space-y-3">
-          {sortedDrinks.map((drink) => (
-            <DrinkCard
-              key={drink.id}
-              drink={drink}
-              onTap={() => increment(drink)}
-              onLongPress={() => decrement(drink)}
-            />
-          ))}
-        </div>
+        <>
+          <div className="space-y-3">
+            {drinks.map((drink) => (
+              <DrinkCard
+                key={drink.id}
+                drink={drink}
+                onTap={() => increment(drink)}
+                onLongPress={() => decrement(drink)}
+              />
+            ))}
+          </div>
+          <p className="text-center text-gray-600 text-xs mt-4">Long press to remove</p>
+        </>
       )}
 
       <button
         onClick={() => setShowPicker(true)}
         aria-label="Add a drink"
-        className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-amber-500 text-black font-bold text-lg rounded-full px-8 py-4 shadow-lg active:bg-amber-400 hover:bg-amber-400 focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950 outline-none"
+        className="fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 bg-amber-500 text-black font-bold text-lg rounded-full px-8 py-4 shadow-lg active:bg-amber-400 hover:bg-amber-400 focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950 outline-none"
       >
         + Add a drink
       </button>
@@ -255,7 +281,7 @@ function DrinkCard({
   };
 
   const handleMouseDown = () => {
-    if (isTouchDevice.current) return; // Skip mouse events on touch devices
+    if (isTouchDevice.current) return;
     longPressed.current = false;
     timerRef.current = setTimeout(() => {
       longPressed.current = true;
@@ -313,17 +339,27 @@ function DrinkPicker({
     return acc;
   }, {});
 
-  const hasResults = filtered.length > 0;
   const showAddCustom =
     search.trim().length > 0 &&
     !menuItems.some((item) => item.name.toLowerCase() === search.trim().toLowerCase());
 
   return (
-    <div className="fixed inset-0 bg-black/80 z-50 flex flex-col" role="dialog" aria-modal="true">
+    <div
+      className="fixed inset-0 bg-black/80 z-50 flex flex-col"
+      role="dialog"
+      aria-modal="true"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       <div className="bg-gray-900 rounded-t-2xl mt-12 flex-1 overflow-y-auto overscroll-contain p-4">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold text-white">Pick a drink</h2>
-          <button onClick={onClose} aria-label="Close picker" className="text-gray-400 text-2xl">
+          <button
+            onClick={onClose}
+            aria-label="Close picker"
+            className="text-gray-400 text-2xl px-2"
+          >
             ×
           </button>
         </div>
@@ -337,16 +373,15 @@ function DrinkPicker({
         >
           <input
             type="text"
-            placeholder="Search or type a new drink..."
+            placeholder="Search or type a new drink…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             aria-label="Search or add drink"
-            className="w-full bg-gray-800 rounded-lg px-4 py-3 text-white placeholder-gray-500 outline-none"
+            className="w-full bg-gray-800 rounded-lg px-4 py-3 text-white placeholder-gray-500 outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
             autoFocus
           />
         </form>
 
-        {/* Add as custom button - shown when search doesn't match menu */}
         {showAddCustom && (
           <button
             onClick={() => onSelect(search.trim())}
@@ -373,7 +408,7 @@ function DrinkPicker({
           </div>
         ))}
 
-        {!hasResults && !showAddCustom && !search && currentDrinks.length === 0 && (
+        {!filtered.length && !showAddCustom && !search && currentDrinks.length === 0 && (
           <p className="text-gray-400 text-center mt-8">Type a drink name to add it</p>
         )}
 

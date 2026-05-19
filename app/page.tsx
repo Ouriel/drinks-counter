@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export default function Home() {
@@ -13,24 +13,35 @@ export default function Home() {
   const [menuItems, setMenuItems] = useState<{ name: string; category: string }[]>([]);
   const [parsing, setParsing] = useState(false);
   const [creating, setCreating] = useState(false);
+  const [slugInput, setSlugInput] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
+  const debounceRef = useRef<NodeJS.Timeout>(null);
 
-  const searchBars = async (q: string) => {
+  // Debounced bar search
+  const searchBars = (q: string) => {
     setBarName(q);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
     if (q.length < 2) {
       setBarSuggestions([]);
       return;
     }
-    const res = await fetch(`/api/menus?q=${encodeURIComponent(q)}`);
-    const data = await res.json();
-    setBarSuggestions(data.menus);
+    debounceRef.current = setTimeout(async () => {
+      const res = await fetch(`/api/menus?q=${encodeURIComponent(q)}`);
+      const data = await res.json();
+      setBarSuggestions(data.menus);
+    }, 300);
   };
+
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, []);
 
   const selectBar = (bar: { barName: string; items: string[] }) => {
     setBarName(bar.barName);
     setBarSuggestions([]);
     if (bar.items.length > 0) {
-      // Bar has menu → go straight to counting
       setMenuItems(bar.items.map((name: string) => ({ name, category: "other" })));
       createSession(bar.items.map((name: string) => ({ name, category: "other" })));
     } else {
@@ -67,17 +78,23 @@ export default function Home() {
 
   const createSession = async (items?: { name: string; category: string }[]) => {
     setCreating(true);
-    const finalItems = items ?? menuItems;
-    const res = await fetch("/api/sessions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        barName: barName || null,
-        menuItems: finalItems.map((i) => i.name),
-      }),
-    });
-    const { slug } = await res.json();
-    router.push(`/s/${slug}`);
+    try {
+      const finalItems = items ?? menuItems;
+      const res = await fetch("/api/sessions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          barName: barName || null,
+          menuItems: finalItems.map((i) => i.name),
+        }),
+      });
+      if (!res.ok) throw new Error("Failed to create session");
+      const { slug } = await res.json();
+      router.push(`/s/${slug}`);
+    } catch {
+      setCreating(false);
+      alert("Could not create session. Please try again.");
+    }
   };
 
   const removeItem = (idx: number) => {
@@ -91,10 +108,27 @@ export default function Home() {
         <h2 className="text-2xl font-bold mb-8">Drinks Counter</h2>
         <button
           onClick={() => setStep("bar")}
-          className="w-full max-w-xs bg-amber-500 text-black font-bold text-lg rounded-xl py-4 active:bg-amber-400"
+          className="w-full max-w-xs bg-amber-500 text-black font-bold text-lg rounded-xl py-4 active:bg-amber-400 mb-6"
         >
           New evening
         </button>
+
+        {/* Resume session by slug */}
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (slugInput.trim()) router.push(`/s/${slugInput.trim().toLowerCase()}`);
+          }}
+          className="w-full max-w-xs"
+        >
+          <input
+            type="text"
+            placeholder="Enter your session code…"
+            value={slugInput}
+            onChange={(e) => setSlugInput(e.target.value)}
+            className="w-full bg-gray-800 rounded-lg px-4 py-3 text-white placeholder-gray-500 outline-none text-center text-sm focus-visible:ring-2 focus-visible:ring-amber-400"
+          />
+        </form>
       </div>
     );
   }
@@ -114,15 +148,12 @@ export default function Home() {
           autoFocus
         />
 
-        {/* Bar suggestions */}
         {barSuggestions.length > 0 && (
           <div className="mb-4 space-y-1">
             {barSuggestions.map((bar) => (
               <button
                 key={bar.id}
-                onClick={() => {
-                  selectBar(bar);
-                }}
+                onClick={() => selectBar(bar)}
                 className="w-full text-left bg-gray-800 rounded-lg px-4 py-3 active:bg-gray-700"
               >
                 <span className="font-medium">{bar.barName}</span>
@@ -136,9 +167,16 @@ export default function Home() {
           <button
             onClick={() => fileRef.current?.click()}
             disabled={parsing || barName.trim().length < 2}
-            className="w-full bg-gray-800 rounded-xl py-4 text-center font-medium active:bg-gray-700 disabled:opacity-50"
+            className="w-full bg-gray-800 rounded-xl py-4 text-center font-medium active:bg-gray-700 disabled:opacity-50 flex items-center justify-center gap-2"
           >
-            {parsing ? "Reading menu…" : "📷 Snap the menu"}
+            {parsing ? (
+              <>
+                <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Reading menu…
+              </>
+            ) : (
+              "📷 Snap the menu"
+            )}
           </button>
 
           <button
@@ -146,10 +184,10 @@ export default function Home() {
               setMenuItems([]);
               createSession([]);
             }}
-            disabled={barName.trim().length < 2}
+            disabled={barName.trim().length < 2 || creating}
             className="w-full bg-gray-800 rounded-xl py-4 text-center font-medium active:bg-gray-700 text-gray-400 disabled:opacity-50"
           >
-            Skip — I&apos;ll add manually
+            {creating ? "Creating…" : "Skip — I\u2019ll add manually"}
           </button>
         </div>
 
@@ -178,7 +216,11 @@ export default function Home() {
               className="flex items-center justify-between bg-gray-800 rounded-lg px-4 py-3"
             >
               <span>{item.name}</span>
-              <button onClick={() => removeItem(idx)} className="text-gray-400 text-xl">
+              <button
+                onClick={() => removeItem(idx)}
+                aria-label={`Remove ${item.name}`}
+                className="text-gray-400 text-xl px-2"
+              >
                 ×
               </button>
             </div>
@@ -193,7 +235,7 @@ export default function Home() {
       <button
         onClick={() => createSession()}
         disabled={creating}
-        className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-amber-500 text-black font-bold text-lg rounded-full px-8 py-4 shadow-lg active:bg-amber-400 disabled:opacity-50"
+        className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-amber-500 text-black font-bold text-lg rounded-full px-8 py-4 shadow-lg active:bg-amber-400 disabled:opacity-50 pb-[calc(1rem+env(safe-area-inset-bottom))]"
       >
         {creating ? "Creating…" : "Start counting 🍺"}
       </button>
