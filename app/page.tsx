@@ -4,31 +4,7 @@ import { useState, useRef, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button, Input, Card } from "@heroui/react";
 import { ThemeSwitch } from "@/lib/theme-switch";
-
-function compressImage(file: File, maxSize = 1600): Promise<File> {
-  return new Promise((resolve) => {
-    if (file.size <= 2 * 1024 * 1024) { resolve(file); return; }
-    const img = new Image();
-    img.onload = () => {
-      const canvas = document.createElement("canvas");
-      let { width, height } = img;
-      if (width > maxSize || height > maxSize) {
-        const ratio = Math.min(maxSize / width, maxSize / height);
-        width = Math.round(width * ratio);
-        height = Math.round(height * ratio);
-      }
-      canvas.width = width;
-      canvas.height = height;
-      canvas.getContext("2d")!.drawImage(img, 0, 0, width, height);
-      canvas.toBlob(
-        (blob) => resolve(new File([blob!], file.name, { type: "image/jpeg" })),
-        "image/jpeg",
-        0.8
-      );
-    };
-    img.src = URL.createObjectURL(file);
-  });
-}
+import imageCompression from "browser-image-compression";
 
 export default function Home() {
   return (
@@ -88,7 +64,11 @@ function HomeContent() {
     const seen = new Set(allItems.map((i) => i.name.toLowerCase()));
 
     for (const file of files) {
-      const compressed = await compressImage(file);
+      const compressed = await imageCompression(file, {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1600,
+        useWebWorker: true,
+      });
       const formData = new FormData();
       formData.append("photo", compressed);
       try {
@@ -250,7 +230,6 @@ function HomeContent() {
           ref={fileRef}
           type="file"
           accept="image/*"
-          capture="environment"
           multiple
           onChange={handlePhoto}
           className="hidden"
