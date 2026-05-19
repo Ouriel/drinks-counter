@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { useParams } from "next/navigation";
-import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
 
 type Drink = { id: string; name: string; count: number; category: string | null };
 type MenuItem = { name: string; category: string };
@@ -15,12 +14,12 @@ function vibrate() {
 
 export default function SessionPage() {
   const { slug } = useParams<{ slug: string }>();
+  const router = useRouter();
   const [drinks, setDrinks] = useState<Drink[]>([]);
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [barName, setBarName] = useState("");
   const [showPicker, setShowPicker] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const [toast, setToast] = useState<{ msg: string; undoFn: () => void } | null>(null);
   const toastTimer = useRef<NodeJS.Timeout>(null);
 
@@ -36,8 +35,7 @@ export default function SessionPage() {
       if (cancelled) return;
 
       if (!drinksRes.ok) {
-        setError("Session expired or not found");
-        setLoading(false);
+        router.replace(`/?slug=${slug}`);
         return;
       }
 
@@ -171,15 +169,6 @@ export default function SessionPage() {
   if (loading)
     return (
       <div className="flex items-center justify-center h-screen text-xl text-white">Loading…</div>
-    );
-  if (error)
-    return (
-      <div className="flex flex-col items-center justify-center h-screen text-center p-6">
-        <p className="text-xl text-red-400 mb-4">{error}</p>
-        <Link href={`/?slug=${slug}`} className="text-amber-400 font-medium">
-          Start a new evening with this code
-        </Link>
-      </div>
     );
 
   return (
