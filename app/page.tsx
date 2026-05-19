@@ -56,29 +56,39 @@ function HomeContent() {
   };
 
   const handlePhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (file.size > 4 * 1024 * 1024) {
-      alert("Photo too large (max 4MB). Try a lower resolution.");
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    if (files.some((f) => f.size > 4 * 1024 * 1024)) {
+      alert("One or more photos too large (max 4MB each).");
       return;
     }
     setParsing(true);
-    const formData = new FormData();
-    formData.append("photo", file);
-    try {
-      const res = await fetch("/api/parse-menu", { method: "POST", body: formData });
-      const data = await res.json();
-      const items = data.items || [];
-      if (items.length > 0) {
-        setMenuItems(items);
-        setStep("review");
-      } else {
-        createSession([]);
+    const allItems: { name: string; category: string }[] = [...menuItems];
+    const seen = new Set(allItems.map((i) => i.name.toLowerCase()));
+
+    for (const file of files) {
+      const formData = new FormData();
+      formData.append("photo", file);
+      try {
+        const res = await fetch("/api/parse-menu", { method: "POST", body: formData });
+        const data = await res.json();
+        for (const item of data.items || []) {
+          if (!seen.has(item.name.toLowerCase())) {
+            seen.add(item.name.toLowerCase());
+            allItems.push(item);
+          }
+        }
+      } catch {
+        // continue with other photos
       }
-    } catch {
+    }
+
+    setParsing(false);
+    if (allItems.length > menuItems.length) {
+      setMenuItems(allItems);
+      setStep("review");
+    } else {
       createSession([]);
-    } finally {
-      setParsing(false);
     }
   };
 
@@ -219,6 +229,7 @@ function HomeContent() {
           type="file"
           accept="image/*"
           capture="environment"
+          multiple
           onChange={handlePhoto}
           className="hidden"
         />
