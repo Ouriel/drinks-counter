@@ -17,15 +17,13 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
   themeColor: "#030712",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="bg-gray-950 antialiased">
+      <body className="bg-gray-950 antialiased touch-manipulation">
         {children}
         <Analytics />
         <SpeedInsights />

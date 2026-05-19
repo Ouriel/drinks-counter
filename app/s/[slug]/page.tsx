@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useParams } from "next/navigation";
+import Link from "next/link";
 
 type Drink = { id: string; name: string; count: number; category: string | null };
 type MenuItem = { name: string; category: string };
@@ -147,11 +148,16 @@ export default function SessionPage() {
 
   if (loading)
     return (
-      <div className="flex items-center justify-center h-screen text-xl text-white">Loading...</div>
+      <div className="flex items-center justify-center h-screen text-xl text-white">Loading…</div>
     );
   if (error)
     return (
-      <div className="flex items-center justify-center h-screen text-xl text-red-500">{error}</div>
+      <div className="flex flex-col items-center justify-center h-screen text-center p-6">
+        <p className="text-xl text-red-400 mb-4">{error}</p>
+        <Link href="/" className="text-amber-400 font-medium">
+          Start a new evening
+        </Link>
+      </div>
     );
 
   return (
@@ -184,7 +190,7 @@ export default function SessionPage() {
       <button
         onClick={() => setShowPicker(true)}
         aria-label="Add a drink"
-        className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-amber-500 text-black font-bold text-lg rounded-full px-8 py-4 shadow-lg active:bg-amber-400"
+        className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-amber-500 text-black font-bold text-lg rounded-full px-8 py-4 shadow-lg active:bg-amber-400 hover:bg-amber-400 focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950 outline-none"
       >
         + Add a drink
       </button>
@@ -271,7 +277,7 @@ function DrinkCard({
       onMouseUp={handleMouseUp}
       onContextMenu={(e) => e.preventDefault()}
       aria-label={`${drink.name}, ${drink.count}. Tap to add one, long press to remove one`}
-      className="w-full flex items-center justify-between bg-gray-800 rounded-xl p-4 active:bg-gray-700 transition-colors select-none"
+      className="w-full flex items-center justify-between bg-gray-800 rounded-xl p-4 active:bg-gray-700 transition-[background-color] select-none focus-visible:ring-2 focus-visible:ring-amber-400 outline-none"
     >
       <div className="text-left">
         <span className="text-lg font-medium">{drink.name}</span>
@@ -314,7 +320,7 @@ function DrinkPicker({
 
   return (
     <div className="fixed inset-0 bg-black/80 z-50 flex flex-col" role="dialog" aria-modal="true">
-      <div className="bg-gray-900 rounded-t-2xl mt-12 flex-1 overflow-y-auto p-4">
+      <div className="bg-gray-900 rounded-t-2xl mt-12 flex-1 overflow-y-auto overscroll-contain p-4">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold text-white">Pick a drink</h2>
           <button onClick={onClose} aria-label="Close picker" className="text-gray-400 text-2xl">

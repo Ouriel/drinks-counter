@@ -96,10 +96,11 @@ export default function Home() {
 
         <input
           type="text"
-          placeholder="Bar name"
+          placeholder="Bar name…"
           value={barName}
           onChange={(e) => searchBars(e.target.value)}
-          className="w-full bg-gray-800 rounded-lg px-4 py-3 mb-2 text-white placeholder-gray-500 outline-none"
+          autoComplete="off"
+          className="w-full bg-gray-800 rounded-lg px-4 py-3 mb-2 text-white placeholder-gray-500 outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
           autoFocus
         />
 
@@ -128,7 +129,7 @@ export default function Home() {
             disabled={parsing || barName.trim().length < 2}
             className="w-full bg-gray-800 rounded-xl py-4 text-center font-medium active:bg-gray-700 disabled:opacity-50"
           >
-            {parsing ? "Reading menu..." : "📷 Snap the menu"}
+            {parsing ? "Reading menu…" : "📷 Snap the menu"}
           </button>
 
           <button
@@ -185,7 +186,7 @@ export default function Home() {
         disabled={creating}
         className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-amber-500 text-black font-bold text-lg rounded-full px-8 py-4 shadow-lg active:bg-amber-400 disabled:opacity-50"
       >
-        {creating ? "Creating..." : "Start counting 🍺"}
+        {creating ? "Creating…" : "Start counting 🍺"}
       </button>
     </div>
   );
