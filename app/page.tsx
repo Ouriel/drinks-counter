@@ -240,7 +240,7 @@ function HomeContent() {
         </div>
 
         <input ref={cameraRef} type="file" accept="image/*" capture="environment" onChange={handlePhoto} className="hidden" />
-        <input ref={fileRef} type="file" accept="image/*" onChange={handlePhoto} className="hidden" />
+        <input ref={fileRef} type="file" accept="image/*" multiple onChange={handlePhoto} className="hidden" />
       </div>
     );
   }
