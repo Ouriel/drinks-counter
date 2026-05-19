@@ -68,8 +68,36 @@ const nouns = [
   "paloma",
 ];
 
+const extras = [
+  "night",
+  "vibes",
+  "crew",
+  "squad",
+  "round",
+  "toast",
+  "cheers",
+  "table",
+  "party",
+  "sunset",
+  "moon",
+  "thunder",
+  "wave",
+  "spark",
+  "flame",
+  "frost",
+  "cloud",
+  "breeze",
+  "storm",
+  "flash",
+  "drift",
+  "rush",
+  "glow",
+  "pulse",
+];
+
 export function generateSlug(): string {
   const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
   const noun = nouns[Math.floor(Math.random() * nouns.length)];
-  return `${adj}-${noun}`;
+  const extra = extras[Math.floor(Math.random() * extras.length)];
+  return `${adj}-${noun}-${extra}`;
 }

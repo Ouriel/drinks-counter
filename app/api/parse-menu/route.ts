@@ -9,7 +9,6 @@ export async function POST(req: NextRequest) {
   if (!file) return NextResponse.json({ error: "No photo" }, { status: 400 });
 
   const bytes = await file.arrayBuffer();
-  const base64 = Buffer.from(bytes).toString("base64");
 
   try {
     const { object } = await generateObject({
@@ -28,7 +27,8 @@ export async function POST(req: NextRequest) {
           content: [
             {
               type: "image",
-              image: `data:${file.type};base64,${base64}`,
+              image: new Uint8Array(bytes),
+              mimeType: file.type as `image/${string}`,
             },
             {
               type: "text",
@@ -41,7 +41,8 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(object);
   } catch (e) {
-    console.error("Menu parsing failed:", e);
-    return NextResponse.json({ items: [], error: "Could not parse menu" }, { status: 200 });
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error("Menu parsing failed:", msg);
+    return NextResponse.json({ items: [], error: msg }, { status: 200 });
   }
 }
