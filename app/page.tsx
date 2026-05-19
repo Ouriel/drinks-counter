@@ -243,11 +243,11 @@ function HomeContent() {
       <h2 className="text-xl font-bold mb-4">Review menu items</h2>
 
       {menuItems.length > 0 && (
-        <div className="space-y-2 mb-6">
+        <div className="space-y-1 mb-6">
           {menuItems.map((item, idx) => (
             <Card key={idx}>
-              <div className="p-3 flex items-center justify-between">
-                <span>{item.name}</span>
+              <div className="px-3 py-2 flex items-center justify-between">
+                <span className="text-sm">{item.name}</span>
                 <Button
                   variant="ghost"
                   size="sm"
