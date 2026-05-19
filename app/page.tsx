@@ -126,7 +126,7 @@ function HomeContent() {
       <div className="min-h-screen flex flex-col items-center justify-center p-6 gap-8 relative">
         <div className="absolute right-4 top-4"><ThemeSwitch /></div>
         <div className="text-center">
-          <Image src="/icon.svg" alt="TipsyTap" width={80} height={80} className="mx-auto mb-4" />
+          <Image src="/icon.svg" alt="TipsyTap" width={120} height={120} className="mx-auto mb-4" />
           <h1 className="text-4xl font-bold">TipsyTap</h1>
           <p className="text-muted mt-2">Tap to track the tipsy</p>
         </div>
