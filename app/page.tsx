@@ -2,6 +2,8 @@
 
 import { useState, useRef, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Button, Input, Card } from "@heroui/react";
+import { ThemeSwitch } from "@/lib/theme-switch";
 
 export default function Home() {
   return (
@@ -27,7 +29,6 @@ function HomeContent() {
   const fileRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<NodeJS.Timeout>(null);
 
-  // Debounced bar search
   const searchBars = (q: string) => {
     setBarName(q);
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -109,17 +110,21 @@ function HomeContent() {
 
   if (step === "start") {
     return (
-      <div className="min-h-screen bg-gray-950 text-white flex flex-col items-center justify-center p-6">
-        <h1 className="text-4xl font-bold mb-2">🍻</h1>
-        <h2 className="text-2xl font-bold mb-8">Drinks Counter</h2>
-        <button
-          onClick={() => setStep("bar")}
-          className="w-full max-w-xs bg-amber-500 text-black font-bold text-lg rounded-xl py-4 active:bg-amber-400 mb-6"
+      <div className="min-h-screen flex flex-col items-center justify-center p-6 gap-6 relative">
+        <div className="absolute right-4 top-4"><ThemeSwitch /></div>
+        <div className="text-center">
+          <p className="text-5xl mb-3">🍻</p>
+          <h1 className="text-3xl font-bold">Drinks Counter</h1>
+          <p className="text-muted mt-2 text-sm">Count your drinks during a night out</p>
+        </div>
+        <Button
+          variant="primary"
+          size="lg"
+          className="w-full max-w-xs"
+          onPress={() => setStep("bar")}
         >
           New evening
-        </button>
-
-        {/* Resume session by slug */}
+        </Button>
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -127,12 +132,11 @@ function HomeContent() {
           }}
           className="w-full max-w-xs"
         >
-          <input
-            type="text"
+          <Input
             placeholder="Enter your session code…"
             value={slugInput}
             onChange={(e) => setSlugInput(e.target.value)}
-            className="w-full bg-gray-800 rounded-lg px-4 py-3 text-white placeholder-gray-500 outline-none text-center text-sm focus-visible:ring-2 focus-visible:ring-amber-400"
+            className="text-center"
           />
         </form>
       </div>
@@ -141,70 +145,74 @@ function HomeContent() {
 
   if (step === "bar") {
     return (
-      <div className="min-h-screen bg-gray-950 text-white p-6">
+      <div className="min-h-screen p-6">
         <h2 className="text-xl font-bold mb-4">Where are you?</h2>
 
-        <input
-          type="text"
+        <Input
           placeholder="Bar name…"
           value={barName}
           onChange={(e) => searchBars(e.target.value)}
           autoComplete="off"
-          className="w-full bg-gray-800 rounded-lg px-4 py-3 mb-2 text-white placeholder-gray-500 outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
           autoFocus
+          className="mb-3"
         />
 
         {barSuggestions.length > 0 && (
-          <div className="mb-4 space-y-1">
+          <div className="mb-4 space-y-2">
             {barSuggestions.map((bar) => (
-              <button
-                key={bar.id}
-                onClick={() => selectBar(bar)}
-                className="w-full text-left bg-gray-800 rounded-lg px-4 py-3 active:bg-gray-700"
-              >
-                <span className="font-medium">{bar.barName}</span>
-                <span className="text-gray-400 text-sm ml-2">{bar.items.length} items</span>
-              </button>
+              <Card key={bar.id}>
+                <button
+                  type="button"
+                  onClick={() => selectBar(bar)}
+                  className="w-full text-left p-3 cursor-pointer"
+                >
+                  <span className="font-medium">{bar.barName}</span>
+                  <span className="text-muted text-sm ml-2">{bar.items.length} items</span>
+                </button>
+              </Card>
             ))}
           </div>
         )}
 
         <div className="space-y-3 mt-6">
           {menuItems.length > 0 && (
-            <button
-              onClick={() => createSession()}
-              disabled={creating}
-              className="w-full bg-amber-500 text-black font-bold rounded-xl py-4 text-center active:bg-amber-400 disabled:opacity-50"
+            <Button
+              variant="primary"
+              size="lg"
+              className="w-full"
+              isDisabled={creating}
+              onPress={() => createSession()}
             >
               {creating ? "Creating…" : `Start (${menuItems.length} drinks)`}
-            </button>
+            </Button>
           )}
 
-          <button
-            onClick={() => fileRef.current?.click()}
-            disabled={parsing || barName.trim().length < 2}
-            className="w-full bg-gray-800 rounded-xl py-4 text-center font-medium active:bg-gray-700 disabled:opacity-50 flex items-center justify-center gap-2"
+          <Button
+            variant="ghost"
+            size="lg"
+            className="w-full"
+            isDisabled={parsing || barName.trim().length < 2}
+            onPress={() => fileRef.current?.click()}
           >
             {parsing ? (
-              <>
-                <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              <span className="flex items-center gap-2">
+                <span className="inline-block w-4 h-4 border-2 border-foreground/30 border-t-foreground rounded-full animate-spin" />
                 Reading menu…
-              </>
+              </span>
             ) : (
               "📷 Snap the menu"
             )}
-          </button>
+          </Button>
 
-          <button
-            onClick={() => {
-              setMenuItems([]);
-              createSession([]);
-            }}
-            disabled={barName.trim().length < 2 || creating}
-            className="w-full bg-gray-800 rounded-xl py-4 text-center font-medium active:bg-gray-700 text-gray-400 disabled:opacity-50"
+          <Button
+            variant="ghost"
+            size="lg"
+            className="w-full text-muted"
+            isDisabled={barName.trim().length < 2 || creating}
+            onPress={() => createSession([])}
           >
-            {creating ? "Creating…" : "Skip — I\u2019ll add manually"}
-          </button>
+            Skip — I'll add manually
+          </Button>
         </div>
 
         <input
@@ -219,42 +227,45 @@ function HomeContent() {
     );
   }
 
-  // Review step (only reached after photo parsing)
+  // Review step
   return (
-    <div className="min-h-screen bg-gray-950 text-white p-6 pb-24">
+    <div className="min-h-screen p-6 pb-24">
       <h2 className="text-xl font-bold mb-4">Review menu items</h2>
 
       {menuItems.length > 0 && (
-        <div className="space-y-1 mb-6">
+        <div className="space-y-2 mb-6">
           {menuItems.map((item, idx) => (
-            <div
-              key={idx}
-              className="flex items-center justify-between bg-gray-800 rounded-lg px-4 py-3"
-            >
-              <span>{item.name}</span>
-              <button
-                onClick={() => removeItem(idx)}
-                aria-label={`Remove ${item.name}`}
-                className="text-gray-400 text-xl px-2"
-              >
-                ×
-              </button>
-            </div>
+            <Card key={idx}>
+              <div className="p-3 flex items-center justify-between">
+                <span>{item.name}</span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onPress={() => removeItem(idx)}
+                  aria-label={`Remove ${item.name}`}
+                >
+                  ×
+                </Button>
+              </div>
+            </Card>
           ))}
         </div>
       )}
 
-      <p className="text-gray-400 text-sm mb-6">
+      <p className="text-muted text-sm mb-6">
         Remove any junk. You can always add more drinks later.
       </p>
 
-      <button
-        onClick={() => createSession()}
-        disabled={creating}
-        className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-amber-500 text-black font-bold text-lg rounded-full px-8 py-4 shadow-lg active:bg-amber-400 disabled:opacity-50 pb-[calc(1rem+env(safe-area-inset-bottom))]"
-      >
-        {creating ? "Creating…" : "Start counting 🍺"}
-      </button>
+      <div className="fixed bottom-6 left-0 right-0 flex justify-center px-6 pb-[env(safe-area-inset-bottom)]">
+        <Button
+          variant="primary"
+          size="lg"
+          isDisabled={creating}
+          onPress={() => createSession()}
+        >
+          {creating ? "Creating…" : "Start counting 🍺"}
+        </Button>
+      </div>
     </div>
   );
 }

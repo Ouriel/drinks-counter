@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { ThemeProvider } from "next-themes";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
@@ -22,9 +23,11 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="color-scheme-dark" style={{ colorScheme: "dark" }}>
-      <body className="bg-gray-950 antialiased touch-manipulation">
-        {children}
+    <html lang="en" suppressHydrationWarning>
+      <body className="bg-background text-foreground antialiased touch-manipulation min-h-screen">
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+          {children}
+        </ThemeProvider>
         <Analytics />
         <SpeedInsights />
       </body>
