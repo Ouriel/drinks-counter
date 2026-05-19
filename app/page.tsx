@@ -26,10 +26,10 @@ export default function Home() {
     setBarSuggestions(data.menus);
   };
 
-  const selectBar = (bar: { items: string[] }) => {
+  const selectBar = (bar: { barName: string; items: string[] }) => {
+    setBarName(bar.barName);
     setMenuItems(bar.items.map((name: string) => ({ name, category: "other" })));
     setBarSuggestions([]);
-    setStep("review");
   };
 
   const handlePhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -111,7 +111,6 @@ export default function Home() {
               <button
                 key={bar.id}
                 onClick={() => {
-                  setBarName(bar.barName);
                   selectBar(bar);
                 }}
                 className="w-full text-left bg-gray-800 rounded-lg px-4 py-3 active:bg-gray-700"
@@ -131,6 +130,15 @@ export default function Home() {
           >
             {parsing ? "Reading menu…" : "📷 Snap the menu"}
           </button>
+
+          {menuItems.length > 0 && (
+            <button
+              onClick={() => createSession()}
+              className="w-full bg-amber-500/20 border border-amber-500/50 rounded-xl py-4 text-center font-medium text-amber-300 active:bg-amber-500/30"
+            >
+              Use existing menu ({menuItems.length} items)
+            </button>
+          )}
 
           <button
             onClick={() => {
