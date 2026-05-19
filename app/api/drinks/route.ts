@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db, drinks, sessions } from "@/lib/db";
+import { db, drinks, sessions, barMenus } from "@/lib/db";
 import { eq, and, sql } from "drizzle-orm";
 
 const MAX_DRINK_NAME_LENGTH = 80;
@@ -56,6 +56,21 @@ export async function POST(req: NextRequest) {
     .insert(drinks)
     .values({ sessionId: session.id, name: cleanName, category: category || null })
     .returning();
+
+  // Add to bar menu if session has one and item isn't already in it
+  if (session.barMenuId) {
+    const [menu] = await db
+      .select()
+      .from(barMenus)
+      .where(eq(barMenus.id, session.barMenuId))
+      .limit(1);
+    if (menu && !menu.items.includes(cleanName)) {
+      await db
+        .update(barMenus)
+        .set({ items: [...menu.items, cleanName] })
+        .where(eq(barMenus.id, session.barMenuId));
+    }
+  }
 
   return NextResponse.json({ drink });
 }
