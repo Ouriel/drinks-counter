@@ -51,6 +51,8 @@ export async function DELETE(req: NextRequest) {
   const { id } = await req.json();
   if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
 
+  // Unlink sessions referencing this bar menu
+  await db.update(sessions).set({ barMenuId: null }).where(eq(sessions.barMenuId, id));
   await db.delete(barMenus).where(eq(barMenus.id, id));
   return NextResponse.json({ ok: true });
 }
