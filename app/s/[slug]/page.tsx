@@ -143,7 +143,7 @@ export default function SessionPage() {
   }
 
   const total = drinks.reduce((sum, d) => sum + d.count, 0);
-  const sortedDrinks = [...drinks].sort((a, b) => b.count - a.count);
+  const sortedDrinks = drinks;
 
   if (loading)
     return (
