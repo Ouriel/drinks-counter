@@ -294,7 +294,6 @@ function DrinkPicker({
   onClose: () => void;
 }) {
   const [search, setSearch] = useState("");
-  const [customName, setCustomName] = useState("");
 
   const currentNames = new Set(currentDrinks.map((d) => d.name));
   const filtered = menuItems.filter(
@@ -308,6 +307,11 @@ function DrinkPicker({
     return acc;
   }, {});
 
+  const hasResults = filtered.length > 0;
+  const showAddCustom =
+    search.trim().length > 0 &&
+    !menuItems.some((item) => item.name.toLowerCase() === search.trim().toLowerCase());
+
   return (
     <div className="fixed inset-0 bg-black/80 z-50 flex flex-col" role="dialog" aria-modal="true">
       <div className="bg-gray-900 rounded-t-2xl mt-12 flex-1 overflow-y-auto p-4">
@@ -318,15 +322,33 @@ function DrinkPicker({
           </button>
         </div>
 
-        <input
-          type="text"
-          placeholder="Search..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          aria-label="Search drinks"
-          className="w-full bg-gray-800 rounded-lg px-4 py-3 mb-4 text-white placeholder-gray-500 outline-none"
-          autoFocus
-        />
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (search.trim()) onSelect(search.trim());
+          }}
+          className="mb-4"
+        >
+          <input
+            type="text"
+            placeholder="Search or type a new drink..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            aria-label="Search or add drink"
+            className="w-full bg-gray-800 rounded-lg px-4 py-3 text-white placeholder-gray-500 outline-none"
+            autoFocus
+          />
+        </form>
+
+        {/* Add as custom button - shown when search doesn't match menu */}
+        {showAddCustom && (
+          <button
+            onClick={() => onSelect(search.trim())}
+            className="w-full text-left bg-amber-500/20 border border-amber-500/50 rounded-lg px-4 py-3 mb-4 text-amber-300 active:bg-amber-500/30"
+          >
+            + Add &quot;{search.trim()}&quot;
+          </button>
+        )}
 
         {Object.entries(grouped).map(([category, items]) => (
           <div key={category} className="mb-4">
@@ -345,6 +367,10 @@ function DrinkPicker({
           </div>
         ))}
 
+        {!hasResults && !showAddCustom && !search && currentDrinks.length === 0 && (
+          <p className="text-gray-400 text-center mt-8">Type a drink name to add it</p>
+        )}
+
         {currentDrinks.length > 0 && (
           <div className="mb-4">
             <h3 className="text-sm text-gray-400 uppercase mb-2">Already ordered</h3>
@@ -362,35 +388,6 @@ function DrinkPicker({
             </div>
           </div>
         )}
-
-        <div className="mt-4 border-t border-gray-700 pt-4">
-          <h3 className="text-sm text-gray-400 uppercase mb-2">Custom item</h3>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (customName.trim()) {
-                onSelect(customName.trim());
-                setCustomName("");
-              }
-            }}
-            className="flex gap-2"
-          >
-            <input
-              type="text"
-              placeholder="Type a drink name..."
-              value={customName}
-              onChange={(e) => setCustomName(e.target.value)}
-              aria-label="Custom drink name"
-              className="flex-1 bg-gray-800 rounded-lg px-4 py-3 text-white placeholder-gray-500 outline-none"
-            />
-            <button
-              type="submit"
-              className="bg-amber-500 text-black font-bold rounded-lg px-4 py-3"
-            >
-              Add
-            </button>
-          </form>
-        </div>
       </div>
     </div>
   );
