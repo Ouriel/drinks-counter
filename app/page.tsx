@@ -95,7 +95,7 @@ export default function Home() {
 
         <input
           type="text"
-          placeholder="Bar name (optional)"
+          placeholder="Bar name"
           value={barName}
           onChange={(e) => searchBars(e.target.value)}
           className="w-full bg-gray-800 rounded-lg px-4 py-3 mb-2 text-white placeholder-gray-500 outline-none"
@@ -124,7 +124,7 @@ export default function Home() {
         <div className="space-y-3 mt-6">
           <button
             onClick={() => fileRef.current?.click()}
-            disabled={parsing}
+            disabled={parsing || barName.trim().length < 2}
             className="w-full bg-gray-800 rounded-xl py-4 text-center font-medium active:bg-gray-700 disabled:opacity-50"
           >
             {parsing ? "Reading menu..." : "📷 Snap the menu"}
@@ -135,7 +135,8 @@ export default function Home() {
               setMenuItems([]);
               setStep("review");
             }}
-            className="w-full bg-gray-800 rounded-xl py-4 text-center font-medium active:bg-gray-700 text-gray-400"
+            disabled={barName.trim().length < 2}
+            className="w-full bg-gray-800 rounded-xl py-4 text-center font-medium active:bg-gray-700 text-gray-400 disabled:opacity-50"
           >
             Skip — I&apos;ll add manually
           </button>
