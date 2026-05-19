@@ -45,11 +45,15 @@ export default function Home() {
     try {
       const res = await fetch("/api/parse-menu", { method: "POST", body: formData });
       const data = await res.json();
-      setMenuItems(data.items || []);
-      setStep("review");
+      const items = data.items || [];
+      if (items.length > 0) {
+        setMenuItems(items);
+        setStep("review");
+      } else {
+        createSession([]);
+      }
     } catch {
-      alert("Couldn't read the menu. You can add drinks manually.");
-      setStep("review");
+      createSession([]);
     } finally {
       setParsing(false);
     }
