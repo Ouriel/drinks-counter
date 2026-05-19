@@ -30,9 +30,16 @@ export async function POST(req: NextRequest) {
 
     if (existing.length) {
       barMenuId = existing[0].id;
-      // Update items if new ones provided and bar had none
-      if (menuItems?.length && existing[0].items.length === 0) {
-        await db.update(barMenus).set({ items: menuItems }).where(eq(barMenus.id, existing[0].id));
+      // Merge new items with existing (no duplicates)
+      if (menuItems?.length) {
+        const existingLower = new Set(existing[0].items.map((i: string) => i.toLowerCase()));
+        const newItems = menuItems.filter((item: string) => !existingLower.has(item.toLowerCase()));
+        if (newItems.length > 0) {
+          await db
+            .update(barMenus)
+            .set({ items: [...existing[0].items, ...newItems] })
+            .where(eq(barMenus.id, existing[0].id));
+        }
       }
     } else {
       const [menu] = await db
