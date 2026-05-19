@@ -1,0 +1,93 @@
+import { NextRequest, NextResponse } from "next/server";
+import { db, drinks, sessions } from "@/lib/db";
+import { eq, and, sql } from "drizzle-orm";
+
+const MAX_DRINK_NAME_LENGTH = 80;
+
+function sanitizeDrinkName(input: string): string {
+  return input.trim().replace(/\s+/g, " ").slice(0, MAX_DRINK_NAME_LENGTH);
+}
+
+// GET drinks for a session
+export async function GET(req: NextRequest) {
+  const slug = req.nextUrl.searchParams.get("slug");
+  if (!slug) return NextResponse.json({ error: "Missing slug" }, { status: 400 });
+
+  const [session] = await db.select().from(sessions).where(eq(sessions.slug, slug)).limit(1);
+
+  if (!session || session.expiresAt < new Date()) {
+    return NextResponse.json({ error: "Session expired or not found" }, { status: 404 });
+  }
+
+  const items = await db.select().from(drinks).where(eq(drinks.sessionId, session.id));
+
+  return NextResponse.json({ drinks: items, sessionId: session.id });
+}
+
+// POST: add a new drink or increment existing
+export async function POST(req: NextRequest) {
+  const { slug, name, category } = await req.json();
+  if (!slug || !name) return NextResponse.json({ error: "Missing fields" }, { status: 400 });
+
+  const cleanName = sanitizeDrinkName(name);
+  if (!cleanName) return NextResponse.json({ error: "Invalid drink name" }, { status: 400 });
+
+  const [session] = await db.select().from(sessions).where(eq(sessions.slug, slug)).limit(1);
+
+  if (!session || session.expiresAt < new Date()) {
+    return NextResponse.json({ error: "Session expired" }, { status: 404 });
+  }
+
+  const [existing] = await db
+    .select()
+    .from(drinks)
+    .where(and(eq(drinks.sessionId, session.id), eq(drinks.name, cleanName)))
+    .limit(1);
+
+  if (existing) {
+    await db
+      .update(drinks)
+      .set({ count: sql`${drinks.count} + 1` })
+      .where(eq(drinks.id, existing.id));
+    return NextResponse.json({ count: existing.count + 1 });
+  }
+
+  const [drink] = await db
+    .insert(drinks)
+    .values({ sessionId: session.id, name: cleanName, category: category || null })
+    .returning();
+
+  return NextResponse.json({ drink });
+}
+
+// PATCH: increment or decrement (with session ownership check)
+export async function PATCH(req: NextRequest) {
+  const { slug, drinkId, delta } = await req.json();
+  if (!slug || !drinkId) return NextResponse.json({ error: "Missing fields" }, { status: 400 });
+
+  // Verify session owns this drink
+  const [session] = await db.select().from(sessions).where(eq(sessions.slug, slug)).limit(1);
+  if (!session || session.expiresAt < new Date()) {
+    return NextResponse.json({ error: "Session expired" }, { status: 404 });
+  }
+
+  const [drink] = await db
+    .select()
+    .from(drinks)
+    .where(and(eq(drinks.id, drinkId), eq(drinks.sessionId, session.id)))
+    .limit(1);
+
+  if (!drink) return NextResponse.json({ error: "Drink not found" }, { status: 404 });
+
+  if (delta === -1 && drink.count <= 1) {
+    await db.delete(drinks).where(eq(drinks.id, drinkId));
+    return NextResponse.json({ deleted: true });
+  }
+
+  await db
+    .update(drinks)
+    .set({ count: sql`GREATEST(${drinks.count} + ${delta}, 0)` })
+    .where(eq(drinks.id, drinkId));
+
+  return NextResponse.json({ ok: true });
+}
