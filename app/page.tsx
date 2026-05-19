@@ -79,16 +79,11 @@ function HomeContent() {
           }
         }
       } catch { /* continue */ }
-      // Delay between images to avoid rate limiting
-      if (files.length > 1) await new Promise((r) => setTimeout(r, 2000));
     }
 
     setParsing(false);
     if (allItems.length > menuItems.length) {
       setMenuItems(allItems);
-      setStep("review");
-    } else {
-      createSession([]);
     }
   };
 
@@ -242,7 +237,7 @@ function HomeContent() {
         </div>
 
         <input ref={cameraRef} type="file" accept="image/*" capture="environment" onChange={handlePhoto} className="hidden" />
-        <input ref={fileRef} type="file" accept="image/*" multiple onChange={handlePhoto} className="hidden" />
+        <input ref={fileRef} type="file" accept="image/*" onChange={handlePhoto} className="hidden" />
       </div>
     );
   }
