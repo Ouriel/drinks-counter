@@ -55,14 +55,15 @@ export default function Home() {
     }
   };
 
-  const createSession = async () => {
+  const createSession = async (items?: { name: string; category: string }[]) => {
     setCreating(true);
+    const finalItems = items ?? menuItems;
     const res = await fetch("/api/sessions", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         barName: barName || null,
-        menuItems: menuItems.map((i) => i.name),
+        menuItems: finalItems.map((i) => i.name),
       }),
     });
     const { slug } = await res.json();
@@ -133,7 +134,7 @@ export default function Home() {
           <button
             onClick={() => {
               setMenuItems([]);
-              setStep("review");
+              createSession([]);
             }}
             disabled={barName.trim().length < 2}
             className="w-full bg-gray-800 rounded-xl py-4 text-center font-medium active:bg-gray-700 text-gray-400 disabled:opacity-50"
@@ -154,12 +155,10 @@ export default function Home() {
     );
   }
 
-  // Review step
+  // Review step (only reached after photo parsing)
   return (
     <div className="min-h-screen bg-gray-950 text-white p-6 pb-24">
-      <h2 className="text-xl font-bold mb-4">
-        {menuItems.length ? "Review menu items" : "Ready to start"}
-      </h2>
+      <h2 className="text-xl font-bold mb-4">Review menu items</h2>
 
       {menuItems.length > 0 && (
         <div className="space-y-1 mb-6">
@@ -178,13 +177,11 @@ export default function Home() {
       )}
 
       <p className="text-gray-400 text-sm mb-6">
-        {menuItems.length
-          ? "Remove any junk. You can always add more drinks later."
-          : "You'll be able to add drinks manually during the evening."}
+        Remove any junk. You can always add more drinks later.
       </p>
 
       <button
-        onClick={createSession}
+        onClick={() => createSession()}
         disabled={creating}
         className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-amber-500 text-black font-bold text-lg rounded-full px-8 py-4 shadow-lg active:bg-amber-400 disabled:opacity-50"
       >
