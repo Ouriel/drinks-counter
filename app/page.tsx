@@ -79,6 +79,8 @@ function HomeContent() {
           }
         }
       } catch { /* continue */ }
+      // Delay between images to avoid rate limiting
+      if (files.length > 1) await new Promise((r) => setTimeout(r, 2000));
     }
 
     setParsing(false);
