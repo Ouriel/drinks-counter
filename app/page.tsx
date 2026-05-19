@@ -113,9 +113,9 @@ function HomeContent() {
       <div className="min-h-screen flex flex-col items-center justify-center p-6 gap-6 relative">
         <div className="absolute right-4 top-4"><ThemeSwitch /></div>
         <div className="text-center">
-          <img src="/icon.svg" alt="Drinks Counter" className="w-16 h-16 mx-auto mb-3" />
-          <h1 className="text-3xl font-bold">Drinks Counter</h1>
-          <p className="text-muted mt-2 text-sm">Count your drinks during a night out</p>
+          <img src="/icon.svg" alt="TipsyTap" className="w-16 h-16 mx-auto mb-3" />
+          <h1 className="text-3xl font-bold">TipsyTap</h1>
+          <p className="text-muted mt-2 text-sm">Tap to track the tipsy</p>
         </div>
         <div className="w-full max-w-xs space-y-3">
           <Button

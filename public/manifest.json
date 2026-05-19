@@ -1,7 +1,7 @@
 {
-  "name": "Drinks Counter",
-  "short_name": "Drinks",
-  "description": "Count your drinks during a night out",
+  "name": "TipsyTap",
+  "short_name": "TipsyTap",
+  "description": "Tap to track the tipsy",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#030712",

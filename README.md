@@ -1,6 +1,6 @@
-# 🍻 Drinks Counter
+# 🍻 TipsyTap
 
-Count your drinks during a night out. Snap the bar menu, pick drinks, tap to count.
+Tap to track the tipsy. Snap the bar menu, pick drinks, tap to count.
 
 ## Setup
 

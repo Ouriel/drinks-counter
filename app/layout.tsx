@@ -5,8 +5,8 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Drinks Counter",
-  description: "Count your drinks during a night out",
+  title: "TipsyTap",
+  description: "Tap to track the tipsy",
   manifest: "/manifest.json",
   icons: {
     icon: "/icon.svg",
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Drinks",
+    title: "TipsyTap",
   },
 };
 
