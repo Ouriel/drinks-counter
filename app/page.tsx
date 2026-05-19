@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 import { Button, Input, Card } from "@heroui/react";
 import { ThemeSwitch } from "@/lib/theme-switch";
 import imageCompression from "browser-image-compression";
@@ -33,10 +34,7 @@ function HomeContent() {
   const searchBars = (q: string) => {
     setBarName(q);
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    if (q.length < 2) {
-      setBarSuggestions([]);
-      return;
-    }
+    if (q.length < 2) { setBarSuggestions([]); return; }
     debounceRef.current = setTimeout(async () => {
       const res = await fetch(`/api/menus?q=${encodeURIComponent(q)}`);
       const data = await res.json();
@@ -45,9 +43,7 @@ function HomeContent() {
   };
 
   useEffect(() => {
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-    };
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
   }, []);
 
   const selectBar = (bar: { barName: string; items: string[] }) => {
@@ -80,9 +76,7 @@ function HomeContent() {
             allItems.push(item);
           }
         }
-      } catch {
-        // continue with other photos
-      }
+      } catch { /* continue */ }
     }
 
     setParsing(false);
@@ -107,7 +101,7 @@ function HomeContent() {
           slug: preferredSlug || undefined,
         }),
       });
-      if (!res.ok) throw new Error("Failed to create session");
+      if (!res.ok) throw new Error("Failed");
       const { slug } = await res.json();
       router.push(`/s/${slug}`);
     } catch {
@@ -120,22 +114,22 @@ function HomeContent() {
     setMenuItems((prev) => prev.filter((_, i) => i !== idx));
   };
 
+  const editItem = (idx: number, newName: string) => {
+    setMenuItems((prev) => prev.map((item, i) => (i === idx ? { ...item, name: newName } : item)));
+  };
+
+  // === START SCREEN ===
   if (step === "start") {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-6 gap-6 relative">
+      <div className="min-h-screen flex flex-col items-center justify-center p-6 gap-8 relative">
         <div className="absolute right-4 top-4"><ThemeSwitch /></div>
         <div className="text-center">
-          <img src="/icon.svg" alt="TipsyTap" className="w-16 h-16 mx-auto mb-3" />
-          <h1 className="text-3xl font-bold">TipsyTap</h1>
-          <p className="text-muted mt-2 text-sm">Tap to track the tipsy</p>
+          <Image src="/icon.svg" alt="TipsyTap" width={80} height={80} className="mx-auto mb-4" />
+          <h1 className="text-4xl font-bold">TipsyTap</h1>
+          <p className="text-muted mt-2">Tap to track the tipsy</p>
         </div>
         <div className="w-full max-w-xs space-y-3">
-          <Button
-            variant="primary"
-            size="lg"
-            className="w-full"
-            onPress={() => setStep("bar")}
-          >
+          <Button variant="primary" size="lg" className="w-full" onPress={() => setStep("bar")}>
             New evening
           </Button>
           <form
@@ -143,24 +137,37 @@ function HomeContent() {
               e.preventDefault();
               if (slugInput.trim()) router.push(`/s/${slugInput.trim().toLowerCase()}`);
             }}
+            className="relative"
           >
-            <Input className="w-full text-center"
-              placeholder="Enter your session code…"
+            <Input
+              className="w-full"
+              placeholder="Session code…"
               value={slugInput}
               onChange={(e) => setSlugInput(e.target.value)}
             />
+            {slugInput.trim() && (
+              <button
+                type="submit"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-accent font-bold text-lg"
+                aria-label="Go to session"
+              >
+                →
+              </button>
+            )}
           </form>
         </div>
       </div>
     );
   }
 
+  // === BAR NAME STEP ===
   if (step === "bar") {
     return (
       <div className="min-h-screen p-6">
         <h2 className="text-xl font-bold mb-4">Where are you?</h2>
 
-        <Input className="w-full mb-3"
+        <Input
+          className="w-full mb-3"
           placeholder="Bar name…"
           value={barName}
           onChange={(e) => searchBars(e.target.value)}
@@ -172,11 +179,7 @@ function HomeContent() {
           <div className="mb-4 space-y-2">
             {barSuggestions.map((bar) => (
               <Card key={bar.id}>
-                <button
-                  type="button"
-                  onClick={() => selectBar(bar)}
-                  className="w-full text-left p-3 cursor-pointer"
-                >
+                <button type="button" onClick={() => selectBar(bar)} className="w-full text-left p-3 cursor-pointer">
                   <span className="font-medium">{bar.barName}</span>
                   <span className="text-muted text-sm ml-2">{bar.items.length} items</span>
                 </button>
@@ -187,13 +190,7 @@ function HomeContent() {
 
         <div className="space-y-3 mt-6">
           {menuItems.length > 0 && (
-            <Button
-              variant="primary"
-              size="lg"
-              className="w-full"
-              isDisabled={creating}
-              onPress={() => createSession()}
-            >
+            <Button variant="primary" size="lg" className="w-full" isDisabled={creating} onPress={() => createSession()}>
               {creating ? "Creating…" : `Start (${menuItems.length} drinks)`}
             </Button>
           )}
@@ -211,7 +208,7 @@ function HomeContent() {
                 Reading menu…
               </span>
             ) : (
-              "📷 Snap the menu"
+              "📷 Snap or pick a photo"
             )}
           </Button>
 
@@ -226,19 +223,12 @@ function HomeContent() {
           </Button>
         </div>
 
-        <input
-          ref={fileRef}
-          type="file"
-          accept="image/*"
-          multiple
-          onChange={handlePhoto}
-          className="hidden"
-        />
+        <input ref={fileRef} type="file" accept="image/*" multiple onChange={handlePhoto} className="hidden" />
       </div>
     );
   }
 
-  // Review step
+  // === REVIEW STEP ===
   return (
     <div className="min-h-screen p-6 pb-24">
       <h2 className="text-xl font-bold mb-4">Review menu items</h2>
@@ -247,14 +237,14 @@ function HomeContent() {
         <div className="space-y-1 mb-6">
           {menuItems.map((item, idx) => (
             <Card key={idx}>
-              <div className="px-3 py-2 flex items-center justify-between">
-                <span className="text-sm">{item.name}</span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onPress={() => removeItem(idx)}
-                  aria-label={`Remove ${item.name}`}
-                >
+              <div className="px-3 py-2 flex items-center gap-2">
+                <input
+                  type="text"
+                  value={item.name}
+                  onChange={(e) => editItem(idx, e.target.value)}
+                  className="flex-1 bg-transparent outline-none text-sm text-foreground"
+                />
+                <Button variant="ghost" size="sm" onPress={() => removeItem(idx)} aria-label={`Remove ${item.name}`}>
                   ×
                 </Button>
               </div>
@@ -264,16 +254,11 @@ function HomeContent() {
       )}
 
       <p className="text-muted text-sm mb-6">
-        Remove any junk. You can always add more drinks later.
+        Tap a name to edit. Remove junk. You can add more later.
       </p>
 
       <div className="fixed bottom-6 left-0 right-0 flex justify-center px-6 pb-[env(safe-area-inset-bottom)]">
-        <Button
-          variant="primary"
-          size="lg"
-          isDisabled={creating}
-          onPress={() => createSession()}
-        >
+        <Button variant="primary" size="lg" isDisabled={creating} onPress={() => createSession()}>
           {creating ? "Creating…" : "Start counting 🍺"}
         </Button>
       </div>

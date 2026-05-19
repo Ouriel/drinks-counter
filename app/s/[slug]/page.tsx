@@ -126,6 +126,9 @@ export default function SessionPage() {
     <div className="min-h-screen p-4 pb-[calc(6rem+env(safe-area-inset-bottom))]">
       {/* Header */}
       <div className="text-center mb-6 relative">
+        <div className="absolute left-0 top-0">
+          <Button variant="ghost" size="sm" onPress={() => router.push("/")}>+ New</Button>
+        </div>
         <div className="absolute right-0 top-0"><ThemeSwitch /></div>
         <h1 className="text-3xl font-bold">🍻 {total} drink{total !== 1 ? "s" : ""}</h1>
         {barName && <p className="text-base mt-1 text-foreground/70">{barName}</p>}
@@ -142,7 +145,7 @@ export default function SessionPage() {
         <>
           <div className="space-y-3">
             {drinks.map((drink) => (
-              <DrinkCard key={drink.id} drink={drink} onTap={() => increment(drink)} onLongPress={() => decrement(drink)} />
+              <DrinkCard key={drink.id.startsWith("temp") ? drink.name : drink.id} drink={drink} onTap={() => increment(drink)} onLongPress={() => decrement(drink)} />
             ))}
           </div>
           <p className="text-center text-muted text-xs mt-4">Long press to remove</p>
@@ -215,6 +218,8 @@ function DrinkPicker({ menuItems, currentDrinks, onSelect, onClose }: { menuItem
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex flex-col" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <div className="bg-surface rounded-t-2xl mt-12 flex-1 overflow-y-auto overscroll-contain p-4">
+        {/* Swipe indicator */}
+        <div className="w-10 h-1 bg-muted/40 rounded-full mx-auto mb-3" />
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold">Pick a drink</h2>
           <Button variant="ghost" size="sm" onPress={onClose} aria-label="Close">×</Button>
@@ -251,7 +256,11 @@ function DrinkPicker({ menuItems, currentDrinks, onSelect, onClose }: { menuItem
         ))}
 
         {!filtered.length && !showAddCustom && !search && currentDrinks.length === 0 && (
-          <p className="text-muted text-center mt-8">Type a drink name to add it</p>
+          <div className="text-center mt-12">
+            <p className="text-4xl mb-3">🔍</p>
+            <p className="text-muted">Type a drink name above</p>
+            <p className="text-muted text-sm mt-1">to search or add it</p>
+          </div>
         )}
 
         {currentDrinks.length > 0 && (
