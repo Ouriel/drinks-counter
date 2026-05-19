@@ -25,8 +25,8 @@
   "dependencies": {
     "@ai-sdk/google": "^3.0.75",
     "@ai-sdk/groq": "^3.0.39",
+    "@neondatabase/serverless": "^1.1.0",
     "@vercel/analytics": "^2.0.1",
-    "@vercel/postgres": "^0.10.0",
     "@vercel/speed-insights": "^2.0.0",
     "ai": "^6.0.185",
     "drizzle-orm": "^0.45.2",
