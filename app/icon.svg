@@ -1,14 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-  <!-- Glass outline -->
-  <path d="M16 12h32l-4 44H20L16 12z" stroke="#f59e0b" stroke-width="2.5" fill="none"/>
-  <!-- Beer level (3/4 full) -->
-  <path d="M17.5 22h29l-3 32H21L17.5 22z" fill="#f59e0b" opacity="0.3"/>
-  <!-- Glass rim -->
-  <rect x="14" y="8" width="36" height="5" rx="2.5" stroke="#f59e0b" stroke-width="2.5" fill="none"/>
-  <!-- Foam -->
-  <circle cx="23" cy="10" r="3" fill="#fbbf24"/>
-  <circle cx="32" cy="8.5" r="3.5" fill="#fbbf24"/>
-  <circle cx="41" cy="10" r="3" fill="#fbbf24"/>
+  <!-- Pint glass shape (wider at top, narrower at bottom, slight curve) -->
+  <path d="M18 8 L15 10 C14 12 14.5 14 15 16 L19 54 C19.5 56 21 58 23 58 L41 58 C43 58 44.5 56 45 54 L49 16 C49.5 14 50 12 49 10 L46 8 Z" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- Beer fill (3/4 level) -->
+  <path d="M20 20 L19.5 50 C19.7 53 21 55 23 55 L41 55 C43 55 44.3 53 44.5 50 L44 20 Z" fill="#f59e0b" opacity="0.25"/>
+  <!-- Foam top -->
+  <ellipse cx="24" cy="19" rx="4" ry="3" fill="#fcd34d"/>
+  <ellipse cx="32" cy="17" rx="5" ry="3.5" fill="#fcd34d"/>
+  <ellipse cx="40" cy="19" rx="4" ry="3" fill="#fcd34d"/>
   <!-- Question mark -->
-  <text x="32" y="46" text-anchor="middle" font-family="system-ui, sans-serif" font-size="22" font-weight="bold" fill="#f59e0b">?</text>
+  <text x="32" y="44" text-anchor="middle" font-family="system-ui, sans-serif" font-size="20" font-weight="bold" fill="#f59e0b">?</text>
 </svg>
