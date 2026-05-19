@@ -40,8 +40,8 @@ export async function POST(req: NextRequest) {
               text: `Extract all drinks and food items from this bar/restaurant menu photo.
 
 Rules:
-- Return the GENERIC TYPE of drink, not the brand name. Example: "blonde beer" instead of "Kronenbourg", "IPA" instead of "Marguerite IPA", "white wine" instead of "Chardonnay"
-- If a brand is well-known and IS the drink name (like "Corona", "Guinness"), keep it
+- Use the generic type when there's only ONE of that kind (e.g. just "blonde beer" if there's only one blonde beer)
+- KEEP the brand/name when there are MULTIPLE variants of the same type (e.g. if there are 3 IPAs, keep "Marguerite IPA", "Punk IPA", "Lagunitas IPA")
 - Split combo items into separate entries (e.g. "Coca, Ice Tea, Limonade" → 3 separate items)
 - Use lowercase names
 - Keep names short (2-4 words max)
