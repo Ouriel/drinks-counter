@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function Home() {
   const router = useRouter();
-  const [step, setStep] = useState<"start" | "bar" | "review">("start");
+  const searchParams = useSearchParams();
+  const preferredSlug = searchParams.get("slug") || "";
+  const [step, setStep] = useState<"start" | "bar" | "review">(preferredSlug ? "bar" : "start");
   const [barName, setBarName] = useState("");
   const [barSuggestions, setBarSuggestions] = useState<
     { id: string; barName: string; items: string[] }[]
@@ -86,6 +88,7 @@ export default function Home() {
         body: JSON.stringify({
           barName: barName || null,
           menuItems: finalItems.map((i) => i.name),
+          slug: preferredSlug || undefined,
         }),
       });
       if (!res.ok) throw new Error("Failed to create session");

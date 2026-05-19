@@ -176,8 +176,8 @@ export default function SessionPage() {
     return (
       <div className="flex flex-col items-center justify-center h-screen text-center p-6">
         <p className="text-xl text-red-400 mb-4">{error}</p>
-        <Link href="/" className="text-amber-400 font-medium">
-          Start a new evening
+        <Link href={`/?slug=${slug}`} className="text-amber-400 font-medium">
+          Start a new evening with this code
         </Link>
       </div>
     );

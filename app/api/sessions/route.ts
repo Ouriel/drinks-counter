@@ -14,7 +14,7 @@ function sanitizeBarName(input: string): string {
 }
 
 export async function POST(req: NextRequest) {
-  const { barName, menuItems } = await req.json();
+  const { barName, menuItems, slug: preferredSlug } = await req.json();
 
   let barMenuId: string | null = null;
 
@@ -52,8 +52,13 @@ export async function POST(req: NextRequest) {
 
   // Retry slug generation on collision
   const expiresAt = new Date(Date.now() + 48 * 60 * 60 * 1000);
-  for (let attempt = 0; attempt < 5; attempt++) {
-    const slug = generateSlug();
+
+  // Try preferred slug first, then generate random ones
+  const slugsToTry = preferredSlug
+    ? [preferredSlug, ...Array.from({ length: 4 }, () => generateSlug())]
+    : Array.from({ length: 5 }, () => generateSlug());
+
+  for (const slug of slugsToTry) {
     try {
       const [session] = await db
         .insert(sessions)
