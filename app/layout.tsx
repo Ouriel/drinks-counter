@@ -8,6 +8,10 @@ export const metadata: Metadata = {
   title: "Drinks Counter",
   description: "Count your drinks during a night out",
   manifest: "/manifest.json",
+  icons: {
+    icon: "/icon.svg",
+    apple: "/icon-192.png",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
