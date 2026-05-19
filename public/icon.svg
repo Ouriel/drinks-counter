@@ -1,12 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-  <!-- Beer glass body -->
-  <path d="M16 12h32l-4 44H20L16 12z" fill="#f59e0b" rx="2"/>
+  <!-- Glass outline -->
+  <path d="M16 12h32l-4 44H20L16 12z" stroke="#f59e0b" stroke-width="2.5" fill="none"/>
+  <!-- Beer level (3/4 full) -->
+  <path d="M17.5 22h29l-3 32H21L17.5 22z" fill="#f59e0b" opacity="0.3"/>
   <!-- Glass rim -->
-  <rect x="14" y="8" width="36" height="6" rx="3" fill="#f59e0b"/>
-  <!-- Foam bubbles -->
-  <circle cx="24" cy="11" r="3" fill="#fbbf24"/>
-  <circle cx="32" cy="9" r="3.5" fill="#fbbf24"/>
-  <circle cx="40" cy="11" r="3" fill="#fbbf24"/>
+  <rect x="14" y="8" width="36" height="5" rx="2.5" stroke="#f59e0b" stroke-width="2.5" fill="none"/>
+  <!-- Foam -->
+  <circle cx="23" cy="10" r="3" fill="#fbbf24"/>
+  <circle cx="32" cy="8.5" r="3.5" fill="#fbbf24"/>
+  <circle cx="41" cy="10" r="3" fill="#fbbf24"/>
   <!-- Question mark -->
-  <text x="32" y="44" text-anchor="middle" font-family="system-ui, sans-serif" font-size="24" font-weight="bold" fill="#1c1917">?</text>
+  <text x="32" y="46" text-anchor="middle" font-family="system-ui, sans-serif" font-size="22" font-weight="bold" fill="#f59e0b">?</text>
 </svg>
