@@ -14,6 +14,6 @@ export function getVisionModel(): LanguageModel {
       return groq("llama-3.2-90b-vision-preview");
     case "gemini":
     default:
-      return google("gemini-2.0-flash");
+      return google("gemini-1.5-flash");
   }
 }
