@@ -51,12 +51,7 @@ function HomeContent() {
   const selectBar = (bar: { barName: string; items: string[] }) => {
     setBarName(bar.barName);
     setBarSuggestions([]);
-    if (bar.items.length > 0) {
-      setMenuItems(bar.items.map((name: string) => ({ name, category: "other" })));
-      createSession(bar.items.map((name: string) => ({ name, category: "other" })));
-    } else {
-      setMenuItems([]);
-    }
+    setMenuItems(bar.items.map((name: string) => ({ name, category: "other" })));
   };
 
   const handlePhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -175,6 +170,16 @@ function HomeContent() {
         )}
 
         <div className="space-y-3 mt-6">
+          {menuItems.length > 0 && (
+            <button
+              onClick={() => createSession()}
+              disabled={creating}
+              className="w-full bg-amber-500 text-black font-bold rounded-xl py-4 text-center active:bg-amber-400 disabled:opacity-50"
+            >
+              {creating ? "Creating…" : `Start (${menuItems.length} drinks)`}
+            </button>
+          )}
+
           <button
             onClick={() => fileRef.current?.click()}
             disabled={parsing || barName.trim().length < 2}
