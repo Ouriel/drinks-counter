@@ -72,9 +72,10 @@ function HomeContent() {
         const res = await fetch("/api/parse-menu", { method: "POST", body: formData });
         const data = await res.json();
         for (const item of data.items || []) {
-          if (!seen.has(item.name.toLowerCase())) {
-            seen.add(item.name.toLowerCase());
-            allItems.push(item);
+          const name = item.name.toLowerCase().trim();
+          if (name && !seen.has(name)) {
+            seen.add(name);
+            allItems.push({ name, category: item.category });
           }
         }
       } catch { /* continue */ }
@@ -165,7 +166,10 @@ function HomeContent() {
   if (step === "bar") {
     return (
       <div className="min-h-screen p-6">
-        <h2 className="text-xl font-bold mb-4">Where are you?</h2>
+        <div className="flex items-center gap-2 mb-4">
+          <Image src="/icon.svg" alt="" width={24} height={24} />
+          <h2 className="text-xl font-bold">Where are you?</h2>
+        </div>
 
         <Input
           className="w-full mb-3"
@@ -210,7 +214,7 @@ function HomeContent() {
                 isDisabled={barName.trim().length < 2}
                 onPress={() => cameraRef.current?.click()}
               >
-                📷 Camera
+                📸 Camera
               </Button>
               <Button
                 variant="ghost"
@@ -219,7 +223,7 @@ function HomeContent() {
                 isDisabled={barName.trim().length < 2}
                 onPress={() => fileRef.current?.click()}
               >
-                🖼️ Gallery
+                📁 Gallery
               </Button>
             </div>
           )}

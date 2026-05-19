@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Image from "next/image";
 import { Button, Input, Card } from "@heroui/react";
 import { ThemeSwitch } from "@/lib/theme-switch";
 
@@ -130,7 +131,7 @@ export default function SessionPage() {
           <Button variant="ghost" size="sm" onPress={() => router.push("/")}>+ New</Button>
         </div>
         <div className="absolute right-0 top-0"><ThemeSwitch /></div>
-        <h1 className="text-3xl font-bold">🍻 {total} drink{total !== 1 ? "s" : ""}</h1>
+        <h1 className="text-3xl font-bold"><Image src="/icon.svg" alt="" width={32} height={32} className="inline mr-2" />{total} drink{total !== 1 ? "s" : ""}</h1>
         {barName && <p className="text-base mt-1 text-foreground/70">{barName}</p>}
         <p className="text-sm mt-0.5 font-mono text-muted">{slug}</p>
       </div>
