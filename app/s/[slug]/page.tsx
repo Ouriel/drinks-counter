@@ -265,7 +265,7 @@ function DrinkPicker({ menuItems, currentDrinks, onSelect, onClose }: { menuItem
 
         {currentDrinks.length > 0 && (
           <div className="mb-4">
-            <h3 className="text-sm text-muted uppercase mb-2">Already ordered</h3>
+            <h3 className="text-sm text-muted uppercase mb-2">Already ordered · tap for +1</h3>
             <div className="space-y-1">
               {currentDrinks.map((d) => (
                 <Card key={d.id}>

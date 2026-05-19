@@ -198,7 +198,7 @@ function HomeContent() {
           <Button
             variant="ghost"
             size="lg"
-            className="w-full"
+            className="w-full text-foreground"
             isDisabled={parsing || barName.trim().length < 2}
             onPress={() => fileRef.current?.click()}
           >
@@ -215,7 +215,7 @@ function HomeContent() {
           <Button
             variant="ghost"
             size="lg"
-            className="w-full text-muted"
+            className="w-full text-foreground/60"
             isDisabled={barName.trim().length < 2 || creating}
             onPress={() => createSession([])}
           >
@@ -223,7 +223,7 @@ function HomeContent() {
           </Button>
         </div>
 
-        <input ref={fileRef} type="file" accept="image/*" multiple onChange={handlePhoto} className="hidden" />
+        <input ref={fileRef} type="file" accept="image/*" onChange={handlePhoto} className="hidden" />
       </div>
     );
   }
