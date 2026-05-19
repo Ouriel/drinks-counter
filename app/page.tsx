@@ -5,6 +5,31 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Button, Input, Card } from "@heroui/react";
 import { ThemeSwitch } from "@/lib/theme-switch";
 
+function compressImage(file: File, maxSize = 1600): Promise<File> {
+  return new Promise((resolve) => {
+    if (file.size <= 2 * 1024 * 1024) { resolve(file); return; }
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      let { width, height } = img;
+      if (width > maxSize || height > maxSize) {
+        const ratio = Math.min(maxSize / width, maxSize / height);
+        width = Math.round(width * ratio);
+        height = Math.round(height * ratio);
+      }
+      canvas.width = width;
+      canvas.height = height;
+      canvas.getContext("2d")!.drawImage(img, 0, 0, width, height);
+      canvas.toBlob(
+        (blob) => resolve(new File([blob!], file.name, { type: "image/jpeg" })),
+        "image/jpeg",
+        0.8
+      );
+    };
+    img.src = URL.createObjectURL(file);
+  });
+}
+
 export default function Home() {
   return (
     <Suspense>
@@ -58,17 +83,14 @@ function HomeContent() {
   const handlePhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (!files.length) return;
-    if (files.some((f) => f.size > 4 * 1024 * 1024)) {
-      alert("One or more photos too large (max 4MB each).");
-      return;
-    }
     setParsing(true);
     const allItems: { name: string; category: string }[] = [...menuItems];
     const seen = new Set(allItems.map((i) => i.name.toLowerCase()));
 
     for (const file of files) {
+      const compressed = await compressImage(file);
       const formData = new FormData();
-      formData.append("photo", file);
+      formData.append("photo", compressed);
       try {
         const res = await fetch("/api/parse-menu", { method: "POST", body: formData });
         const data = await res.json();
