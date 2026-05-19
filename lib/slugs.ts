@@ -15,6 +15,22 @@ const adjectives = [
   "zesty",
   "dark",
   "bright",
+  "wild",
+  "lazy",
+  "tipsy",
+  "cheeky",
+  "funky",
+  "groovy",
+  "snappy",
+  "breezy",
+  "misty",
+  "dusty",
+  "rusty",
+  "shiny",
+  "cloudy",
+  "stormy",
+  "sunny",
+  "moody",
 ];
 
 const nouns = [
@@ -34,11 +50,26 @@ const nouns = [
   "gimlet",
   "julep",
   "flip",
+  "cosmo",
+  "martini",
+  "highball",
+  "collins",
+  "fizz",
+  "punch",
+  "grog",
+  "tonic",
+  "cider",
+  "ale",
+  "brew",
+  "draft",
+  "shot",
+  "sangria",
+  "bellini",
+  "paloma",
 ];
 
 export function generateSlug(): string {
   const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
   const noun = nouns[Math.floor(Math.random() * nouns.length)];
-  const num = Math.floor(Math.random() * 99) + 1;
-  return `${adj}-${noun}-${num}`;
+  return `${adj}-${noun}`;
 }
