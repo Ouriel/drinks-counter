@@ -3,10 +3,15 @@ import { generateObject } from "ai";
 import { z } from "zod";
 import { getVisionModel } from "@/lib/ai";
 
+const MAX_FILE_SIZE = 4 * 1024 * 1024; // 4MB
+
 export async function POST(req: NextRequest) {
   const formData = await req.formData();
   const file = formData.get("photo") as File;
   if (!file) return NextResponse.json({ error: "No photo" }, { status: 400 });
+  if (file.size > MAX_FILE_SIZE) {
+    return NextResponse.json({ error: "File too large (max 4MB)" }, { status: 413 });
+  }
 
   const bytes = await file.arrayBuffer();
 

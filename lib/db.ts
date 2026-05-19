@@ -28,5 +28,10 @@ export const drinks = pgTable("drinks", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-const sql = neon(process.env.POSTGRES_URL!);
+const connectionString = process.env.POSTGRES_URL;
+if (!connectionString && process.env.NODE_ENV === "production") {
+  throw new Error("POSTGRES_URL environment variable is required");
+}
+
+const sql = neon(connectionString || "postgresql://localhost:5432/drinks");
 export const db = drizzle(sql);

@@ -127,9 +127,9 @@ export default function SessionPage() {
       {/* Header */}
       <div className="text-center mb-6 relative">
         <div className="absolute right-0 top-0"><ThemeSwitch /></div>
-        <h1 className="text-2xl font-bold">🍻 {total} drink{total !== 1 ? "s" : ""}</h1>
-        {barName && <p className="text-sm mt-1 text-foreground/70">{barName}</p>}
-        <p className="text-xs mt-0.5 font-mono text-muted">{slug}</p>
+        <h1 className="text-3xl font-bold">🍻 {total} drink{total !== 1 ? "s" : ""}</h1>
+        {barName && <p className="text-base mt-1 text-foreground/70">{barName}</p>}
+        <p className="text-sm mt-0.5 font-mono text-muted">{slug}</p>
       </div>
 
       {/* Drinks list */}
@@ -195,10 +195,10 @@ function DrinkCard({ drink, onTap, onLongPress }: { drink: Drink; onTap: () => v
         aria-label={`${drink.name}, ${drink.count}. Tap to add, long press to remove`}
       >
         <div>
-          <span className="text-lg font-medium">{drink.name}</span>
-          {drink.category && <span className="ml-2 text-xs text-muted">{drink.category}</span>}
+          <span className="text-xl font-medium">{drink.name}</span>
+          {drink.category && <span className="ml-2 text-sm text-muted">{drink.category}</span>}
         </div>
-        <span className="text-2xl font-bold tabular-nums">{drink.count}</span>
+        <span className="text-3xl font-bold tabular-nums">{drink.count}</span>
       </button>
     </Card>
   );

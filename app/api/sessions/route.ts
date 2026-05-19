@@ -1,17 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db, sessions, barMenus } from "@/lib/db";
 import { generateSlug } from "@/lib/slugs";
+import { sanitizeBarName } from "@/lib/sanitize";
 import { eq } from "drizzle-orm";
-
-function sanitizeBarName(input: string): string {
-  return input
-    .trim()
-    .toLowerCase()
-    .replace(/[^\p{L}\p{N}\s'-]/gu, "")
-    .replace(/\s+/g, " ")
-    .trim()
-    .slice(0, 100);
-}
 
 export async function POST(req: NextRequest) {
   const { barName, menuItems, slug: preferredSlug } = await req.json();
@@ -30,7 +21,6 @@ export async function POST(req: NextRequest) {
 
     if (existing.length) {
       barMenuId = existing[0].id;
-      // Merge new items with existing (no duplicates)
       if (menuItems?.length) {
         const existingLower = new Set(existing[0].items.map((i: string) => i.toLowerCase()));
         const newItems = menuItems.filter((item: string) => !existingLower.has(item.toLowerCase()));
@@ -50,10 +40,7 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // Retry slug generation on collision
   const expiresAt = new Date(Date.now() + 48 * 60 * 60 * 1000);
-
-  // Try preferred slug first, then generate random ones
   const slugsToTry = preferredSlug
     ? [preferredSlug, ...Array.from({ length: 4 }, () => generateSlug())]
     : Array.from({ length: 5 }, () => generateSlug());
@@ -75,7 +62,6 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ error: "Could not generate unique session" }, { status: 500 });
 }
 
-// GET session info (menu items for picker)
 export async function GET(req: NextRequest) {
   const slug = req.nextUrl.searchParams.get("slug");
   if (!slug) return NextResponse.json({ error: "Missing slug" }, { status: 400 });

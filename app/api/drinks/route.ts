@@ -1,12 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db, drinks, sessions, barMenus } from "@/lib/db";
 import { eq, and, sql } from "drizzle-orm";
-
-const MAX_DRINK_NAME_LENGTH = 80;
-
-function sanitizeDrinkName(input: string): string {
-  return input.trim().replace(/\s+/g, " ").slice(0, MAX_DRINK_NAME_LENGTH);
-}
+import { sanitizeDrinkName } from "@/lib/sanitize";
 
 // GET drinks for a session
 export async function GET(req: NextRequest) {
@@ -38,10 +33,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Session expired" }, { status: 404 });
   }
 
+  // Case-insensitive match using lower()
   const [existing] = await db
     .select()
     .from(drinks)
-    .where(and(eq(drinks.sessionId, session.id), eq(drinks.name, cleanName)))
+    .where(
+      and(eq(drinks.sessionId, session.id), sql`lower(${drinks.name}) = ${cleanName}`)
+    )
     .limit(1);
 
   if (existing) {
@@ -64,7 +62,7 @@ export async function POST(req: NextRequest) {
       .from(barMenus)
       .where(eq(barMenus.id, session.barMenuId))
       .limit(1);
-    if (menu && !menu.items.includes(cleanName)) {
+    if (menu && !menu.items.some((i: string) => i.toLowerCase() === cleanName)) {
       await db
         .update(barMenus)
         .set({ items: [...menu.items, cleanName] })
@@ -79,8 +77,8 @@ export async function POST(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   const { slug, drinkId, delta } = await req.json();
   if (!slug || !drinkId) return NextResponse.json({ error: "Missing fields" }, { status: 400 });
+  if (delta !== 1 && delta !== -1) return NextResponse.json({ error: "Invalid delta" }, { status: 400 });
 
-  // Verify session owns this drink
   const [session] = await db.select().from(sessions).where(eq(sessions.slug, slug)).limit(1);
   if (!session || session.expiresAt < new Date()) {
     return NextResponse.json({ error: "Session expired" }, { status: 404 });
@@ -101,7 +99,7 @@ export async function PATCH(req: NextRequest) {
 
   await db
     .update(drinks)
-    .set({ count: sql`GREATEST(${drinks.count} + ${delta}, 0)` })
+    .set({ count: sql`${drinks.count} + ${delta}` })
     .where(eq(drinks.id, drinkId));
 
   return NextResponse.json({ ok: true });
