@@ -42,6 +42,7 @@ export async function POST(req: NextRequest) {
 Rules:
 - Use the generic type when there's only ONE of that kind (e.g. just "blonde beer" if there's only one blonde beer)
 - KEEP the brand/name when there are MULTIPLE variants of the same type (e.g. if there are 3 IPAs, keep "Marguerite IPA", "Punk IPA", "Lagunitas IPA")
+- Include supplements and extras (e.g. "picon", "sirop", "grenadine") as separate items — these are small add-ons often listed in smaller text
 - Split combo items into separate entries (e.g. "Coca, Ice Tea, Limonade" → 3 separate items)
 - Use lowercase names
 - Keep names short (2-4 words max)
