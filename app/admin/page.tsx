@@ -6,16 +6,23 @@ type BarMenu = { id: string; barName: string; items: string[]; createdAt: string
 type Stats = { totalBarMenus: number; totalSessions: number; totalDrinks: number };
 
 export default function AdminPage() {
-  const [secret, setSecret] = useState("");
+  const [secret, setSecret] = useState(() => {
+    if (typeof window !== "undefined") return sessionStorage.getItem("admin-secret") || "";
+    return "";
+  });
   const [authed, setAuthed] = useState(false);
   const [menus, setMenus] = useState<BarMenu[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [editing, setEditing] = useState<string | null>(null);
   const [editItems, setEditItems] = useState("");
 
-  async function load() {
+  useEffect(() => {
+    if (secret) fetchAdmin(secret);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  async function fetchAdmin(s: string) {
     const res = await fetch("/api/admin", {
-      headers: { Authorization: `Bearer ${secret}` },
+      headers: { Authorization: `Bearer ${s}` },
     });
     if (!res.ok) {
       setAuthed(false);
@@ -25,6 +32,11 @@ export default function AdminPage() {
     setMenus(data.menus);
     setStats(data.stats);
     setAuthed(true);
+    sessionStorage.setItem("admin-secret", s);
+  }
+
+  async function load() {
+    fetchAdmin(secret);
   }
 
   async function deleteMenu(id: string) {
