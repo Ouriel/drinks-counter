@@ -29,6 +29,7 @@ function HomeContent() {
   const [creating, setCreating] = useState(false);
   const [slugInput, setSlugInput] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
+  const cameraRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<NodeJS.Timeout>(null);
 
   const searchBars = (q: string) => {
@@ -195,22 +196,33 @@ function HomeContent() {
             </Button>
           )}
 
-          <Button
-            variant="ghost"
-            size="lg"
-            className="w-full text-foreground"
-            isDisabled={parsing || barName.trim().length < 2}
-            onPress={() => fileRef.current?.click()}
-          >
-            {parsing ? (
-              <span className="flex items-center gap-2">
-                <span className="inline-block w-4 h-4 border-2 border-foreground/30 border-t-foreground rounded-full animate-spin" />
-                Reading menu…
-              </span>
-            ) : (
-              "📷 Snap or pick a photo"
-            )}
-          </Button>
+          {parsing ? (
+            <div className="w-full text-center py-4 flex items-center justify-center gap-2 text-foreground">
+              <span className="inline-block w-4 h-4 border-2 border-foreground/30 border-t-foreground rounded-full animate-spin" />
+              Reading menu…
+            </div>
+          ) : (
+            <div className="flex gap-2">
+              <Button
+                variant="ghost"
+                size="lg"
+                className="flex-1 text-foreground"
+                isDisabled={barName.trim().length < 2}
+                onPress={() => cameraRef.current?.click()}
+              >
+                📷 Camera
+              </Button>
+              <Button
+                variant="ghost"
+                size="lg"
+                className="flex-1 text-foreground"
+                isDisabled={barName.trim().length < 2}
+                onPress={() => fileRef.current?.click()}
+              >
+                🖼️ Gallery
+              </Button>
+            </div>
+          )}
 
           <Button
             variant="ghost"
@@ -223,6 +235,7 @@ function HomeContent() {
           </Button>
         </div>
 
+        <input ref={cameraRef} type="file" accept="image/*" capture="environment" onChange={handlePhoto} className="hidden" />
         <input ref={fileRef} type="file" accept="image/*" onChange={handlePhoto} className="hidden" />
       </div>
     );
