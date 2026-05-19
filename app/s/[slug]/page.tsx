@@ -221,7 +221,7 @@ function DrinkPicker({ menuItems, currentDrinks, onSelect, onClose }: { menuItem
         </div>
 
         <form onSubmit={(e) => { e.preventDefault(); if (search.trim()) onSelect(search.trim()); }} className="mb-4">
-          <Input
+          <Input className="w-full"
             placeholder="Search or type a new drink…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}

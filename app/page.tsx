@@ -132,12 +132,10 @@ function HomeContent() {
               if (slugInput.trim()) router.push(`/s/${slugInput.trim().toLowerCase()}`);
             }}
           >
-            <Input
+            <Input className="w-full text-center"
               placeholder="Enter your session code…"
               value={slugInput}
               onChange={(e) => setSlugInput(e.target.value)}
-              className="text-center"
-              size="lg"
             />
           </form>
         </div>
@@ -150,13 +148,12 @@ function HomeContent() {
       <div className="min-h-screen p-6">
         <h2 className="text-xl font-bold mb-4">Where are you?</h2>
 
-        <Input
+        <Input className="w-full mb-3"
           placeholder="Bar name…"
           value={barName}
           onChange={(e) => searchBars(e.target.value)}
           autoComplete="off"
           autoFocus
-          className="mb-3"
         />
 
         {barSuggestions.length > 0 && (
