@@ -117,28 +117,30 @@ function HomeContent() {
           <h1 className="text-3xl font-bold">Drinks Counter</h1>
           <p className="text-muted mt-2 text-sm">Count your drinks during a night out</p>
         </div>
-        <Button
-          variant="primary"
-          size="lg"
-          className="w-full max-w-xs"
-          onPress={() => setStep("bar")}
-        >
-          New evening
-        </Button>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (slugInput.trim()) router.push(`/s/${slugInput.trim().toLowerCase()}`);
-          }}
-          className="w-full max-w-xs"
-        >
-          <Input
-            placeholder="Enter your session code…"
-            value={slugInput}
-            onChange={(e) => setSlugInput(e.target.value)}
-            className="text-center"
-          />
-        </form>
+        <div className="w-full max-w-xs space-y-3">
+          <Button
+            variant="primary"
+            size="lg"
+            className="w-full"
+            onPress={() => setStep("bar")}
+          >
+            New evening
+          </Button>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (slugInput.trim()) router.push(`/s/${slugInput.trim().toLowerCase()}`);
+            }}
+          >
+            <Input
+              placeholder="Enter your session code…"
+              value={slugInput}
+              onChange={(e) => setSlugInput(e.target.value)}
+              className="text-center"
+              size="lg"
+            />
+          </form>
+        </div>
       </div>
     );
   }
