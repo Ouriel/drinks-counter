@@ -155,7 +155,7 @@ function HomeContent() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          barName: barName || null,
+          barName: barName.trim() || null,
           menuItems: finalItems,
           slug: preferredSlug || undefined,
         }),

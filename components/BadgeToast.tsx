@@ -1,20 +1,24 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Confetti } from "./Confetti";
 import type { Badge } from "@/lib/gamification";
 
 export function BadgeToast({ badge, onDone }: { badge: Badge; onDone: () => void }) {
   const [visible, setVisible] = useState(true);
   const [showConfetti, setShowConfetti] = useState(true);
+  const onDoneRef = useRef(onDone);
+  useEffect(() => {
+    onDoneRef.current = onDone;
+  });
 
   useEffect(() => {
     const t = setTimeout(() => {
       setVisible(false);
-      setTimeout(onDone, 300);
+      setTimeout(() => onDoneRef.current(), 300);
     }, 2500);
     return () => clearTimeout(t);
-  }, [onDone]);
+  }, []);
 
   return (
     <>

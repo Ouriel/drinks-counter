@@ -81,26 +81,23 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Session expired or not found" }, { status: 404 });
   }
 
+  const [menuResult, tableResult] = await Promise.all([
+    session.barMenuId
+      ? db.select().from(barMenus).where(eq(barMenus.id, session.barMenuId)).limit(1)
+      : Promise.resolve([]),
+    session.tableId
+      ? db.select().from(tables).where(eq(tables.id, session.tableId)).limit(1)
+      : Promise.resolve([]),
+  ]);
+
   let menuItems: MenuItem[] = [];
   let barNameResult: string | null = null;
-  if (session.barMenuId) {
-    const [menu] = await db
-      .select()
-      .from(barMenus)
-      .where(eq(barMenus.id, session.barMenuId))
-      .limit(1);
-    if (menu) {
-      menuItems = normalizeMenuItems(menu.items);
-      barNameResult = menu.barName;
-    }
+  if (menuResult[0]) {
+    menuItems = normalizeMenuItems(menuResult[0].items);
+    barNameResult = menuResult[0].barName;
   }
 
-  // Get table code if session is in a table
-  let tableCode: string | null = null;
-  if (session.tableId) {
-    const [table] = await db.select().from(tables).where(eq(tables.id, session.tableId)).limit(1);
-    if (table) tableCode = table.code;
-  }
+  const tableCode: string | null = tableResult[0]?.code ?? null;
 
   return NextResponse.json({
     session: {
