@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db, sessions, barMenus } from "@/lib/db";
+import { db, sessions, barMenus, normalizeMenuItems } from "@/lib/db";
+import type { MenuItem } from "@/lib/db";
 import { generateSlug } from "@/lib/slugs";
 import { sanitizeBarName } from "@/lib/sanitize";
 import { eq } from "drizzle-orm";
@@ -22,20 +23,24 @@ export async function POST(req: NextRequest) {
     if (existing.length) {
       barMenuId = existing[0].id;
       if (menuItems?.length) {
-        const existingLower = new Set(existing[0].items.map((i: string) => i.toLowerCase()));
-        const newItems = menuItems.filter((item: string) => !existingLower.has(item.toLowerCase()));
+        const currentItems = normalizeMenuItems(existing[0].items);
+        const existingLower = new Set(currentItems.map((i) => i.name.toLowerCase()));
+        const incoming: MenuItem[] = menuItems.map((item: MenuItem | string) =>
+          typeof item === "string" ? { name: item, category: "other" } : item
+        );
+        const newItems = incoming.filter((item) => !existingLower.has(item.name.toLowerCase()));
         if (newItems.length > 0) {
           await db
             .update(barMenus)
-            .set({ items: [...existing[0].items, ...newItems] })
+            .set({ items: [...currentItems, ...newItems] })
             .where(eq(barMenus.id, existing[0].id));
         }
       }
     } else {
-      const [menu] = await db
-        .insert(barMenus)
-        .values({ barName: cleanName, items: menuItems || [] })
-        .returning();
+      const items: MenuItem[] = (menuItems || []).map((item: MenuItem | string) =>
+        typeof item === "string" ? { name: item, category: "other" } : item
+      );
+      const [menu] = await db.insert(barMenus).values({ barName: cleanName, items }).returning();
       barMenuId = menu.id;
     }
   }
@@ -72,7 +77,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Session expired or not found" }, { status: 404 });
   }
 
-  let menuItems: string[] = [];
+  let menuItems: MenuItem[] = [];
   let barNameResult: string | null = null;
   if (session.barMenuId) {
     const [menu] = await db
@@ -81,7 +86,7 @@ export async function GET(req: NextRequest) {
       .where(eq(barMenus.id, session.barMenuId))
       .limit(1);
     if (menu) {
-      menuItems = menu.items;
+      menuItems = normalizeMenuItems(menu.items);
       barNameResult = menu.barName;
     }
   }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db, barMenus, sessions, drinks } from "@/lib/db";
+import { db, barMenus, sessions, drinks, normalizeMenuItems } from "@/lib/db";
+import type { MenuItem } from "@/lib/db";
 import { eq, sql, count } from "drizzle-orm";
 
 function checkAuth(req: NextRequest) {
@@ -19,7 +20,7 @@ export async function GET(req: NextRequest) {
     .from(drinks);
 
   return NextResponse.json({
-    menus,
+    menus: menus.map((m) => ({ ...m, items: normalizeMenuItems(m.items) })),
     stats: {
       totalBarMenus: menus.length,
       totalSessions: sessionCount.count,
@@ -34,8 +35,12 @@ export async function PATCH(req: NextRequest) {
   const { id, items, barName } = await req.json();
   if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
 
-  const updates: { items?: string[]; barName?: string } = {};
-  if (Array.isArray(items)) updates.items = items.filter((i): i is string => typeof i === "string");
+  const updates: { items?: MenuItem[]; barName?: string } = {};
+  if (Array.isArray(items)) {
+    updates.items = items.map((i: MenuItem | string) =>
+      typeof i === "string" ? { name: i, category: "other" } : i
+    );
+  }
   if (typeof barName === "string") updates.barName = barName;
 
   if (Object.keys(updates).length === 0) {

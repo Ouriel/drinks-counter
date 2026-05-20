@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
-import { Button, Input, Card } from "@heroui/react";
+import { Button, Input, Card, Chip, Spinner } from "@heroui/react";
 import { ThemeSwitch } from "@/lib/theme-switch";
 import imageCompression from "browser-image-compression";
 
@@ -15,6 +15,16 @@ export default function Home() {
   );
 }
 
+const CATEGORY_EMOJI: Record<string, string> = {
+  beer: "🍺",
+  wine: "🍷",
+  cocktail: "🍸",
+  spirit: "🥃",
+  soft: "🥤",
+  food: "🍕",
+  other: "🍹",
+};
+
 function HomeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -22,35 +32,81 @@ function HomeContent() {
   const [step, setStep] = useState<"start" | "bar" | "review">(preferredSlug ? "bar" : "start");
   const [barName, setBarName] = useState("");
   const [barSuggestions, setBarSuggestions] = useState<
-    { id: string; barName: string; items: string[] }[]
+    { id: string; barName: string; items: { name: string; category: string }[] }[]
   >([]);
+  const [osmResults, setOsmResults] = useState<{ name: string; address: string }[]>([]);
   const [menuItems, setMenuItems] = useState<{ name: string; category: string }[]>([]);
   const [parsing, setParsing] = useState(false);
   const [creating, setCreating] = useState(false);
   const [slugInput, setSlugInput] = useState("");
+  const [recentSessions] = useState<{ slug: string; barName: string; date: string }[]>(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      const stored = localStorage.getItem("tipsytap_recent");
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
   const fileRef = useRef<HTMLInputElement>(null);
   const cameraRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<NodeJS.Timeout>(null);
+  const geoRef = useRef<{ lat: number; lng: number } | null>(null);
+
+  // Get geolocation once on mount
+  useEffect(() => {
+    if (typeof navigator !== "undefined" && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          geoRef.current = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        },
+        () => {},
+        { timeout: 5000 }
+      );
+    }
+  }, []);
 
   const searchBars = (q: string) => {
     setBarName(q);
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    if (q.length < 2) { setBarSuggestions([]); return; }
+    if (q.length < 2) {
+      setBarSuggestions([]);
+      setOsmResults([]);
+      return;
+    }
     debounceRef.current = setTimeout(async () => {
+      // Search existing DB
       const res = await fetch(`/api/menus?q=${encodeURIComponent(q)}`);
       const data = await res.json();
       setBarSuggestions(data.menus);
+
+      // Search OSM if no DB results
+      if (data.menus.length === 0) {
+        const geo = geoRef.current;
+        const params = new URLSearchParams({ q });
+        if (geo) {
+          params.set("lat", String(geo.lat));
+          params.set("lng", String(geo.lng));
+        }
+        const osmRes = await fetch(`/api/bars/search?${params}`);
+        const osmData = await osmRes.json();
+        setOsmResults(osmData.results || []);
+      } else {
+        setOsmResults([]);
+      }
     }, 300);
   };
 
   useEffect(() => {
-    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
   }, []);
 
-  const selectBar = (bar: { barName: string; items: string[] }) => {
+  const selectBar = (bar: { barName: string; items: { name: string; category: string }[] }) => {
     setBarName(bar.barName);
     setBarSuggestions([]);
-    setMenuItems(bar.items.map((name: string) => ({ name, category: "other" })));
+    setMenuItems(bar.items);
   };
 
   const handlePhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,7 +134,9 @@ function HomeContent() {
             allItems.push({ name, category: item.category });
           }
         }
-      } catch { /* continue */ }
+      } catch {
+        /* continue */
+      }
     }
 
     setParsing(false);
@@ -99,12 +157,22 @@ function HomeContent() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           barName: barName || null,
-          menuItems: finalItems.map((i) => i.name),
+          menuItems: finalItems,
           slug: preferredSlug || undefined,
         }),
       });
       if (!res.ok) throw new Error("Failed");
       const { slug } = await res.json();
+      // Save to recent sessions
+      try {
+        const recent = JSON.parse(localStorage.getItem("tipsytap_recent") || "[]");
+        const entry = { slug, barName: barName || slug, date: new Date().toISOString() };
+        const updated = [entry, ...recent.filter((s: { slug: string }) => s.slug !== slug)].slice(
+          0,
+          10
+        );
+        localStorage.setItem("tipsytap_recent", JSON.stringify(updated));
+      } catch {}
       router.push(`/s/${slug}`);
     } catch {
       setCreating(false);
@@ -124,7 +192,9 @@ function HomeContent() {
   if (step === "start") {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 gap-8 relative">
-        <div className="absolute right-4 top-4"><ThemeSwitch /></div>
+        <div className="absolute right-4 top-4">
+          <ThemeSwitch />
+        </div>
         <div className="text-center">
           <Image src="/icon.svg" alt="TipsyTap" width={120} height={120} className="mx-auto mb-4" />
           <h1 className="text-4xl font-bold">TipsyTap</h1>
@@ -157,6 +227,27 @@ function HomeContent() {
               </button>
             )}
           </form>
+          {recentSessions.length > 0 && (
+            <div className="pt-2">
+              <p className="text-xs text-muted mb-2">Recent sessions</p>
+              <div className="space-y-1">
+                {recentSessions.map((s) => (
+                  <Card key={s.slug}>
+                    <button
+                      type="button"
+                      onClick={() => router.push(`/s/${s.slug}`)}
+                      className="w-full text-left px-3 py-2 cursor-pointer"
+                    >
+                      <span className="font-medium text-sm">{s.barName}</span>
+                      <span className="text-muted text-xs ml-2">
+                        {new Date(s.date).toLocaleDateString()}
+                      </span>
+                    </button>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -184,7 +275,11 @@ function HomeContent() {
           <div className="mb-4 space-y-2">
             {barSuggestions.map((bar) => (
               <Card key={bar.id}>
-                <button type="button" onClick={() => selectBar(bar)} className="w-full text-left p-3 cursor-pointer">
+                <button
+                  type="button"
+                  onClick={() => selectBar(bar)}
+                  className="w-full text-left p-3 cursor-pointer"
+                >
                   <span className="font-medium">{bar.barName}</span>
                   <span className="text-muted text-sm ml-2">{bar.items.length} items</span>
                 </button>
@@ -193,17 +288,46 @@ function HomeContent() {
           </div>
         )}
 
+        {osmResults.length > 0 && barSuggestions.length === 0 && (
+          <div className="mb-4 space-y-2">
+            <p className="text-xs text-muted">📍 Nearby places</p>
+            {osmResults.map((place, i) => (
+              <Card key={i}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setBarName(place.name);
+                    setOsmResults([]);
+                  }}
+                  className="w-full text-left p-3 cursor-pointer"
+                >
+                  <span className="font-medium">{place.name}</span>
+                  {place.address && (
+                    <span className="text-muted text-sm block">{place.address}</span>
+                  )}
+                </button>
+              </Card>
+            ))}
+          </div>
+        )}
+
         <div className="space-y-3 mt-6">
           {menuItems.length > 0 && (
-            <Button variant="primary" size="lg" className="w-full" isDisabled={creating} onPress={() => createSession()}>
+            <Button
+              variant="primary"
+              size="lg"
+              className="w-full"
+              isDisabled={creating}
+              onPress={() => createSession()}
+            >
               {creating ? "Creating…" : `Start (${menuItems.length} drinks)`}
             </Button>
           )}
 
           {parsing ? (
             <div className="w-full text-center py-4 flex items-center justify-center gap-2 text-foreground">
-              <span className="inline-block w-4 h-4 border-2 border-foreground/30 border-t-foreground rounded-full animate-spin" />
-              Reading menu…
+              <Spinner size="sm" />
+              <span>Reading menu…</span>
             </div>
           ) : (
             <div className="flex gap-2">
@@ -235,12 +359,26 @@ function HomeContent() {
             isDisabled={barName.trim().length < 2 || creating}
             onPress={() => createSession([])}
           >
-            Skip — I'll add manually
+            Skip — I&apos;ll add manually
           </Button>
         </div>
 
-        <input ref={cameraRef} type="file" accept="image/*" capture="environment" onChange={handlePhoto} className="hidden" />
-        <input ref={fileRef} type="file" accept="image/*" multiple onChange={handlePhoto} className="hidden" />
+        <input
+          ref={cameraRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          onChange={handlePhoto}
+          className="hidden"
+        />
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/*"
+          multiple
+          onChange={handlePhoto}
+          className="hidden"
+        />
       </div>
     );
   }
@@ -255,13 +393,19 @@ function HomeContent() {
           {menuItems.map((item, idx) => (
             <Card key={idx}>
               <div className="px-3 py-2 flex items-center gap-2">
+                <Chip size="sm">{CATEGORY_EMOJI[item.category] || "🍹"}</Chip>
                 <input
                   type="text"
                   value={item.name}
                   onChange={(e) => editItem(idx, e.target.value)}
                   className="flex-1 bg-transparent outline-none text-sm text-foreground"
                 />
-                <Button variant="ghost" size="sm" onPress={() => removeItem(idx)} aria-label={`Remove ${item.name}`}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onPress={() => removeItem(idx)}
+                  aria-label={`Remove ${item.name}`}
+                >
                   ×
                 </Button>
               </div>

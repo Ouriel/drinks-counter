@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db, barMenus } from "@/lib/db";
+import { db, barMenus, normalizeMenuItems } from "@/lib/db";
 import { sql } from "drizzle-orm";
 import { sanitizeBarName } from "@/lib/sanitize";
 
@@ -20,5 +20,10 @@ export async function GET(req: NextRequest) {
 
   results.sort((a, b) => a.barName.length - b.barName.length || a.barName.localeCompare(b.barName));
 
-  return NextResponse.json({ menus: results });
+  const menus = results.map((r) => ({
+    ...r,
+    items: normalizeMenuItems(r.items),
+  }));
+
+  return NextResponse.json({ menus });
 }

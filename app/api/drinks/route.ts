@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db, drinks, sessions, barMenus } from "@/lib/db";
+import { db, drinks, sessions, barMenus, normalizeMenuItems } from "@/lib/db";
 import { eq, and, sql } from "drizzle-orm";
 import { sanitizeDrinkName } from "@/lib/sanitize";
 
@@ -37,9 +37,7 @@ export async function POST(req: NextRequest) {
   const [existing] = await db
     .select()
     .from(drinks)
-    .where(
-      and(eq(drinks.sessionId, session.id), sql`lower(${drinks.name}) = ${cleanName}`)
-    )
+    .where(and(eq(drinks.sessionId, session.id), sql`lower(${drinks.name}) = ${cleanName}`))
     .limit(1);
 
   if (existing) {
@@ -62,11 +60,14 @@ export async function POST(req: NextRequest) {
       .from(barMenus)
       .where(eq(barMenus.id, session.barMenuId))
       .limit(1);
-    if (menu && !menu.items.some((i: string) => i.toLowerCase() === cleanName)) {
-      await db
-        .update(barMenus)
-        .set({ items: [...menu.items, cleanName] })
-        .where(eq(barMenus.id, session.barMenuId));
+    if (menu) {
+      const currentItems = normalizeMenuItems(menu.items);
+      if (!currentItems.some((i) => i.name.toLowerCase() === cleanName)) {
+        await db
+          .update(barMenus)
+          .set({ items: [...currentItems, { name: cleanName, category: category || "other" }] })
+          .where(eq(barMenus.id, session.barMenuId));
+      }
     }
   }
 
@@ -77,7 +78,8 @@ export async function POST(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   const { slug, drinkId, delta } = await req.json();
   if (!slug || !drinkId) return NextResponse.json({ error: "Missing fields" }, { status: 400 });
-  if (delta !== 1 && delta !== -1) return NextResponse.json({ error: "Invalid delta" }, { status: 400 });
+  if (delta !== 1 && delta !== -1)
+    return NextResponse.json({ error: "Invalid delta" }, { status: 400 });
 
   const [session] = await db.select().from(sessions).where(eq(sessions.slug, slug)).limit(1);
   if (!session || session.expiresAt < new Date()) {

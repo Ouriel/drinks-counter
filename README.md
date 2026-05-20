@@ -1,51 +1,88 @@
-# 🍻 TipsyTap
+# TipsyTap 🍻
 
-Tap to track the tipsy. Snap the bar menu, pick drinks, tap to count.
+Mobile-first web app to count drinks during a night out. Snap a bar menu photo, AI extracts drinks with categories, then tap to count throughout the evening.
 
 ## Features
 
-- 📷 Snap menu photos → AI extracts drink names (Gemini 2.5 Flash Lite)
-- 🍺 Tap to count, long-press to remove
-- 🔍 Fuzzy bar search — reuse menus others already scanned
-- 🔗 Fun session URLs (`/s/tipsy-negroni-thunder`)
-- 🌙 Dark/light theme
-- 📱 PWA — installable on mobile
-- ⏰ Sessions auto-expire after 48h
+- **AI Menu Scanning** — photograph a bar menu, Gemini extracts drinks with categories (beer, wine, cocktail, spirit, soft, food)
+- **Bar Search** — fuzzy search existing bars in DB + OpenStreetMap/Nominatim for nearby places with geolocation
+- **Drink Counter** — tap to increment, long press to decrement, haptic feedback
+- **Categories** — emoji badges (🍺🍷🍸🥃🥤🍕) on all drink cards and in the picker
+- **Session Timer** — elapsed time computed from first drink timestamp
+- **Evening Summary** — screenshot-friendly card with totals, categories, top drinks, duration
+- **Share** — native share API (mobile) or clipboard copy (desktop)
+- **Recent Sessions** — localStorage history on the start screen
+- **Dark/Light Theme** — toggle with next-themes
+- **PWA Ready** — manifest, icons, mobile-optimized
 
 ## Stack
 
-- **Framework**: Next.js 16 (App Router) + TypeScript 6
-- **UI**: HeroUI v3 + Tailwind CSS 4
-- **Database**: Neon Postgres + Drizzle ORM
-- **AI**: Vercel AI SDK + Google Gemini 2.5 Flash Lite
-- **Deploy**: Vercel (free tier)
-- **Test**: Vitest · **Lint**: ESLint + Prettier · **CI**: GitHub Actions
+| Layer      | Technology                                   |
+| ---------- | -------------------------------------------- |
+| Framework  | Next.js 16 (App Router)                      |
+| Language   | TypeScript 6                                 |
+| UI         | HeroUI v3 + Tailwind CSS 4                   |
+| Database   | Neon Postgres + Drizzle ORM                  |
+| AI         | Vercel AI SDK + Google Gemini 2.5 Flash Lite |
+| Deploy     | Vercel (free tier)                           |
+| Test       | Vitest (26 tests)                            |
+| Lint       | ESLint 9 + Prettier                          |
+| Pre-commit | Husky + lint-staged                          |
 
-## Setup
+## Architecture
 
-1. Deploy to Vercel (connect this repo)
-2. Add **Neon Postgres** storage (Storage tab)
-3. Set environment variables:
-   - `GOOGLE_GENERATIVE_AI_API_KEY` — from https://aistudio.google.com/apikey
-   - `ADMIN_SECRET` — any password for `/admin`
-   - `CRON_SECRET` — any string for cleanup cron
-4. Schema auto-pushes on deploy (`drizzle-kit push` in build script)
+```
+app/
+├── page.tsx                       # Home: new evening flow (bar search → photo → review)
+├── s/[slug]/page.tsx              # Session: drink counter UI
+├── s/[slug]/summary/page.tsx      # Evening summary (screenshot-friendly)
+├── admin/page.tsx                 # Admin: manage bar menus
+├── stats/page.tsx                 # Public stats (top drinks, categories)
+└── api/
+    ├── sessions/route.ts          # POST: create session, GET: session info
+    ├── drinks/route.ts            # GET/POST/PATCH: drink CRUD
+    ├── menus/route.ts             # GET: fuzzy bar menu search
+    ├── bars/search/route.ts       # GET: OSM Nominatim bar search
+    ├── parse-menu/route.ts        # POST: photo → AI → structured drinks
+    ├── admin/route.ts             # Admin CRUD (protected)
+    └── cron/cleanup/route.ts      # Expired session cleanup
 
-## Local dev
-
-```bash
-cp .env.example .env.local
-# Fill in POSTGRES_URL and GOOGLE_GENERATIVE_AI_API_KEY
-npm install
-npm run dev
+lib/
+├── db.ts                          # Drizzle schema + DB connection
+├── menu-items.ts                  # MenuItem type + normalizeMenuItems()
+├── ai.ts                          # Configurable AI provider (gemini/groq)
+├── slugs.ts                       # Fun slug generator
+├── sanitize.ts                    # Input sanitization
+└── theme-switch.tsx               # Dark/light toggle
 ```
 
-## Commands
+## Data Model
+
+- **bar_menus** — permanent, shared. Bar name + items as `{name, category}[]`
+- **sessions** — personal, 48h TTL. Slug URL = access token
+- **drinks** — per-session. Name + count + category. Cascade delete with session
+
+## Development
 
 ```bash
-npm run dev          # Dev server
+npm run dev          # Local dev server
 npm run build        # Production build (includes drizzle-kit push)
-npm test             # Vitest
+npm test             # Run Vitest
 npm run lint         # ESLint
-npm run format:check # Prettier
+npm run format:check # Prettier check
 ```
+
+## Environment Variables
+
+| Variable                       | Purpose                            |
+| ------------------------------ | ---------------------------------- |
+| `POSTGRES_URL`                 | Neon Postgres connection string    |
+| `GOOGLE_GENERATIVE_AI_API_KEY` | Gemini 2.5 Flash Lite              |
+| `GROQ_API_KEY`                 | Alternative AI provider (optional) |
+| `AI_PROVIDER`                  | "gemini" (default) or "groq"       |
+| `ADMIN_SECRET`                 | Protects admin page                |
+| `CRON_SECRET`                  | Protects cleanup cron              |
+
+## License
+
+GPL-3.0

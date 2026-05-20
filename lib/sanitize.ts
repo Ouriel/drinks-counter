@@ -12,9 +12,5 @@ export function sanitizeBarName(input: string): string {
 }
 
 export function sanitizeDrinkName(input: string): string {
-  return input
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, " ")
-    .slice(0, MAX_DRINK_NAME_LENGTH);
+  return input.trim().toLowerCase().replace(/\s+/g, " ").slice(0, MAX_DRINK_NAME_LENGTH);
 }

@@ -1,4 +1,4 @@
-import { db, barMenus, sessions, drinks } from "@/lib/db";
+import { db, barMenus, sessions, drinks, normalizeMenuItems } from "@/lib/db";
 import { sql, count, desc } from "drizzle-orm";
 
 export const dynamic = "force-dynamic";
@@ -17,14 +17,32 @@ export default async function StatsPage() {
     .orderBy(desc(sql`SUM(${drinks.count})`))
     .limit(10);
 
-  const topBars = await db
-    .select({
-      barName: barMenus.barName,
-      itemCount: sql<number>`jsonb_array_length(${barMenus.items})`,
-    })
+  const byCategory = await db
+    .select({ category: drinks.category, total: sql<number>`SUM(${drinks.count})` })
+    .from(drinks)
+    .groupBy(drinks.category)
+    .orderBy(desc(sql`SUM(${drinks.count})`));
+
+  const topBarsRaw = await db
+    .select()
     .from(barMenus)
     .orderBy(desc(sql`jsonb_array_length(${barMenus.items})`))
     .limit(10);
+
+  const topBars = topBarsRaw.map((b) => ({
+    barName: b.barName,
+    itemCount: normalizeMenuItems(b.items).length,
+  }));
+
+  const EMOJI: Record<string, string> = {
+    beer: "🍺",
+    wine: "🍷",
+    cocktail: "🍸",
+    spirit: "🥃",
+    soft: "🥤",
+    food: "🍕",
+    other: "🍹",
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground p-6">
@@ -44,6 +62,24 @@ export default async function StatsPage() {
           <p className="text-sm text-muted mt-1">Drinks</p>
         </div>
       </div>
+
+      {byCategory.length > 0 && (
+        <>
+          <h2 className="text-lg font-bold mb-3">By Category</h2>
+          <div className="grid grid-cols-2 gap-2 mb-8">
+            {byCategory.map((c) => (
+              <div
+                key={c.category || "other"}
+                className="bg-surface rounded-lg px-3 py-2 flex items-center gap-2"
+              >
+                <span className="text-lg">{EMOJI[c.category || "other"] || "🍹"}</span>
+                <span className="text-sm flex-1">{c.category || "other"}</span>
+                <span className="font-bold tabular-nums">{c.total}</span>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
 
       <h2 className="text-lg font-bold mb-3">🍺 Top Drinks</h2>
       <div className="space-y-2 mb-8">

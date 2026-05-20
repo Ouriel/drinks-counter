@@ -1,70 +1,51 @@
 # AGENTS.md — TipsyTap
 
-## Overview
+## Project Overview
 
-Mobile-first drinks counter app. Snap a bar menu photo, AI extracts drinks, tap to count throughout the evening. Each person gets a session via fun slug URL.
+Mobile-first drinks counter app. Users snap a bar menu photo, AI extracts drinks with categories, then they tap to count throughout the evening. Each session gets a fun slug URL (no auth).
 
-## Tech Stack
+## Stack
 
 - Next.js 16 (App Router) + TypeScript 6
-- HeroUI v3 + Tailwind CSS 4
+- HeroUI v3 (Card, Button, Chip, Spinner, Input) + Tailwind CSS 4
 - Neon Postgres + Drizzle ORM
-- Vercel AI SDK + Google Gemini 2.5 Flash Lite (or Groq)
-- Deployed on Vercel free tier
+- Vercel AI SDK + Google Gemini 2.5 Flash Lite
+- Vitest, ESLint 9, Prettier, Husky
 
-## Development
+## Key Conventions
+
+- **HeroUI v3 patterns**: Card with `<button>` inside for pressable cards (no `isPressable` prop). Use `Chip` for category badges. Use `Spinner` for loading states. Button uses `onPress` not `onClick`.
+- **Data normalization**: `bar_menus.items` is `MenuItem[]` (`{name, category}`). Legacy data may be `string[]` — always use `normalizeMenuItems()` from `lib/menu-items.ts` when reading.
+- **Input sanitization**: All user inputs go through `lib/sanitize.ts`. Bar names and drink names are lowercased.
+- **No auth**: The slug URL IS the access token. PATCH endpoints verify slug ownership.
+- **Categories**: beer, cocktail, wine, spirit, soft, food, other. Emojis: 🍺🍸🍷🥃🥤🍕🍹.
+- **Tests**: Pure logic in separate files (not in db.ts) to avoid DB connection in tests.
+
+## File Structure
+
+```
+lib/db.ts           — Schema + DB connection (don't import in tests)
+lib/menu-items.ts   — MenuItem type + normalizeMenuItems (safe to import in tests)
+lib/sanitize.ts     — Input sanitization
+lib/ai.ts           — AI provider config
+lib/slugs.ts        — Slug generation
+lib/theme-switch.tsx — Theme toggle component
+```
+
+## Commands
 
 ```bash
-npm run dev          # Start dev server
-npm run build        # Production build (must pass before pushing)
-npm test             # Run all tests (must pass before pushing)
-npm run lint         # ESLint check
-npm run format:check # Prettier check
+npm run dev          # Dev server
+npm test             # 26 tests
+npm run lint         # ESLint
+npm run format:check # Prettier
+npx tsc --noEmit    # Type check
 ```
 
-## Project Structure
+## Important Notes
 
-```
-app/                  # Next.js App Router pages and API routes
-├── page.tsx          # Home: bar search → photo → review → create session
-├── s/[slug]/         # Session: drink counter (tap +1, long-press -1)
-├── admin/            # Admin: manage bar menus (protected)
-├── stats/            # Public stats page
-└── api/              # REST endpoints
-lib/                  # Shared utilities
-├── db.ts             # Drizzle schema + connection
-├── ai.ts             # AI provider config
-├── slugs.ts          # Slug generator
-├── sanitize.ts       # Input sanitization (shared)
-└── theme-switch.tsx  # Dark/light toggle
-tests/                # Vitest unit tests
-```
-
-## Database Schema
-
-- `bar_menus` — Permanent. Bar name (lowercase) + items (jsonb string array).
-- `sessions` — 48h TTL. Slug (unique) + optional bar_menu FK.
-- `drinks` — Per-session counts. Name (lowercase) + count. Cascade delete.
-
-Schema auto-pushes on deploy: `drizzle-kit push` runs in build script.
-
-## Rules
-
-1. Run `npm test` and `npm run build` before committing
-2. All API routes validate inputs and return proper HTTP status codes
-3. Drink names are lowercased — matching is case-insensitive
-4. PATCH /api/drinks validates delta is exactly 1 or -1
-5. Use shared `lib/sanitize.ts` for all user input cleaning
-6. Use HeroUI components + theme tokens (not hardcoded colors)
-7. Keep the UI mobile-first — test at 375px width minimum
-8. Never store secrets in code — use environment variables
-9. Check library docs (Context7/web search) before assuming API versions or limits
-
-## Environment Variables
-
-- `POSTGRES_URL` — Neon database connection
-- `GOOGLE_GENERATIVE_AI_API_KEY` — Gemini 2.5 Flash Lite
-- `GROQ_API_KEY` — Alternative AI provider
-- `AI_PROVIDER` — "gemini" (default) or "groq"
-- `ADMIN_SECRET` — Protects /admin and /api/admin
-- `CRON_SECRET` — Protects cleanup cron endpoint
+- `drizzle-kit push` runs at build time — schema changes auto-apply on deploy
+- Vercel serverless body limit is 4.5MB — images compressed client-side to 1MB
+- Android 14+ Chrome: camera needs separate `capture="environment"` input
+- OSM Nominatim: 1 req/sec rate limit, User-Agent required
+- Gemini free tier: 15 RPM, 1000 req/day

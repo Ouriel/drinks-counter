@@ -3,14 +3,47 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import { Button, Input, Card } from "@heroui/react";
+import { Button, Input, Card, Chip, Spinner } from "@heroui/react";
 import { ThemeSwitch } from "@/lib/theme-switch";
 
-type Drink = { id: string; name: string; count: number; category: string | null };
+type Drink = {
+  id: string;
+  name: string;
+  count: number;
+  category: string | null;
+  createdAt?: string;
+};
 type MenuItem = { name: string; category: string };
+
+const CATEGORY_EMOJI: Record<string, string> = {
+  beer: "🍺",
+  wine: "🍷",
+  cocktail: "🍸",
+  spirit: "🥃",
+  soft: "🥤",
+  food: "🍕",
+  other: "🍹",
+};
+
+function categoryEmoji(cat: string | null): string {
+  return CATEGORY_EMOJI[cat || "other"] || "🍹";
+}
 
 function vibrate() {
   if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(10);
+}
+
+function formatElapsed(drinks: Drink[]): string | null {
+  const firstDrink = drinks.reduce<string | null>((earliest, d) => {
+    if (!d.createdAt) return earliest;
+    return !earliest || d.createdAt < earliest ? d.createdAt : earliest;
+  }, null);
+  if (!firstDrink) return null;
+  const mins = Math.floor((Date.now() - new Date(firstDrink).getTime()) / 60000);
+  if (mins < 1) return "just started";
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return h > 0 ? `${h}h${m > 0 ? `${m}m` : ""}` : `${m}m`;
 }
 
 export default function SessionPage() {
@@ -41,14 +74,14 @@ export default function SessionPage() {
       setLoading(false);
       if (sessionRes.ok) {
         const sessionData = await sessionRes.json();
-        if (sessionData.menuItems?.length) {
-          setMenuItems(sessionData.menuItems.map((name: string) => ({ name, category: "other" })));
-        }
+        if (sessionData.menuItems?.length) setMenuItems(sessionData.menuItems);
         if (sessionData.session?.barName) setBarName(sessionData.session.barName);
       }
     }
     load();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [slug, router]);
 
   async function fetchDrinks() {
@@ -69,9 +102,14 @@ export default function SessionPage() {
     vibrate();
     const existing = drinks.find((d) => d.name === name);
     if (existing) {
-      setDrinks((prev) => prev.map((d) => (d.id === existing.id ? { ...d, count: d.count + 1 } : d)));
+      setDrinks((prev) =>
+        prev.map((d) => (d.id === existing.id ? { ...d, count: d.count + 1 } : d))
+      );
     } else {
-      setDrinks((prev) => [...prev, { id: `temp-${Date.now()}`, name, count: 1, category: category || null }]);
+      setDrinks((prev) => [
+        ...prev,
+        { id: `temp-${Date.now()}`, name, count: 1, category: category || null },
+      ]);
     }
 
     const res = await fetch("/api/drinks", {
@@ -80,20 +118,35 @@ export default function SessionPage() {
       body: JSON.stringify({ slug, name, category }),
     });
 
-    if (!res.ok) { fetchDrinks(); return; }
+    if (!res.ok) {
+      fetchDrinks();
+      return;
+    }
 
     if (!existing) {
       const data = await res.json();
       if (data.drink) {
-        setDrinks((prev) => prev.map((d) => (d.name === name && d.id.startsWith("temp") ? { ...d, id: data.drink.id } : d)));
+        setDrinks((prev) =>
+          prev.map((d) =>
+            d.name === name && d.id.startsWith("temp") ? { ...d, id: data.drink.id } : d
+          )
+        );
         showToastMsg(`${name} +1`, async () => {
-          await fetch("/api/drinks", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ slug, drinkId: data.drink.id, delta: -1 }) });
+          await fetch("/api/drinks", {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ slug, drinkId: data.drink.id, delta: -1 }),
+          });
           fetchDrinks();
         });
       }
     } else {
       showToastMsg(`${name} +1`, async () => {
-        await fetch("/api/drinks", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ slug, drinkId: existing.id, delta: -1 }) });
+        await fetch("/api/drinks", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ slug, drinkId: existing.id, delta: -1 }),
+        });
         fetchDrinks();
       });
     }
@@ -102,9 +155,17 @@ export default function SessionPage() {
   async function increment(drink: Drink) {
     vibrate();
     setDrinks((prev) => prev.map((d) => (d.id === drink.id ? { ...d, count: d.count + 1 } : d)));
-    await fetch("/api/drinks", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ slug, name: drink.name, category: drink.category }) });
+    await fetch("/api/drinks", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ slug, name: drink.name, category: drink.category }),
+    });
     showToastMsg(`${drink.name} +1`, async () => {
-      await fetch("/api/drinks", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ slug, drinkId: drink.id, delta: -1 }) });
+      await fetch("/api/drinks", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug, drinkId: drink.id, delta: -1 }),
+      });
       fetchDrinks();
     });
   }
@@ -116,25 +177,74 @@ export default function SessionPage() {
     } else {
       setDrinks((prev) => prev.map((d) => (d.id === drink.id ? { ...d, count: d.count - 1 } : d)));
     }
-    await fetch("/api/drinks", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ slug, drinkId: drink.id, delta: -1 }) });
+    await fetch("/api/drinks", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ slug, drinkId: drink.id, delta: -1 }),
+    });
   }
 
   const total = drinks.reduce((sum, d) => sum + d.count, 0);
+  const elapsed = formatElapsed(drinks);
 
-  if (loading) return <div className="flex items-center justify-center h-screen text-xl animate-pulse">Loading…</div>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Spinner size="lg" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen p-4 pb-[calc(6rem+env(safe-area-inset-bottom))]">
       {/* Header */}
       <div className="text-center mb-6 relative">
         <div className="absolute left-0 top-0">
-          <Button variant="ghost" size="sm" onPress={() => router.push("/")}>+ New</Button>
+          <Button variant="ghost" size="sm" onPress={() => router.push("/")}>
+            + New
+          </Button>
         </div>
-        <div className="absolute right-0 top-0"><ThemeSwitch /></div>
-        <h1 className="text-3xl font-bold"><Image src="/icon.svg" alt="" width={32} height={32} className="inline mr-2" />{total} drink{total !== 1 ? "s" : ""}</h1>
+        <div className="absolute right-0 top-0 flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            onPress={() => {
+              if (navigator.share) {
+                navigator.share({
+                  title: "TipsyTap",
+                  text: `Join my session at ${barName || slug}`,
+                  url: window.location.href,
+                });
+              } else {
+                navigator.clipboard.writeText(window.location.href);
+                showToastMsg("Link copied!", () => {});
+              }
+            }}
+            aria-label="Share"
+          >
+            📤
+          </Button>
+          <ThemeSwitch />
+        </div>
+        <h1 className="text-3xl font-bold">
+          <Image src="/icon.svg" alt="" width={32} height={32} className="inline mr-2" />
+          {total} drink{total !== 1 ? "s" : ""}
+        </h1>
         {barName && <p className="text-base mt-1 text-foreground/70">{barName}</p>}
-        <p className="text-sm mt-0.5 font-mono text-muted">{slug}</p>
+        <p className="text-sm mt-0.5 font-mono text-muted">
+          {slug}
+          {elapsed && ` · ⏱ ${elapsed}`}
+        </p>
       </div>
+
+      {/* Summary link */}
+      {drinks.length > 0 && (
+        <div className="text-center mb-4">
+          <Button variant="ghost" size="sm" onPress={() => router.push(`/s/${slug}/summary`)}>
+            📊 Evening summary
+          </Button>
+        </div>
+      )}
 
       {/* Drinks list */}
       {drinks.length === 0 ? (
@@ -146,7 +256,12 @@ export default function SessionPage() {
         <>
           <div className="space-y-3">
             {drinks.map((drink) => (
-              <DrinkCard key={drink.id.startsWith("temp") ? drink.name : drink.id} drink={drink} onTap={() => increment(drink)} onLongPress={() => decrement(drink)} />
+              <DrinkCard
+                key={drink.id.startsWith("temp") ? drink.name : drink.id}
+                drink={drink}
+                onTap={() => increment(drink)}
+                onLongPress={() => decrement(drink)}
+              />
             ))}
           </div>
           <p className="text-center text-muted text-xs mt-4">Long press to remove</p>
@@ -162,29 +277,76 @@ export default function SessionPage() {
 
       {/* Toast */}
       {toast && (
-        <div role="status" aria-live="polite" className="fixed top-4 left-1/2 -translate-x-1/2 bg-surface border border-border rounded-lg px-4 py-2 flex items-center gap-3 shadow-lg z-40">
+        <div
+          role="status"
+          aria-live="polite"
+          className="fixed top-4 left-1/2 -translate-x-1/2 bg-surface border border-border rounded-lg px-4 py-2 flex items-center gap-3 shadow-lg z-40"
+        >
           <span>{toast.msg}</span>
-          <Button variant="ghost" size="sm" onPress={() => { toast.undoFn(); setToast(null); }}>Undo</Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onPress={() => {
+              toast.undoFn();
+              setToast(null);
+            }}
+          >
+            Undo
+          </Button>
         </div>
       )}
 
       {/* Picker */}
       {showPicker && (
-        <DrinkPicker menuItems={menuItems} currentDrinks={drinks} onSelect={addDrink} onClose={() => setShowPicker(false)} />
+        <DrinkPicker
+          menuItems={menuItems}
+          currentDrinks={drinks}
+          onSelect={addDrink}
+          onClose={() => setShowPicker(false)}
+        />
       )}
     </div>
   );
 }
 
-function DrinkCard({ drink, onTap, onLongPress }: { drink: Drink; onTap: () => void; onLongPress: () => void }) {
+function DrinkCard({
+  drink,
+  onTap,
+  onLongPress,
+}: {
+  drink: Drink;
+  onTap: () => void;
+  onLongPress: () => void;
+}) {
   const timerRef = useRef<NodeJS.Timeout>(null);
   const longPressed = useRef(false);
   const isTouchDevice = useRef(false);
 
-  const handleTouchStart = () => { isTouchDevice.current = true; longPressed.current = false; timerRef.current = setTimeout(() => { longPressed.current = true; onLongPress(); }, 500); };
-  const handleTouchEnd = () => { if (timerRef.current) clearTimeout(timerRef.current); if (!longPressed.current) onTap(); };
-  const handleMouseDown = () => { if (isTouchDevice.current) return; longPressed.current = false; timerRef.current = setTimeout(() => { longPressed.current = true; onLongPress(); }, 500); };
-  const handleMouseUp = () => { if (isTouchDevice.current) return; if (timerRef.current) clearTimeout(timerRef.current); if (!longPressed.current) onTap(); };
+  const handleTouchStart = () => {
+    isTouchDevice.current = true;
+    longPressed.current = false;
+    timerRef.current = setTimeout(() => {
+      longPressed.current = true;
+      onLongPress();
+    }, 500);
+  };
+  const handleTouchEnd = () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (!longPressed.current) onTap();
+  };
+  const handleMouseDown = () => {
+    if (isTouchDevice.current) return;
+    longPressed.current = false;
+    timerRef.current = setTimeout(() => {
+      longPressed.current = true;
+      onLongPress();
+    }, 500);
+  };
+  const handleMouseUp = () => {
+    if (isTouchDevice.current) return;
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (!longPressed.current) onTap();
+  };
 
   return (
     <Card>
@@ -198,9 +360,9 @@ function DrinkCard({ drink, onTap, onLongPress }: { drink: Drink; onTap: () => v
         onContextMenu={(e) => e.preventDefault()}
         aria-label={`${drink.name}, ${drink.count}. Tap to add, long press to remove`}
       >
-        <div>
-          <span className="text-xl font-medium">{drink.name}</span>
-          {drink.category && <span className="ml-2 text-sm text-muted">{drink.category}</span>}
+        <div className="flex items-center gap-2">
+          <Chip size="sm">{categoryEmoji(drink.category)}</Chip>
+          <span className="text-lg font-medium">{drink.name}</span>
         </div>
         <span className="text-3xl font-bold tabular-nums">{drink.count}</span>
       </button>
@@ -208,26 +370,58 @@ function DrinkCard({ drink, onTap, onLongPress }: { drink: Drink; onTap: () => v
   );
 }
 
-function DrinkPicker({ menuItems, currentDrinks, onSelect, onClose }: { menuItems: MenuItem[]; currentDrinks: Drink[]; onSelect: (name: string, category?: string) => void; onClose: () => void }) {
+function DrinkPicker({
+  menuItems,
+  currentDrinks,
+  onSelect,
+  onClose,
+}: {
+  menuItems: MenuItem[];
+  currentDrinks: Drink[];
+  onSelect: (name: string, category?: string) => void;
+  onClose: () => void;
+}) {
   const [search, setSearch] = useState("");
 
   const currentNames = new Set(currentDrinks.map((d) => d.name));
-  const filtered = menuItems.filter((item) => item.name.toLowerCase().includes(search.toLowerCase()) && !currentNames.has(item.name));
-  const grouped = filtered.reduce<Record<string, MenuItem[]>>((acc, item) => { const cat = item.category || "other"; if (!acc[cat]) acc[cat] = []; acc[cat].push(item); return acc; }, {});
-  const showAddCustom = search.trim().length > 0 && !menuItems.some((item) => item.name.toLowerCase() === search.trim().toLowerCase());
+  const filtered = menuItems.filter(
+    (item) => item.name.toLowerCase().includes(search.toLowerCase()) && !currentNames.has(item.name)
+  );
+  const grouped = filtered.reduce<Record<string, MenuItem[]>>((acc, item) => {
+    const cat = item.category || "other";
+    if (!acc[cat]) acc[cat] = [];
+    acc[cat].push(item);
+    return acc;
+  }, {});
+  const showAddCustom =
+    search.trim().length > 0 &&
+    !menuItems.some((item) => item.name.toLowerCase() === search.trim().toLowerCase());
 
   return (
-    <div className="fixed inset-0 bg-black/60 z-50 flex flex-col" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+    <div
+      className="fixed inset-0 bg-black/60 z-50 flex flex-col"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       <div className="bg-surface rounded-t-2xl mt-12 flex-1 overflow-y-auto overscroll-contain p-4">
-        {/* Swipe indicator */}
         <div className="w-10 h-1 bg-muted/40 rounded-full mx-auto mb-3" />
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold">Pick a drink</h2>
-          <Button variant="ghost" size="sm" onPress={onClose} aria-label="Close">×</Button>
+          <Button variant="ghost" size="sm" onPress={onClose} aria-label="Close">
+            ×
+          </Button>
         </div>
 
-        <form onSubmit={(e) => { e.preventDefault(); if (search.trim()) onSelect(search.trim()); }} className="mb-4">
-          <Input className="w-full"
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (search.trim()) onSelect(search.trim());
+          }}
+          className="mb-4"
+        >
+          <Input
+            className="w-full"
             placeholder="Search or type a new drink…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -236,18 +430,29 @@ function DrinkPicker({ menuItems, currentDrinks, onSelect, onClose }: { menuItem
         </form>
 
         {showAddCustom && (
-          <Button variant="ghost" className="w-full mb-4 border border-accent/50 text-accent" onPress={() => onSelect(search.trim())}>
+          <Button
+            variant="ghost"
+            className="w-full mb-4 border border-accent/50 text-accent"
+            onPress={() => onSelect(search.trim())}
+          >
             + Add &quot;{search.trim()}&quot;
           </Button>
         )}
 
         {Object.entries(grouped).map(([category, items]) => (
           <div key={category} className="mb-4">
-            <h3 className="text-sm text-muted uppercase mb-2">{category}</h3>
+            <div className="flex items-center gap-2 mb-2">
+              <Chip size="sm">{CATEGORY_EMOJI[category] || "🍹"}</Chip>
+              <span className="text-sm text-muted uppercase">{category}</span>
+            </div>
             <div className="space-y-1">
               {items.map((item) => (
                 <Card key={item.name}>
-                  <button type="button" onClick={() => onSelect(item.name, item.category)} className="w-full text-left p-3 cursor-pointer">
+                  <button
+                    type="button"
+                    onClick={() => onSelect(item.name, item.category)}
+                    className="w-full text-left p-3 cursor-pointer"
+                  >
                     {item.name}
                   </button>
                 </Card>
@@ -270,7 +475,11 @@ function DrinkPicker({ menuItems, currentDrinks, onSelect, onClose }: { menuItem
             <div className="space-y-1">
               {currentDrinks.map((d) => (
                 <Card key={d.id}>
-                  <button type="button" onClick={() => onSelect(d.name, d.category || undefined)} className="w-full text-left p-3 cursor-pointer flex justify-between">
+                  <button
+                    type="button"
+                    onClick={() => onSelect(d.name, d.category || undefined)}
+                    className="w-full text-left p-3 cursor-pointer flex justify-between"
+                  >
                     <span>{d.name}</span>
                     <span className="text-muted">×{d.count}</span>
                   </button>

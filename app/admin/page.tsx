@@ -25,7 +25,10 @@ export default function AdminPage() {
     const res = await fetch("/api/admin", {
       headers: { Authorization: `Bearer ${s}` },
     });
-    if (!res.ok) { setAuthed(false); return; }
+    if (!res.ok) {
+      setAuthed(false);
+      return;
+    }
     const data = await res.json();
     setMenus(data.menus);
     setStats(data.stats);
@@ -33,7 +36,9 @@ export default function AdminPage() {
     sessionStorage.setItem("admin-secret", s);
   }
 
-  async function load() { fetchAdmin(secret); }
+  async function load() {
+    fetchAdmin(secret);
+  }
 
   async function deleteMenu(id: string) {
     if (!confirm("Delete this bar menu?")) return;
@@ -46,7 +51,10 @@ export default function AdminPage() {
   }
 
   async function saveItems(id: string) {
-    const items = editItems.split("\n").map((s) => s.trim()).filter(Boolean);
+    const items = editItems
+      .split("\n")
+      .map((s) => s.trim())
+      .filter(Boolean);
     await fetch("/api/admin", {
       method: "PATCH",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${secret}` },
@@ -60,7 +68,13 @@ export default function AdminPage() {
     return (
       <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-6">
         <h1 className="text-2xl font-bold mb-6">Admin</h1>
-        <form onSubmit={(e) => { e.preventDefault(); load(); }} className="w-full max-w-xs space-y-3">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            load();
+          }}
+          className="w-full max-w-xs space-y-3"
+        >
           <Input
             type="password"
             placeholder="Admin secret…"
@@ -111,7 +125,10 @@ export default function AdminPage() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onPress={() => { setEditing(menu.id); setEditItems(menu.items.join("\n")); }}
+                    onPress={() => {
+                      setEditing(menu.id);
+                      setEditItems(menu.items.join("\n"));
+                    }}
                   >
                     Edit
                   </Button>
@@ -135,8 +152,12 @@ export default function AdminPage() {
                     className="w-full bg-surface-secondary rounded-lg px-3 py-2 text-sm text-foreground outline-none resize-y"
                   />
                   <div className="flex gap-2 mt-2">
-                    <Button variant="primary" size="sm" onPress={() => saveItems(menu.id)}>Save</Button>
-                    <Button variant="ghost" size="sm" onPress={() => setEditing(null)}>Cancel</Button>
+                    <Button variant="primary" size="sm" onPress={() => saveItems(menu.id)}>
+                      Save
+                    </Button>
+                    <Button variant="ghost" size="sm" onPress={() => setEditing(null)}>
+                      Cancel
+                    </Button>
                   </div>
                 </div>
               ) : (

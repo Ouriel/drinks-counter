@@ -2,10 +2,14 @@ import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
 import { pgTable, uuid, text, jsonb, integer, timestamp } from "drizzle-orm/pg-core";
 
+export type { MenuItem } from "./menu-items";
+export { normalizeMenuItems } from "./menu-items";
+import type { MenuItem } from "./menu-items";
+
 export const barMenus = pgTable("bar_menus", {
   id: uuid("id").defaultRandom().primaryKey(),
   barName: text("bar_name").notNull(),
-  items: jsonb("items").$type<string[]>().notNull().default([]),
+  items: jsonb("items").$type<MenuItem[]>().notNull().default([]),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
