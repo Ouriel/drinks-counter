@@ -111,7 +111,6 @@ export default function SessionPage() {
       });
 
       if (!res.ok) {
-        pendingOps.current--;
         fetchDrinks();
         return;
       }
@@ -121,7 +120,9 @@ export default function SessionPage() {
         if (data.drink) {
           setDrinks((prev) =>
             prev.map((d) =>
-              d.name === name && d.id.startsWith("temp") ? { ...d, id: data.drink.id } : d
+              d.name.toLowerCase() === name.toLowerCase() && d.id.startsWith("temp")
+                ? { ...d, id: data.drink.id }
+                : d
             )
           );
           showToastMsg(`${name} +1`, async () => {
@@ -143,9 +144,10 @@ export default function SessionPage() {
           fetchDrinks();
         });
       }
+    } catch {
+      fetchDrinks();
     } finally {
       pendingOps.current--;
-      // Reconcile after all pending ops complete
       if (pendingOps.current === 0) {
         fetchDrinks();
       }
