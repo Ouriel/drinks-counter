@@ -181,7 +181,7 @@ export default function SummaryPage() {
         <Button variant="ghost" onPress={copyAsText}>
           {copied ? "Copied ✓" : "Copy text 📋"}
         </Button>
-        <Button variant="ghost" onPress={() => window.history.back()}>
+        <Button variant="ghost" onPress={() => (window.location.href = `/s/${slug}`)}>
           Back
         </Button>
       </div>
