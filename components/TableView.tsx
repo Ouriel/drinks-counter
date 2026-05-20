@@ -34,7 +34,9 @@ export function TableView({
   useEffect(() => {
     queueMicrotask(() => fetchRanking());
     if (!tableCode) return;
-    const id = setInterval(fetchRanking, 15_000);
+    const id = setInterval(() => {
+      if (document.visibilityState === "visible") fetchRanking();
+    }, 60_000);
     return () => clearInterval(id);
   }, [tableCode, fetchRanking]);
 
