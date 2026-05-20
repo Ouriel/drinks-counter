@@ -45,7 +45,16 @@ export async function POST(req: NextRequest) {
         items: z.array(
           z.object({
             name: z.string(),
-            category: z.enum(["beer", "cocktail", "wine", "spirit", "soft", "food", "other"]),
+            category: z.enum([
+              "beer",
+              "cocktail",
+              "wine",
+              "spirit",
+              "shot",
+              "soft",
+              "food",
+              "other",
+            ]),
           })
         ),
       }),
@@ -69,7 +78,7 @@ Rules:
 - Split combo items into separate entries (e.g. "Coca, Ice Tea, Limonade" → 3 separate items)
 - Use lowercase names
 - Keep names short (2-4 words max)
-- Category must be one of: beer, cocktail, wine, spirit, soft, food, other
+- Category must be one of: beer, cocktail, wine, spirit, shot, soft, food, other
 - Ignore prices, descriptions, and decorative text`,
             },
           ],

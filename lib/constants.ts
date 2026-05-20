@@ -3,6 +3,7 @@ export const CATEGORY_EMOJI: Record<string, string> = {
   wine: "🍷",
   cocktail: "🍸",
   spirit: "🥃",
+  shot: "🥂",
   soft: "🥤",
   food: "🍕",
   other: "🍹",
