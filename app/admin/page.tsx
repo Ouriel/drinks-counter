@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { Button, Input, Card } from "@heroui/react";
 
-type BarMenu = { id: string; barName: string; items: string[]; createdAt: string };
+type MenuItem = { name: string; category: string };
+type BarMenu = { id: string; barName: string; items: MenuItem[]; createdAt: string };
 type Stats = { totalBarMenus: number; totalSessions: number; totalDrinks: number };
 
 export default function AdminPage() {
@@ -15,7 +16,8 @@ export default function AdminPage() {
   const [menus, setMenus] = useState<BarMenu[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [editing, setEditing] = useState<string | null>(null);
-  const [editItems, setEditItems] = useState("");
+  const [editBarName, setEditBarName] = useState("");
+  const [editRows, setEditRows] = useState<MenuItem[]>([]);
 
   useEffect(() => {
     if (secret) fetchAdmin(secret);
@@ -50,15 +52,14 @@ export default function AdminPage() {
     load();
   }
 
+  const categories = ["beer", "cocktail", "wine", "spirit", "soft", "food", "other"];
+
   async function saveItems(id: string) {
-    const items = editItems
-      .split("\n")
-      .map((s) => s.trim())
-      .filter(Boolean);
+    const items = editRows.filter((r) => r.name.trim());
     await fetch("/api/admin", {
       method: "PATCH",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${secret}` },
-      body: JSON.stringify({ id, items }),
+      body: JSON.stringify({ id, items, barName: editBarName.trim() }),
     });
     setEditing(null);
     load();
@@ -127,7 +128,8 @@ export default function AdminPage() {
                     size="sm"
                     onPress={() => {
                       setEditing(menu.id);
-                      setEditItems(menu.items.join("\n"));
+                      setEditBarName(menu.barName);
+                      setEditRows([...menu.items]);
                     }}
                   >
                     Edit
@@ -144,14 +146,59 @@ export default function AdminPage() {
               </div>
 
               {editing === menu.id ? (
-                <div className="mt-2">
-                  <textarea
-                    value={editItems}
-                    onChange={(e) => setEditItems(e.target.value)}
-                    rows={8}
-                    className="w-full bg-surface-secondary rounded-lg px-3 py-2 text-sm text-foreground outline-none resize-y"
+                <div className="mt-2 space-y-2">
+                  <Input
+                    placeholder="Bar name"
+                    value={editBarName}
+                    onChange={(e) => setEditBarName(e.target.value)}
                   />
-                  <div className="flex gap-2 mt-2">
+                  <div className="space-y-1">
+                    {editRows.map((row, i) => (
+                      <div key={i} className="flex gap-2 items-center">
+                        <Input
+                          placeholder="Drink name"
+                          value={row.name}
+                          onChange={(e) => {
+                            const next = [...editRows];
+                            next[i] = { ...next[i], name: e.target.value };
+                            setEditRows(next);
+                          }}
+                          className="flex-1"
+                        />
+                        <select
+                          aria-label="Category"
+                          value={row.category}
+                          onChange={(e) => {
+                            const next = [...editRows];
+                            next[i] = { ...next[i], category: e.target.value };
+                            setEditRows(next);
+                          }}
+                          className="w-32 bg-default-100 rounded-lg px-2 py-2 text-sm text-foreground outline-none"
+                        >
+                          {categories.map((c) => (
+                            <option key={c} value={c}>
+                              {c}
+                            </option>
+                          ))}
+                        </select>
+                        <Button
+                          variant="ghost"
+                          isIconOnly
+                          onPress={() => setEditRows(editRows.filter((_, j) => j !== i))}
+                        >
+                          ✕
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onPress={() => setEditRows([...editRows, { name: "", category: "other" }])}
+                  >
+                    + Add item
+                  </Button>
+                  <div className="flex gap-2">
                     <Button variant="primary" size="sm" onPress={() => saveItems(menu.id)}>
                       Save
                     </Button>
@@ -161,7 +208,9 @@ export default function AdminPage() {
                   </div>
                 </div>
               ) : (
-                <p className="text-sm text-muted truncate">{menu.items.join(", ")}</p>
+                <p className="text-sm text-muted truncate">
+                  {menu.items.map((i) => i.name).join(", ")}
+                </p>
               )}
             </div>
           </Card>

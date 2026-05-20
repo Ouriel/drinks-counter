@@ -13,11 +13,25 @@
 - AI menu parsing works (Gemini 2.5 Flash Lite, 15 RPM free)
 - Multiple photo upload from gallery works
 - Camera button opens camera directly (Android 14+ workaround)
-- HeroUI v3 components (Button, Input, Card)
+- HeroUI v3 components (Button, Input, Card, Chip, Spinner)
 - Dark/light theme toggle (next-themes)
 - Original Gemini logo (pint glass + question mark, dark bg)
+- Commit 3e10b92 pushed to main, Vercel auto-deploying
 
 ## Recent Changes (2026-05-20)
+
+### Admin Page Fix
+
+- Fixed [object Object] display: admin page now handles MenuItem[] properly
+- Edit mode uses structured rows: Input (drink name) + native select (category) + ✕ delete per row
+- "Add item" button to append new rows
+- Bar name is editable in edit mode (Input field above items list)
+- HeroUI v3 Select is too complex (React Aria primitives), used styled native `<select>` instead
+
+### Cron Cleanup
+
+- Configured in vercel.json: daily at 06:00 UTC (`/api/cron/cleanup`)
+- **NOT running** — no logs in last 7 days. Likely needs Vercel Pro plan or CRON_SECRET not set.
 
 ### Categories
 
