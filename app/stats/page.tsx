@@ -2,7 +2,6 @@ import { db, barMenus, sessions, drinks, normalizeMenuItems } from "@/lib/db";
 import { sql, count, desc } from "drizzle-orm";
 import { CATEGORY_EMOJI } from "@/lib/constants";
 
-export const dynamic = "force-dynamic";
 export const revalidate = 60;
 
 export default async function StatsPage() {
