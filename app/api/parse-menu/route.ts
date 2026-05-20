@@ -51,6 +51,7 @@ export async function POST(req: NextRequest) {
               "wine",
               "spirit",
               "shot",
+              "mocktail",
               "soft",
               "food",
               "other",
@@ -78,7 +79,10 @@ Rules:
 - Split combo items into separate entries (e.g. "Coca, Ice Tea, Limonade" → 3 separate items)
 - Use lowercase names
 - Keep names short (2-4 words max)
-- Category must be one of: beer, cocktail, wine, spirit, shot, soft, food, other
+- Category must be one of: beer, cocktail, wine, spirit, shot, mocktail, soft, food, other
+- "mocktail" = non-alcoholic cocktails (virgin drinks, alcohol-free mixes)
+- "shot" = small 2-4cl drinks meant to be downed in one go (Jägerbomb, tequila shot, B52, etc.)
+- "spirit" = neat spirits served in a tumbler (whiskey, rum, vodka neat, digestifs)
 - Ignore prices, descriptions, and decorative text`,
             },
           ],

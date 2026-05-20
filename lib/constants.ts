@@ -3,10 +3,11 @@ export const CATEGORY_EMOJI: Record<string, string> = {
   wine: "🍷",
   cocktail: "🍸",
   spirit: "🥃",
-  shot: "🥂",
+  shot: "🔥",
+  mocktail: "🍹",
   soft: "🥤",
   food: "🍕",
-  other: "🍹",
+  other: "🫧",
 };
 
 export const CATEGORIES = Object.keys(CATEGORY_EMOJI);
