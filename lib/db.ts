@@ -1,6 +1,6 @@
 import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
-import { pgTable, uuid, text, jsonb, integer, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, uuid, text, jsonb, integer, timestamp, varchar } from "drizzle-orm/pg-core";
 
 export type { MenuItem } from "./menu-items";
 export { normalizeMenuItems } from "./menu-items";
@@ -13,10 +13,18 @@ export const barMenus = pgTable("bar_menus", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const tables = pgTable("tables", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  code: varchar("code", { length: 8 }).notNull().unique(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export const sessions = pgTable("sessions", {
   id: uuid("id").defaultRandom().primaryKey(),
   slug: text("slug").notNull().unique(),
   barMenuId: uuid("bar_menu_id").references(() => barMenus.id),
+  tableId: uuid("table_id").references(() => tables.id),
+  nickname: varchar("nickname", { length: 30 }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   expiresAt: timestamp("expires_at").notNull(),
 });

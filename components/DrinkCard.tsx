@@ -20,10 +20,12 @@ export function DrinkCard({
   drink,
   onTap,
   onLongPress,
+  isTop,
 }: {
   drink: Drink;
   onTap: () => void;
   onLongPress: () => void;
+  isTop?: boolean;
 }) {
   const timerRef = useRef<NodeJS.Timeout>(null);
   const longPressed = useRef(false);
@@ -73,6 +75,7 @@ export function DrinkCard({
         </div>
         <div className="flex items-center gap-2">
           <span className="text-3xl font-bold tabular-nums">{drink.count}</span>
+          {isTop && <span className="text-lg">👑</span>}
           <span className="text-muted text-lg">+</span>
         </div>
       </button>

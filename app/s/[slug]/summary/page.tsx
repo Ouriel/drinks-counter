@@ -4,6 +4,13 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Button, Card, Chip, Spinner } from "@heroui/react";
 import { CATEGORY_EMOJI } from "@/lib/constants";
+import { titleCase } from "@/lib/sanitize";
+import {
+  getAllEarnedBadges,
+  getDrinkAchievements,
+  getPace,
+  getPersonalBest,
+} from "@/lib/gamification";
 
 type Drink = { name: string; count: number; category: string | null; createdAt: string };
 
@@ -92,7 +99,7 @@ export default function SummaryPage() {
       .sort((a, b) => b.count - a.count)
       .map((d) => `${CATEGORY_EMOJI[d.category || "other"] || "🍹"} ${d.name} ×${d.count}`);
     const text = [
-      `🍻 ${total} drinks${barName ? ` at ${barName}` : ""}`,
+      `🍻 ${total} drinks${barName ? ` at ${titleCase(barName)}` : ""}`,
       durationMins > 0 ? `⏱ ${durationStr}` : "",
       "",
       ...lines,
@@ -114,7 +121,7 @@ export default function SummaryPage() {
           <div className="text-center mb-6">
             <p className="text-5xl mb-2">🍻</p>
             <h1 className="text-2xl font-bold">Evening Summary</h1>
-            {barName && <p className="text-foreground/70 mt-1">{barName}</p>}
+            {barName && <p className="text-foreground/70 mt-1">{titleCase(barName)}</p>}
             {firstDrink && (
               <p className="text-sm text-muted mt-1">
                 {new Date(firstDrink).toLocaleDateString()} · {durationStr}
@@ -126,6 +133,9 @@ export default function SummaryPage() {
           <div className="text-center mb-6">
             <p className="text-6xl font-bold">{total}</p>
             <p className="text-muted">drink{total !== 1 ? "s" : ""} total</p>
+            {total >= getPersonalBest() && total > 0 && (
+              <p className="text-sm mt-1">🏅 Personal best!</p>
+            )}
           </div>
 
           {/* By category */}
@@ -140,6 +150,44 @@ export default function SummaryPage() {
                 ))}
             </div>
           )}
+
+          {/* Badges */}
+          {(() => {
+            const badges = getAllEarnedBadges(total);
+            const pace = getPace(drinks);
+            const achievements = getDrinkAchievements(drinks);
+            return (
+              <>
+                {badges.length > 0 && (
+                  <div className="flex flex-wrap justify-center gap-2 mb-4">
+                    {badges.map((b) => (
+                      <span key={b.title} title={b.title} className="text-2xl">
+                        {b.emoji}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {/* Pace */}
+                {pace && (
+                  <p className="text-center text-sm text-muted mb-4">
+                    Pace: {pace.emoji} {pace.label}
+                  </p>
+                )}
+
+                {/* Achievements */}
+                {achievements.length > 0 && (
+                  <div className="space-y-1 mb-4">
+                    {achievements.map((a) => (
+                      <p key={a.text} className="text-sm text-center">
+                        {a.emoji} {a.text}
+                      </p>
+                    ))}
+                  </div>
+                )}
+              </>
+            );
+          })()}
 
           {/* Top drinks */}
           <div className="space-y-1">
@@ -168,7 +216,7 @@ export default function SummaryPage() {
             if (navigator.share) {
               navigator.share({
                 title: "My TipsyTap Evening",
-                text: `${total} drinks at ${barName || "the bar"} 🍻`,
+                text: `${total} drinks at ${titleCase(barName || "the bar")} 🍻`,
                 url: window.location.href,
               });
             } else {

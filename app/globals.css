@@ -5,3 +5,35 @@
   --accent: oklch(0.769 0.188 70.08);
   --accent-foreground: oklch(0.15 0 0);
 }
+
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-20px) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+@keyframes wobble {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-2deg);
+  }
+  75% {
+    transform: rotate(2deg);
+  }
+}
+
+.animate-confetti-fall {
+  animation: confetti-fall 2.2s ease-in forwards;
+}
+
+.animate-wobble {
+  animation: wobble 0.5s ease-in-out;
+}

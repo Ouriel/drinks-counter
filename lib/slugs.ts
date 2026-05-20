@@ -167,7 +167,7 @@ const nouns = [
   "vermouth",
   "prosecco",
   "champagne",
-  "rosé",
+  "rose",
   "merlot",
   "shiraz",
   "riesling",

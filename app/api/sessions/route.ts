@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db, sessions, barMenus, normalizeMenuItems } from "@/lib/db";
+import { db, sessions, barMenus, tables, normalizeMenuItems } from "@/lib/db";
 import type { MenuItem } from "@/lib/db";
 import { generateSlug } from "@/lib/slugs";
 import { sanitizeBarName } from "@/lib/sanitize";
@@ -95,8 +95,21 @@ export async function GET(req: NextRequest) {
     }
   }
 
+  // Get table code if session is in a table
+  let tableCode: string | null = null;
+  if (session.tableId) {
+    const [table] = await db.select().from(tables).where(eq(tables.id, session.tableId)).limit(1);
+    if (table) tableCode = table.code;
+  }
+
   return NextResponse.json({
-    session: { id: session.id, slug: session.slug, barName: barNameResult },
+    session: {
+      id: session.id,
+      slug: session.slug,
+      barName: barNameResult,
+      tableCode,
+      nickname: session.nickname,
+    },
     menuItems,
   });
 }

@@ -130,6 +130,28 @@
 - ✅ FIXED: Timer extracted to ElapsedTimer component (no full page re-render)
 - Slug test updated to match new 4-part format
 
+## Table View (2026-05-20)
+
+- DB: `tables` table (id, code, created_at) + `table_id` and `nickname` on sessions
+- lib/nicknames.ts: auto-generates animal emoji nicknames (🦊 Fox, 🐻 Bear, etc.)
+- API: /api/tables — POST (create), PATCH (join), GET (read-only ranking, no slugs exposed)
+- Sessions API returns tableCode + nickname
+- components/TableView.tsx: create/join buttons, ranking display with 15s auto-refresh
+- Security: GET ranking only returns nicknames + totals, never slugs
+- Schema migration needed: `npx drizzle-kit push`
+
+## Gamification (2026-05-20)
+
+- lib/gamification.ts: badges (7 milestones), color shift (hue 210→30), pace indicator, drink achievements, nudges, personal best
+- components/BadgeToast.tsx: animated popup + confetti emoji rain on badge unlock
+- components/Confetti.tsx: 24 emoji particles falling with CSS animation
+- Session page: background color shifts warm, badge toasts, pace display, nudge popups, wobble on count after 10+, crown on top drink
+- Summary page: shows earned badges, pace, drink-specific achievements, personal best indicator
+- Achievements: rainbow drinker, category master, explorer, adventurer, signature, devoted, wildcard, escalation, night owl, savoring it, speed round
+- Nudges: water every 3 drinks, taxi at 8, sleep at 12
+- Personal best: localStorage tracking, 🏅 badge on new record
+- CSS: confetti-fall keyframes, wobble keyframes in globals.css
+
 ## CI/CD
 
 - Vitest: 20 tests

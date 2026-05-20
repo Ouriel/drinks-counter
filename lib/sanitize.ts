@@ -14,3 +14,10 @@ export function sanitizeBarName(input: string): string {
 export function sanitizeDrinkName(input: string): string {
   return input.trim().toLowerCase().replace(/\s+/g, " ").slice(0, MAX_DRINK_NAME_LENGTH);
 }
+
+export function titleCase(input: string): string {
+  return input
+    .split(" ")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+}

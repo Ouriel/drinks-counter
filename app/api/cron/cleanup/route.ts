@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db, sessions } from "@/lib/db";
-import { lt } from "drizzle-orm";
+import { db, sessions, tables } from "@/lib/db";
+import { lt, sql } from "drizzle-orm";
 import { verifySecret } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
@@ -13,5 +13,13 @@ export async function GET(req: NextRequest) {
     .where(lt(sessions.expiresAt, new Date()))
     .returning({ id: sessions.id });
 
-  return NextResponse.json({ deleted: result.length });
+  // Clean up orphaned tables (no sessions referencing them)
+  const orphaned = await db
+    .delete(tables)
+    .where(
+      sql`${tables.id} NOT IN (SELECT DISTINCT ${sessions.tableId} FROM ${sessions} WHERE ${sessions.tableId} IS NOT NULL)`
+    )
+    .returning({ id: tables.id });
+
+  return NextResponse.json({ deletedSessions: result.length, deletedTables: orphaned.length });
 }

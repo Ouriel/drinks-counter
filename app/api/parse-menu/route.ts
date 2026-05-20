@@ -36,13 +36,16 @@ export async function POST(req: NextRequest) {
     );
   }
   const formData = await req.formData();
-  const file = formData.get("photo") as File;
-  if (!file) return NextResponse.json({ error: "No photo" }, { status: 400 });
+  const file = formData.get("photo");
+  if (!file || typeof file === "string") {
+    return NextResponse.json({ error: "No photo" }, { status: 400 });
+  }
   if (file.size > MAX_FILE_SIZE) {
     return NextResponse.json({ error: "File too large (max 4MB)" }, { status: 413 });
   }
 
   const bytes = await file.arrayBuffer();
+  const mediaType = file.type || "image/jpeg";
 
   try {
     const { object } = await generateObject({
@@ -72,7 +75,7 @@ export async function POST(req: NextRequest) {
             {
               type: "image",
               image: new Uint8Array(bytes),
-              mediaType: file.type,
+              mediaType: mediaType,
             },
             {
               type: "text",

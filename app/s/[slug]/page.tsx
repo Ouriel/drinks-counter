@@ -5,10 +5,21 @@ import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { Button, Spinner } from "@heroui/react";
 import { ThemeSwitch } from "@/lib/theme-switch";
+import { titleCase } from "@/lib/sanitize";
 import { DrinkCard } from "@/components/DrinkCard";
 import { DrinkPicker } from "@/components/DrinkPicker";
-import { QrCode } from "@/components/QrCode";
 import { PwaInstallPrompt } from "@/components/PwaInstallPrompt";
+import { BadgeToast } from "@/components/BadgeToast";
+import { TableView } from "@/components/TableView";
+import {
+  getBadgeForCount,
+  getSessionHue,
+  getPace,
+  getNudge,
+  checkPersonalBest,
+  type Badge,
+  type Nudge,
+} from "@/lib/gamification";
 import type { Drink } from "@/components/DrinkCard";
 
 type MenuItem = { name: string; category: string };
@@ -47,10 +58,14 @@ export default function SessionPage() {
   const [drinks, setDrinks] = useState<Drink[]>([]);
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [barName, setBarName] = useState("");
+  const [tableCode, setTableCode] = useState<string | null>(null);
+  const [nickname, setNickname] = useState<string | null>(null);
   const [showPicker, setShowPicker] = useState(false);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState<{ msg: string; undoFn: () => void } | null>(null);
-  const [showQr, setShowQr] = useState(false);
+  const [badge, setBadge] = useState<Badge | null>(null);
+  const [nudge, setNudge] = useState<Nudge | null>(null);
+  const prevTotal = useRef(0);
   const toastTimer = useRef<NodeJS.Timeout>(null);
   const pendingOps = useRef(0);
 
@@ -83,6 +98,8 @@ export default function SessionPage() {
         const sessionData = await sessionRes.json();
         if (sessionData.menuItems?.length) setMenuItems(sessionData.menuItems);
         if (sessionData.session?.barName) setBarName(sessionData.session.barName);
+        if (sessionData.session?.tableCode) setTableCode(sessionData.session.tableCode);
+        if (sessionData.session?.nickname) setNickname(sessionData.session.nickname);
       }
     }
     load();
@@ -240,6 +257,33 @@ export default function SessionPage() {
   }
 
   const total = drinks.reduce((sum, d) => sum + d.count, 0);
+  const pace = getPace(drinks);
+  const bgColor = getSessionHue(total);
+
+  // Trigger badges and nudges on total change
+
+  useEffect(() => {
+    if (total === prevTotal.current) return;
+    queueMicrotask(() => {
+      const newBadge = getBadgeForCount(total);
+      if (newBadge) setBadge(newBadge);
+      const newNudge = getNudge(total, prevTotal.current);
+      if (newNudge) {
+        setNudge(newNudge);
+        setTimeout(() => setNudge(null), 4000);
+      }
+      if (checkPersonalBest(total)) {
+        if (!newBadge) {
+          setBadge({
+            emoji: "🏅",
+            title: "Personal Best!",
+            subtitle: `${total} drinks — new record`,
+          });
+        }
+      }
+      prevTotal.current = total;
+    });
+  }, [total]);
 
   if (loading) {
     return (
@@ -250,7 +294,19 @@ export default function SessionPage() {
   }
 
   return (
-    <div className="min-h-screen p-4 pb-[calc(6rem+env(safe-area-inset-bottom))]">
+    <div
+      className="min-h-screen p-4 pb-[calc(6rem+env(safe-area-inset-bottom))] transition-colors duration-1000"
+      style={{ backgroundColor: bgColor }}
+    >
+      {/* Badge popup */}
+      {badge && <BadgeToast badge={badge} onDone={() => setBadge(null)} />}
+
+      {/* Nudge */}
+      {nudge && (
+        <div className="fixed top-4 right-4 z-40 bg-surface/90 border border-border rounded-lg px-3 py-2 text-sm animate-pulse">
+          {nudge.emoji} {nudge.text}
+        </div>
+      )}
       {/* Header */}
       <div className="text-center mb-6 relative">
         <div className="absolute left-0 top-0">
@@ -259,9 +315,6 @@ export default function SessionPage() {
           </Button>
         </div>
         <div className="absolute right-0 top-0 flex items-center gap-1">
-          <Button variant="ghost" size="sm" onPress={() => setShowQr(true)} aria-label="QR Code">
-            📱
-          </Button>
           <Button
             variant="ghost"
             size="sm"
@@ -269,7 +322,7 @@ export default function SessionPage() {
               if (navigator.share) {
                 navigator.share({
                   title: "TipsyTap",
-                  text: `Join my session at ${barName || slug}`,
+                  text: `Join my session at ${titleCase(barName || slug)}`,
                   url: window.location.href,
                 });
               } else {
@@ -283,14 +336,20 @@ export default function SessionPage() {
           </Button>
           <ThemeSwitch />
         </div>
-        <h1 className="text-3xl font-bold">
+        <h1 className={`text-3xl font-bold ${total >= 10 ? "animate-wobble" : ""}`} key={total}>
           <Image src="/icon.svg" alt="" width={32} height={32} className="inline mr-2" />
           {total} drink{total !== 1 ? "s" : ""}
         </h1>
-        {barName && <p className="text-base mt-1 text-foreground/70">{barName}</p>}
+        {barName && <p className="text-base mt-1 text-foreground/70">{titleCase(barName)}</p>}
         <p className="text-sm mt-0.5 font-mono text-muted">
           {slug}
           <ElapsedTimer drinks={drinks} />
+          {pace && (
+            <>
+              {" "}
+              · {pace.emoji} {pace.label}
+            </>
+          )}
         </p>
       </div>
 
@@ -318,12 +377,16 @@ export default function SessionPage() {
                 drink={drink}
                 onTap={() => increment(drink)}
                 onLongPress={() => decrement(drink)}
+                isTop={drinks.length > 1 && drink.count === Math.max(...drinks.map((d) => d.count))}
               />
             ))}
           </div>
           <p className="text-center text-muted text-xs mt-4">Long press to remove</p>
         </>
       )}
+
+      {/* Table */}
+      <TableView slug={slug} tableCode={tableCode} nickname={nickname} />
 
       {/* FAB */}
       <div className="fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom))] left-0 right-0 flex justify-center">
@@ -361,30 +424,6 @@ export default function SessionPage() {
           onSelect={addDrink}
           onClose={() => setShowPicker(false)}
         />
-      )}
-
-      {/* QR Code modal */}
-      {showQr && (
-        <div
-          className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-6"
-          onClick={() => setShowQr(false)}
-          onKeyDown={(e) => e.key === "Escape" && setShowQr(false)}
-          role="dialog"
-          aria-modal="true"
-          aria-label="QR Code"
-        >
-          <div
-            className="bg-surface rounded-2xl p-6 text-center max-w-xs w-full"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 className="text-lg font-bold mb-4">Scan to join</h3>
-            <QrCode url={typeof window !== "undefined" ? window.location.href : ""} />
-            <p className="text-sm text-muted mt-4 font-mono">{slug}</p>
-            <Button variant="ghost" size="sm" className="mt-4" onPress={() => setShowQr(false)}>
-              Close
-            </Button>
-          </div>
-        </div>
       )}
 
       <PwaInstallPrompt />
