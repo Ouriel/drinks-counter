@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Button, Input, Card, Chip, Spinner } from "@heroui/react";
 import { ThemeSwitch } from "@/lib/theme-switch";
+import { CATEGORY_EMOJI } from "@/lib/constants";
 import imageCompression from "browser-image-compression";
 
 export default function Home() {
@@ -14,16 +15,6 @@ export default function Home() {
     </Suspense>
   );
 }
-
-const CATEGORY_EMOJI: Record<string, string> = {
-  beer: "🍺",
-  wine: "🍷",
-  cocktail: "🍸",
-  spirit: "🥃",
-  soft: "🥤",
-  food: "🍕",
-  other: "🍹",
-};
 
 function HomeContent() {
   const router = useRouter();
@@ -52,6 +43,7 @@ function HomeContent() {
   const cameraRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<NodeJS.Timeout>(null);
   const geoRef = useRef<{ lat: number; lng: number } | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   // Get geolocation once on mount
   useEffect(() => {
@@ -176,7 +168,8 @@ function HomeContent() {
       router.push(`/s/${slug}`);
     } catch {
       setCreating(false);
-      alert("Could not create session. Please try again.");
+      setErrorMsg("Could not create session. Please try again.");
+      setTimeout(() => setErrorMsg(null), 4000);
     }
   };
 
@@ -192,6 +185,7 @@ function HomeContent() {
   if (step === "start") {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 gap-8 relative">
+        {errorMsg && <ErrorToast message={errorMsg} onClose={() => setErrorMsg(null)} />}
         <div className="absolute right-4 top-4">
           <ThemeSwitch />
         </div>
@@ -257,6 +251,7 @@ function HomeContent() {
   if (step === "bar") {
     return (
       <div className="min-h-screen p-6">
+        {errorMsg && <ErrorToast message={errorMsg} onClose={() => setErrorMsg(null)} />}
         <div className="flex items-center gap-2 mb-4">
           <Image src="/icon.svg" alt="" width={24} height={24} />
           <h2 className="text-xl font-bold">Where are you?</h2>
@@ -310,6 +305,15 @@ function HomeContent() {
             ))}
           </div>
         )}
+
+        {barName.length >= 2 &&
+          barSuggestions.length === 0 &&
+          osmResults.length === 0 &&
+          !parsing && (
+            <p className="text-sm text-muted text-center mb-4">
+              📸 No results — take a photo of the menu to get started!
+            </p>
+          )}
 
         <div className="space-y-3 mt-6">
           {menuItems.length > 0 && (
@@ -423,6 +427,20 @@ function HomeContent() {
           {creating ? "Creating…" : "Start counting 🍺"}
         </Button>
       </div>
+    </div>
+  );
+}
+
+function ErrorToast({ message, onClose }: { message: string; onClose: () => void }) {
+  return (
+    <div
+      role="alert"
+      className="fixed top-4 left-1/2 -translate-x-1/2 bg-danger/10 border border-danger/30 text-danger rounded-lg px-4 py-3 flex items-center gap-3 shadow-lg z-50"
+    >
+      <span className="text-sm">{message}</span>
+      <button onClick={onClose} className="text-danger/60 hover:text-danger font-bold">
+        ×
+      </button>
     </div>
   );
 }

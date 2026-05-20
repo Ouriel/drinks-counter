@@ -1,33 +1,17 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import { Button, Input, Card, Chip, Spinner } from "@heroui/react";
+import { Button, Spinner } from "@heroui/react";
 import { ThemeSwitch } from "@/lib/theme-switch";
+import { DrinkCard } from "@/components/DrinkCard";
+import { DrinkPicker } from "@/components/DrinkPicker";
+import { QrCode } from "@/components/QrCode";
+import { PwaInstallPrompt } from "@/components/PwaInstallPrompt";
+import type { Drink } from "@/components/DrinkCard";
 
-type Drink = {
-  id: string;
-  name: string;
-  count: number;
-  category: string | null;
-  createdAt?: string;
-};
 type MenuItem = { name: string; category: string };
-
-const CATEGORY_EMOJI: Record<string, string> = {
-  beer: "🍺",
-  wine: "🍷",
-  cocktail: "🍸",
-  spirit: "🥃",
-  soft: "🥤",
-  food: "🍕",
-  other: "🍹",
-};
-
-function categoryEmoji(cat: string | null): string {
-  return CATEGORY_EMOJI[cat || "other"] || "🍹";
-}
 
 function vibrate() {
   if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(10);
@@ -55,7 +39,19 @@ export default function SessionPage() {
   const [showPicker, setShowPicker] = useState(false);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState<{ msg: string; undoFn: () => void } | null>(null);
+  const [showQr, setShowQr] = useState(false);
   const toastTimer = useRef<NodeJS.Timeout>(null);
+  const pendingOps = useRef(0);
+
+  const fetchDrinks = useCallback(async () => {
+    const res = await fetch(`/api/drinks?slug=${slug}`);
+    if (!res.ok) return;
+    const data = await res.json();
+    // Only reconcile if no pending operations
+    if (pendingOps.current === 0) {
+      setDrinks(data.drinks);
+    }
+  }, [slug]);
 
   useEffect(() => {
     let cancelled = false;
@@ -84,13 +80,6 @@ export default function SessionPage() {
     };
   }, [slug, router]);
 
-  async function fetchDrinks() {
-    const res = await fetch(`/api/drinks?slug=${slug}`);
-    if (!res.ok) return;
-    const data = await res.json();
-    setDrinks(data.drinks);
-  }
-
   function showToastMsg(msg: string, undoFn: () => void) {
     if (toastTimer.current) clearTimeout(toastTimer.current);
     setToast({ msg, undoFn });
@@ -100,6 +89,8 @@ export default function SessionPage() {
   async function addDrink(name: string, category?: string) {
     setShowPicker(false);
     vibrate();
+    pendingOps.current++;
+
     const existing = drinks.find((d) => d.name === name);
     if (existing) {
       setDrinks((prev) =>
@@ -112,76 +103,99 @@ export default function SessionPage() {
       ]);
     }
 
-    const res = await fetch("/api/drinks", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ slug, name, category }),
-    });
+    try {
+      const res = await fetch("/api/drinks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug, name, category }),
+      });
 
-    if (!res.ok) {
-      fetchDrinks();
-      return;
-    }
+      if (!res.ok) {
+        pendingOps.current--;
+        fetchDrinks();
+        return;
+      }
 
-    if (!existing) {
-      const data = await res.json();
-      if (data.drink) {
-        setDrinks((prev) =>
-          prev.map((d) =>
-            d.name === name && d.id.startsWith("temp") ? { ...d, id: data.drink.id } : d
-          )
-        );
+      if (!existing) {
+        const data = await res.json();
+        if (data.drink) {
+          setDrinks((prev) =>
+            prev.map((d) =>
+              d.name === name && d.id.startsWith("temp") ? { ...d, id: data.drink.id } : d
+            )
+          );
+          showToastMsg(`${name} +1`, async () => {
+            await fetch("/api/drinks", {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ slug, drinkId: data.drink.id, delta: -1 }),
+            });
+            fetchDrinks();
+          });
+        }
+      } else {
         showToastMsg(`${name} +1`, async () => {
           await fetch("/api/drinks", {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ slug, drinkId: data.drink.id, delta: -1 }),
+            body: JSON.stringify({ slug, drinkId: existing.id, delta: -1 }),
           });
           fetchDrinks();
         });
       }
-    } else {
-      showToastMsg(`${name} +1`, async () => {
-        await fetch("/api/drinks", {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ slug, drinkId: existing.id, delta: -1 }),
-        });
+    } finally {
+      pendingOps.current--;
+      // Reconcile after all pending ops complete
+      if (pendingOps.current === 0) {
         fetchDrinks();
-      });
+      }
     }
   }
 
   async function increment(drink: Drink) {
     vibrate();
+    pendingOps.current++;
     setDrinks((prev) => prev.map((d) => (d.id === drink.id ? { ...d, count: d.count + 1 } : d)));
-    await fetch("/api/drinks", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ slug, name: drink.name, category: drink.category }),
-    });
-    showToastMsg(`${drink.name} +1`, async () => {
+
+    try {
       await fetch("/api/drinks", {
-        method: "PATCH",
+        method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug, drinkId: drink.id, delta: -1 }),
+        body: JSON.stringify({ slug, name: drink.name, category: drink.category }),
       });
-      fetchDrinks();
-    });
+      showToastMsg(`${drink.name} +1`, async () => {
+        await fetch("/api/drinks", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ slug, drinkId: drink.id, delta: -1 }),
+        });
+        fetchDrinks();
+      });
+    } finally {
+      pendingOps.current--;
+      if (pendingOps.current === 0) fetchDrinks();
+    }
   }
 
   async function decrement(drink: Drink) {
     vibrate();
+    pendingOps.current++;
     if (drink.count <= 1) {
       setDrinks((prev) => prev.filter((d) => d.id !== drink.id));
     } else {
       setDrinks((prev) => prev.map((d) => (d.id === drink.id ? { ...d, count: d.count - 1 } : d)));
     }
-    await fetch("/api/drinks", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ slug, drinkId: drink.id, delta: -1 }),
-    });
+
+    try {
+      await fetch("/api/drinks", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug, drinkId: drink.id, delta: -1 }),
+      });
+    } finally {
+      pendingOps.current--;
+      if (pendingOps.current === 0) fetchDrinks();
+    }
   }
 
   const total = drinks.reduce((sum, d) => sum + d.count, 0);
@@ -205,6 +219,9 @@ export default function SessionPage() {
           </Button>
         </div>
         <div className="absolute right-0 top-0 flex items-center gap-1">
+          <Button variant="ghost" size="sm" onPress={() => setShowQr(true)} aria-label="QR Code">
+            📱
+          </Button>
           <Button
             variant="ghost"
             size="sm"
@@ -305,190 +322,28 @@ export default function SessionPage() {
           onClose={() => setShowPicker(false)}
         />
       )}
-    </div>
-  );
-}
 
-function DrinkCard({
-  drink,
-  onTap,
-  onLongPress,
-}: {
-  drink: Drink;
-  onTap: () => void;
-  onLongPress: () => void;
-}) {
-  const timerRef = useRef<NodeJS.Timeout>(null);
-  const longPressed = useRef(false);
-  const isTouchDevice = useRef(false);
-
-  const handleTouchStart = () => {
-    isTouchDevice.current = true;
-    longPressed.current = false;
-    timerRef.current = setTimeout(() => {
-      longPressed.current = true;
-      onLongPress();
-    }, 500);
-  };
-  const handleTouchEnd = () => {
-    if (timerRef.current) clearTimeout(timerRef.current);
-    if (!longPressed.current) onTap();
-  };
-  const handleMouseDown = () => {
-    if (isTouchDevice.current) return;
-    longPressed.current = false;
-    timerRef.current = setTimeout(() => {
-      longPressed.current = true;
-      onLongPress();
-    }, 500);
-  };
-  const handleMouseUp = () => {
-    if (isTouchDevice.current) return;
-    if (timerRef.current) clearTimeout(timerRef.current);
-    if (!longPressed.current) onTap();
-  };
-
-  return (
-    <Card>
-      <button
-        type="button"
-        className="w-full p-4 flex items-center justify-between select-none cursor-pointer active:scale-[0.98] transition-transform"
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-        onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}
-        onContextMenu={(e) => e.preventDefault()}
-        aria-label={`${drink.name}, ${drink.count}. Tap to add, long press to remove`}
-      >
-        <div className="flex items-center gap-2">
-          <Chip size="sm">{categoryEmoji(drink.category)}</Chip>
-          <span className="text-lg font-medium">{drink.name}</span>
-        </div>
-        <span className="text-3xl font-bold tabular-nums">{drink.count}</span>
-      </button>
-    </Card>
-  );
-}
-
-function DrinkPicker({
-  menuItems,
-  currentDrinks,
-  onSelect,
-  onClose,
-}: {
-  menuItems: MenuItem[];
-  currentDrinks: Drink[];
-  onSelect: (name: string, category?: string) => void;
-  onClose: () => void;
-}) {
-  const [search, setSearch] = useState("");
-
-  const currentNames = new Set(currentDrinks.map((d) => d.name));
-  const filtered = menuItems.filter(
-    (item) => item.name.toLowerCase().includes(search.toLowerCase()) && !currentNames.has(item.name)
-  );
-  const grouped = filtered.reduce<Record<string, MenuItem[]>>((acc, item) => {
-    const cat = item.category || "other";
-    if (!acc[cat]) acc[cat] = [];
-    acc[cat].push(item);
-    return acc;
-  }, {});
-  const showAddCustom =
-    search.trim().length > 0 &&
-    !menuItems.some((item) => item.name.toLowerCase() === search.trim().toLowerCase());
-
-  return (
-    <div
-      className="fixed inset-0 bg-black/60 z-50 flex flex-col"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
-    >
-      <div className="bg-surface rounded-t-2xl mt-12 flex-1 overflow-y-auto overscroll-contain p-4">
-        <div className="w-10 h-1 bg-muted/40 rounded-full mx-auto mb-3" />
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">Pick a drink</h2>
-          <Button variant="ghost" size="sm" onPress={onClose} aria-label="Close">
-            ×
-          </Button>
-        </div>
-
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (search.trim()) onSelect(search.trim());
-          }}
-          className="mb-4"
+      {/* QR Code modal */}
+      {showQr && (
+        <div
+          className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-6"
+          onClick={() => setShowQr(false)}
         >
-          <Input
-            className="w-full"
-            placeholder="Search or type a new drink…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            autoFocus
-          />
-        </form>
-
-        {showAddCustom && (
-          <Button
-            variant="ghost"
-            className="w-full mb-4 border border-accent/50 text-accent"
-            onPress={() => onSelect(search.trim())}
+          <div
+            className="bg-surface rounded-2xl p-6 text-center max-w-xs w-full"
+            onClick={(e) => e.stopPropagation()}
           >
-            + Add &quot;{search.trim()}&quot;
-          </Button>
-        )}
-
-        {Object.entries(grouped).map(([category, items]) => (
-          <div key={category} className="mb-4">
-            <div className="flex items-center gap-2 mb-2">
-              <Chip size="sm">{CATEGORY_EMOJI[category] || "🍹"}</Chip>
-              <span className="text-sm text-muted uppercase">{category}</span>
-            </div>
-            <div className="space-y-1">
-              {items.map((item) => (
-                <Card key={item.name}>
-                  <button
-                    type="button"
-                    onClick={() => onSelect(item.name, item.category)}
-                    className="w-full text-left p-3 cursor-pointer"
-                  >
-                    {item.name}
-                  </button>
-                </Card>
-              ))}
-            </div>
+            <h3 className="text-lg font-bold mb-4">Scan to join</h3>
+            <QrCode url={typeof window !== "undefined" ? window.location.href : ""} />
+            <p className="text-sm text-muted mt-4 font-mono">{slug}</p>
+            <Button variant="ghost" size="sm" className="mt-4" onPress={() => setShowQr(false)}>
+              Close
+            </Button>
           </div>
-        ))}
+        </div>
+      )}
 
-        {!filtered.length && !showAddCustom && !search && currentDrinks.length === 0 && (
-          <div className="text-center mt-12">
-            <p className="text-4xl mb-3">🔍</p>
-            <p className="text-muted">Type a drink name above</p>
-            <p className="text-muted text-sm mt-1">to search or add it</p>
-          </div>
-        )}
-
-        {currentDrinks.length > 0 && (
-          <div className="mb-4">
-            <h3 className="text-sm text-muted uppercase mb-2">Already ordered · tap for +1</h3>
-            <div className="space-y-1">
-              {currentDrinks.map((d) => (
-                <Card key={d.id}>
-                  <button
-                    type="button"
-                    onClick={() => onSelect(d.name, d.category || undefined)}
-                    className="w-full text-left p-3 cursor-pointer flex justify-between"
-                  >
-                    <span>{d.name}</span>
-                    <span className="text-muted">×{d.count}</span>
-                  </button>
-                </Card>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
+      <PwaInstallPrompt />
     </div>
   );
 }

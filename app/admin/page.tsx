@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Button, Input, Card } from "@heroui/react";
+import { CATEGORIES } from "@/lib/constants";
 
 type MenuItem = { name: string; category: string };
 type BarMenu = { id: string; barName: string; items: MenuItem[]; createdAt: string };
@@ -52,7 +53,7 @@ export default function AdminPage() {
     load();
   }
 
-  const categories = ["beer", "cocktail", "wine", "spirit", "soft", "food", "other"];
+  const categories = CATEGORIES;
 
   async function saveItems(id: string) {
     const items = editRows.filter((r) => r.name.trim());

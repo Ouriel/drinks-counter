@@ -1,5 +1,6 @@
 import { db, barMenus, sessions, drinks, normalizeMenuItems } from "@/lib/db";
 import { sql, count, desc } from "drizzle-orm";
+import { CATEGORY_EMOJI } from "@/lib/constants";
 
 export const dynamic = "force-dynamic";
 
@@ -34,16 +35,6 @@ export default async function StatsPage() {
     itemCount: normalizeMenuItems(b.items).length,
   }));
 
-  const EMOJI: Record<string, string> = {
-    beer: "🍺",
-    wine: "🍷",
-    cocktail: "🍸",
-    spirit: "🥃",
-    soft: "🥤",
-    food: "🍕",
-    other: "🍹",
-  };
-
   return (
     <div className="min-h-screen bg-background text-foreground p-6">
       <h1 className="text-2xl font-bold mb-6">📊 TipsyTap Stats</h1>
@@ -72,7 +63,7 @@ export default async function StatsPage() {
                 key={c.category || "other"}
                 className="bg-surface rounded-lg px-3 py-2 flex items-center gap-2"
               >
-                <span className="text-lg">{EMOJI[c.category || "other"] || "🍹"}</span>
+                <span className="text-lg">{CATEGORY_EMOJI[c.category || "other"] || "🍹"}</span>
                 <span className="text-sm flex-1">{c.category || "other"}</span>
                 <span className="font-bold tabular-nums">{c.total}</span>
               </div>

@@ -3,24 +3,17 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Button, Card, Chip, Spinner } from "@heroui/react";
+import { CATEGORY_EMOJI } from "@/lib/constants";
 
 type Drink = { name: string; count: number; category: string | null; createdAt: string };
-
-const CATEGORY_EMOJI: Record<string, string> = {
-  beer: "🍺",
-  wine: "🍷",
-  cocktail: "🍸",
-  spirit: "🥃",
-  soft: "🥤",
-  food: "🍕",
-  other: "🍹",
-};
 
 export default function SummaryPage() {
   const { slug } = useParams<{ slug: string }>();
   const [drinks, setDrinks] = useState<Drink[]>([]);
   const [barName, setBarName] = useState("");
   const [loading, setLoading] = useState(true);
+  const [expired, setExpired] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -28,7 +21,12 @@ export default function SummaryPage() {
         fetch(`/api/drinks?slug=${slug}`),
         fetch(`/api/sessions?slug=${slug}`),
       ]);
-      if (dRes.ok) setDrinks((await dRes.json()).drinks);
+      if (!dRes.ok) {
+        setExpired(true);
+        setLoading(false);
+        return;
+      }
+      setDrinks((await dRes.json()).drinks);
       if (sRes.ok) {
         const s = await sRes.json();
         if (s.session?.barName) setBarName(s.session.barName);
@@ -42,6 +40,25 @@ export default function SummaryPage() {
     return (
       <div className="flex items-center justify-center h-screen">
         <Spinner size="lg" />
+      </div>
+    );
+  }
+
+  if (expired) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-6">
+        <Card className="w-full max-w-sm">
+          <div className="p-6 text-center">
+            <p className="text-5xl mb-4">⏰</p>
+            <h1 className="text-xl font-bold mb-2">Session expired</h1>
+            <p className="text-muted">
+              This session has expired (48h limit). Start a new evening to keep counting!
+            </p>
+            <Button variant="primary" className="mt-6" onPress={() => (window.location.href = "/")}>
+              New evening
+            </Button>
+          </div>
+        </Card>
       </div>
     );
   }
@@ -69,6 +86,25 @@ export default function SummaryPage() {
     durationMins >= 60
       ? `${Math.floor(durationMins / 60)}h${durationMins % 60 > 0 ? `${durationMins % 60}m` : ""}`
       : `${durationMins}m`;
+
+  function copyAsText() {
+    const lines = drinks
+      .sort((a, b) => b.count - a.count)
+      .map((d) => `${CATEGORY_EMOJI[d.category || "other"] || "🍹"} ${d.name} ×${d.count}`);
+    const text = [
+      `🍻 ${total} drinks${barName ? ` at ${barName}` : ""}`,
+      durationMins > 0 ? `⏱ ${durationStr}` : "",
+      "",
+      ...lines,
+      "",
+      "— tipsy-tap.vercel.app",
+    ]
+      .filter(Boolean)
+      .join("\n");
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-background">
@@ -141,6 +177,9 @@ export default function SummaryPage() {
           }}
         >
           Share 📤
+        </Button>
+        <Button variant="ghost" onPress={copyAsText}>
+          {copied ? "Copied ✓" : "Copy text 📋"}
         </Button>
         <Button variant="ghost" onPress={() => window.history.back()}>
           Back

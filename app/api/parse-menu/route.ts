@@ -5,7 +5,30 @@ import { getVisionModel } from "@/lib/ai";
 
 const MAX_FILE_SIZE = 4 * 1024 * 1024; // 4MB
 
+// Simple in-memory rate limiter: max 5 requests per IP per minute
+const rateMap = new Map<string, { count: number; resetAt: number }>();
+const RATE_LIMIT = 5;
+const RATE_WINDOW_MS = 60_000;
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const entry = rateMap.get(ip);
+  if (!entry || now > entry.resetAt) {
+    rateMap.set(ip, { count: 1, resetAt: now + RATE_WINDOW_MS });
+    return false;
+  }
+  entry.count++;
+  return entry.count > RATE_LIMIT;
+}
+
 export async function POST(req: NextRequest) {
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  if (isRateLimited(ip)) {
+    return NextResponse.json(
+      { error: "Too many requests. Please wait a moment." },
+      { status: 429 }
+    );
+  }
   const formData = await req.formData();
   const file = formData.get("photo") as File;
   if (!file) return NextResponse.json({ error: "No photo" }, { status: 400 });

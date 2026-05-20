@@ -28,6 +28,28 @@
 - Bar name is editable in edit mode (Input field above items list)
 - HeroUI v3 Select is too complex (React Aria primitives), used styled native `<select>` instead
 
+### Bug Fixes
+
+- Expired session summary shows friendly message + "New evening" button instead of empty state
+- Replaced alert() with ErrorToast component (fixed position, auto-dismiss, closeable)
+- Race condition: pendingOps ref prevents server reconciliation during rapid taps
+
+### UX Improvements
+
+- Drink picker: "Already ordered" section moved to TOP for quick +1
+- Drink cards show visual `+` affordance on the right
+- Bar search: shows "No results — take a photo!" guidance when empty
+- QR code modal (📱 button) for sharing session with friends at the table
+- Copy as text button on summary page (formatted drink list for group chats)
+- PWA install prompt (beforeinstallprompt, dismissible, session-persisted)
+
+### Code Quality
+
+- Extracted CATEGORY_EMOJI + CATEGORIES to `lib/constants.ts` (was duplicated in 4 files)
+- Extracted DrinkCard and DrinkPicker to `components/` directory
+- Rate limiting on /api/parse-menu: 5 requests/IP/minute (in-memory)
+- Added `qrcode-generator` dependency for QR code SVG generation
+
 ### Cron Cleanup
 
 - Configured in vercel.json: daily at 06:00 UTC (`/api/cron/cleanup`)
