@@ -9,6 +9,8 @@ type BarMenu = { id: string; barName: string; items: MenuItem[]; createdAt: stri
 type Stats = { totalBarMenus: number; totalSessions: number; totalDrinks: number };
 
 export default function AdminPage() {
+  // Note: sessionStorage is cleared on tab close. Acceptable for admin-only page.
+  // XSS would expose it, but admin is not a high-value target in this app.
   const [secret, setSecret] = useState(() => {
     if (typeof window !== "undefined") return sessionStorage.getItem("admin-secret") || "";
     return "";

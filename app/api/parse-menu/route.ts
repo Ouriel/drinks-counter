@@ -12,6 +12,12 @@ const RATE_WINDOW_MS = 60_000;
 
 function isRateLimited(ip: string): boolean {
   const now = Date.now();
+  // Periodic cleanup: remove expired entries
+  if (rateMap.size > 100) {
+    for (const [key, entry] of rateMap) {
+      if (now > entry.resetAt) rateMap.delete(key);
+    }
+  }
   const entry = rateMap.get(ip);
   if (!entry || now > entry.resetAt) {
     rateMap.set(ip, { count: 1, resetAt: now + RATE_WINDOW_MS });
@@ -94,6 +100,6 @@ Rules:
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     console.error("Menu parsing failed:", msg);
-    return NextResponse.json({ items: [], error: msg }, { status: 200 });
+    return NextResponse.json({ error: "Menu parsing failed", items: [] }, { status: 500 });
   }
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button, Input, Card, Chip } from "@heroui/react";
 import { CATEGORY_EMOJI } from "@/lib/constants";
 import type { Drink } from "./DrinkCard";
@@ -19,6 +19,31 @@ export function DrinkPicker({
   onClose: () => void;
 }) {
   const [search, setSearch] = useState("");
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Close on Escape + trap focus
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+      if (e.key === "Tab" && containerRef.current) {
+        const focusable = containerRef.current.querySelectorAll<HTMLElement>(
+          'button, input, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [onClose]);
 
   const currentNames = new Set(currentDrinks.map((d) => d.name));
   const filtered = menuItems.filter(
@@ -41,7 +66,10 @@ export function DrinkPicker({
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="bg-surface rounded-t-2xl mt-12 flex-1 overflow-y-auto overscroll-contain p-4">
+      <div
+        ref={containerRef}
+        className="bg-surface rounded-t-2xl mt-12 flex-1 overflow-y-auto overscroll-contain p-4"
+      >
         <div className="w-10 h-1 bg-muted/40 rounded-full mx-auto mb-3" />
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold">Pick a drink</h2>

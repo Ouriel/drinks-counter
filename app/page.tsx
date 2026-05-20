@@ -67,24 +67,31 @@ function HomeContent() {
       return;
     }
     debounceRef.current = setTimeout(async () => {
-      // Search existing DB
-      const res = await fetch(`/api/menus?q=${encodeURIComponent(q)}`);
-      const data = await res.json();
-      setBarSuggestions(data.menus);
+      try {
+        // Search existing DB
+        const res = await fetch(`/api/menus?q=${encodeURIComponent(q)}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        setBarSuggestions(data.menus);
 
-      // Search OSM if no DB results
-      if (data.menus.length === 0) {
-        const geo = geoRef.current;
-        const params = new URLSearchParams({ q });
-        if (geo) {
-          params.set("lat", String(geo.lat));
-          params.set("lng", String(geo.lng));
+        // Search OSM if no DB results
+        if (data.menus.length === 0) {
+          const geo = geoRef.current;
+          const params = new URLSearchParams({ q });
+          if (geo) {
+            params.set("lat", String(geo.lat));
+            params.set("lng", String(geo.lng));
+          }
+          const osmRes = await fetch(`/api/bars/search?${params}`);
+          if (osmRes.ok) {
+            const osmData = await osmRes.json();
+            setOsmResults(osmData.results || []);
+          }
+        } else {
+          setOsmResults([]);
         }
-        const osmRes = await fetch(`/api/bars/search?${params}`);
-        const osmData = await osmRes.json();
-        setOsmResults(osmData.results || []);
-      } else {
-        setOsmResults([]);
+      } catch {
+        // Network error — silently ignore for search
       }
     }, 300);
   };

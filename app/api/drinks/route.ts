@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db, drinks, sessions, barMenus, normalizeMenuItems } from "@/lib/db";
 import { eq, and, sql } from "drizzle-orm";
 import { sanitizeDrinkName } from "@/lib/sanitize";
+import { addDrinkSchema, patchDrinkSchema, parseBody } from "@/lib/schemas";
 
 // GET drinks for a session
 export async function GET(req: NextRequest) {
@@ -21,8 +22,10 @@ export async function GET(req: NextRequest) {
 
 // POST: add a new drink or increment existing
 export async function POST(req: NextRequest) {
-  const { slug, name, category } = await req.json();
-  if (!slug || !name) return NextResponse.json({ error: "Missing fields" }, { status: 400 });
+  const body = await req.json();
+  const parsed = parseBody(addDrinkSchema, body);
+  if ("error" in parsed) return NextResponse.json({ error: parsed.error }, { status: 400 });
+  const { slug, name, category } = parsed.data;
 
   const cleanName = sanitizeDrinkName(name);
   if (!cleanName) return NextResponse.json({ error: "Invalid drink name" }, { status: 400 });
@@ -76,10 +79,10 @@ export async function POST(req: NextRequest) {
 
 // PATCH: increment or decrement (with session ownership check)
 export async function PATCH(req: NextRequest) {
-  const { slug, drinkId, delta } = await req.json();
-  if (!slug || !drinkId) return NextResponse.json({ error: "Missing fields" }, { status: 400 });
-  if (delta !== 1 && delta !== -1)
-    return NextResponse.json({ error: "Invalid delta" }, { status: 400 });
+  const body = await req.json();
+  const parsed = parseBody(patchDrinkSchema, body);
+  if ("error" in parsed) return NextResponse.json({ error: parsed.error }, { status: 400 });
+  const { slug, drinkId, delta } = parsed.data;
 
   const [session] = await db.select().from(sessions).where(eq(sessions.slug, slug)).limit(1);
   if (!session || session.expiresAt < new Date()) {
@@ -102,7 +105,7 @@ export async function PATCH(req: NextRequest) {
   await db
     .update(drinks)
     .set({ count: sql`${drinks.count} + ${delta}` })
-    .where(eq(drinks.id, drinkId));
+    .where(and(eq(drinks.id, drinkId), sql`${drinks.count} > 0`));
 
   return NextResponse.json({ ok: true });
 }

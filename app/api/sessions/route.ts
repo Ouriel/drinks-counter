@@ -4,9 +4,13 @@ import type { MenuItem } from "@/lib/db";
 import { generateSlug } from "@/lib/slugs";
 import { sanitizeBarName } from "@/lib/sanitize";
 import { eq } from "drizzle-orm";
+import { createSessionSchema, parseBody } from "@/lib/schemas";
 
 export async function POST(req: NextRequest) {
-  const { barName, menuItems, slug: preferredSlug } = await req.json();
+  const body = await req.json();
+  const parsed = parseBody(createSessionSchema, body);
+  if ("error" in parsed) return NextResponse.json({ error: parsed.error }, { status: 400 });
+  const { barName, menuItems, slug: preferredSlug } = parsed.data;
 
   let barMenuId: string | null = null;
 

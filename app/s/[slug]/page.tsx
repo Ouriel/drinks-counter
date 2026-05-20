@@ -91,7 +91,7 @@ export default function SessionPage() {
     vibrate();
     pendingOps.current++;
 
-    const existing = drinks.find((d) => d.name === name);
+    const existing = drinks.find((d) => d.name.toLowerCase() === name.toLowerCase());
     if (existing) {
       setDrinks((prev) =>
         prev.map((d) => (d.id === existing.id ? { ...d, count: d.count + 1 } : d))
@@ -158,11 +158,22 @@ export default function SessionPage() {
     setDrinks((prev) => prev.map((d) => (d.id === drink.id ? { ...d, count: d.count + 1 } : d)));
 
     try {
-      await fetch("/api/drinks", {
+      const res = await fetch("/api/drinks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ slug, name: drink.name, category: drink.category }),
       });
+      if (!res.ok) {
+        if (res.status === 404) {
+          showToastMsg("Session expired", () => {});
+          return;
+        }
+        // Rollback optimistic update
+        setDrinks((prev) =>
+          prev.map((d) => (d.id === drink.id ? { ...d, count: d.count - 1 } : d))
+        );
+        return;
+      }
       showToastMsg(`${drink.name} +1`, async () => {
         await fetch("/api/drinks", {
           method: "PATCH",
@@ -171,6 +182,8 @@ export default function SessionPage() {
         });
         fetchDrinks();
       });
+    } catch {
+      setDrinks((prev) => prev.map((d) => (d.id === drink.id ? { ...d, count: d.count - 1 } : d)));
     } finally {
       pendingOps.current--;
       if (pendingOps.current === 0) fetchDrinks();
@@ -180,6 +193,7 @@ export default function SessionPage() {
   async function decrement(drink: Drink) {
     vibrate();
     pendingOps.current++;
+    const prevCount = drink.count;
     if (drink.count <= 1) {
       setDrinks((prev) => prev.filter((d) => d.id !== drink.id));
     } else {
@@ -187,16 +201,37 @@ export default function SessionPage() {
     }
 
     try {
-      await fetch("/api/drinks", {
+      const res = await fetch("/api/drinks", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ slug, drinkId: drink.id, delta: -1 }),
+      });
+      if (!res.ok) {
+        // Rollback
+        setDrinks((prev) => {
+          const exists = prev.find((d) => d.id === drink.id);
+          if (exists) return prev.map((d) => (d.id === drink.id ? { ...d, count: prevCount } : d));
+          return [...prev, { ...drink, count: prevCount }];
+        });
+      }
+    } catch {
+      setDrinks((prev) => {
+        const exists = prev.find((d) => d.id === drink.id);
+        if (exists) return prev.map((d) => (d.id === drink.id ? { ...d, count: prevCount } : d));
+        return [...prev, { ...drink, count: prevCount }];
       });
     } finally {
       pendingOps.current--;
       if (pendingOps.current === 0) fetchDrinks();
     }
   }
+
+  // Re-render elapsed timer every 60s
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setTick((t) => t + 1), 60_000);
+    return () => clearInterval(id);
+  }, []);
 
   const total = drinks.reduce((sum, d) => sum + d.count, 0);
   const elapsed = formatElapsed(drinks);
@@ -328,6 +363,10 @@ export default function SessionPage() {
         <div
           className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-6"
           onClick={() => setShowQr(false)}
+          onKeyDown={(e) => e.key === "Escape" && setShowQr(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-label="QR Code"
         >
           <div
             className="bg-surface rounded-2xl p-6 text-center max-w-xs w-full"

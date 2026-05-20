@@ -2,12 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { db, barMenus, sessions, drinks, normalizeMenuItems } from "@/lib/db";
 import type { MenuItem } from "@/lib/db";
 import { eq, sql, count } from "drizzle-orm";
+import { verifySecret } from "@/lib/auth";
 
 function checkAuth(req: NextRequest) {
-  const secret = process.env.ADMIN_SECRET;
-  if (!secret) return false;
-  const auth = req.headers.get("authorization");
-  return auth === `Bearer ${secret}`;
+  return verifySecret(req.headers.get("authorization"), process.env.ADMIN_SECRET);
 }
 
 export async function GET(req: NextRequest) {
