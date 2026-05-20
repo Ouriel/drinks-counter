@@ -65,7 +65,10 @@ export async function POST(req: NextRequest) {
       .limit(1);
     if (menu) {
       const currentItems = normalizeMenuItems(menu.items);
-      if (!currentItems.some((i) => i.name.toLowerCase() === cleanName)) {
+      if (
+        currentItems.length < 200 &&
+        !currentItems.some((i) => i.name.toLowerCase() === cleanName)
+      ) {
         await db
           .update(barMenus)
           .set({ items: [...currentItems, { name: cleanName, category: category || "other" }] })
@@ -97,15 +100,26 @@ export async function PATCH(req: NextRequest) {
 
   if (!drink) return NextResponse.json({ error: "Drink not found" }, { status: 404 });
 
-  if (delta === -1 && drink.count <= 1) {
-    await db.delete(drinks).where(eq(drinks.id, drinkId));
-    return NextResponse.json({ deleted: true });
+  if (delta === -1) {
+    // Atomic: delete if count <= 1, otherwise decrement
+    const deleted = await db
+      .delete(drinks)
+      .where(and(eq(drinks.id, drinkId), sql`${drinks.count} <= 1`))
+      .returning();
+    if (deleted.length > 0) {
+      return NextResponse.json({ deleted: true });
+    }
+    await db
+      .update(drinks)
+      .set({ count: sql`${drinks.count} - 1` })
+      .where(and(eq(drinks.id, drinkId), sql`${drinks.count} > 1`));
+    return NextResponse.json({ ok: true });
   }
 
   await db
     .update(drinks)
-    .set({ count: sql`${drinks.count} + ${delta}` })
-    .where(and(eq(drinks.id, drinkId), sql`${drinks.count} > 0`));
+    .set({ count: sql`${drinks.count} + 1` })
+    .where(eq(drinks.id, drinkId));
 
   return NextResponse.json({ ok: true });
 }

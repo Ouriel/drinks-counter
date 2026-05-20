@@ -88,7 +88,7 @@ export default function SummaryPage() {
       : `${durationMins}m`;
 
   function copyAsText() {
-    const lines = drinks
+    const lines = [...drinks]
       .sort((a, b) => b.count - a.count)
       .map((d) => `${CATEGORY_EMOJI[d.category || "other"] || "🍹"} ${d.name} ×${d.count}`);
     const text = [
@@ -143,7 +143,7 @@ export default function SummaryPage() {
 
           {/* Top drinks */}
           <div className="space-y-1">
-            {drinks
+            {[...drinks]
               .sort((a, b) => b.count - a.count)
               .slice(0, 5)
               .map((d) => (

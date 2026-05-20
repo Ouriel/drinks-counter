@@ -30,6 +30,17 @@ function formatElapsed(drinks: Drink[]): string | null {
   return h > 0 ? `${h}h${m > 0 ? `${m}m` : ""}` : `${m}m`;
 }
 
+function ElapsedTimer({ drinks }: { drinks: Drink[] }) {
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setTick((t) => t + 1), 60_000);
+    return () => clearInterval(id);
+  }, []);
+  const elapsed = formatElapsed(drinks);
+  if (!elapsed) return null;
+  return <> · ⏱ {elapsed}</>;
+}
+
 export default function SessionPage() {
   const { slug } = useParams<{ slug: string }>();
   const router = useRouter();
@@ -228,15 +239,7 @@ export default function SessionPage() {
     }
   }
 
-  // Re-render elapsed timer every 60s
-  const [, setTick] = useState(0);
-  useEffect(() => {
-    const id = setInterval(() => setTick((t) => t + 1), 60_000);
-    return () => clearInterval(id);
-  }, []);
-
   const total = drinks.reduce((sum, d) => sum + d.count, 0);
-  const elapsed = formatElapsed(drinks);
 
   if (loading) {
     return (
@@ -287,7 +290,7 @@ export default function SessionPage() {
         {barName && <p className="text-base mt-1 text-foreground/70">{barName}</p>}
         <p className="text-sm mt-0.5 font-mono text-muted">
           {slug}
-          {elapsed && ` · ⏱ ${elapsed}`}
+          <ElapsedTimer drinks={drinks} />
         </p>
       </div>
 

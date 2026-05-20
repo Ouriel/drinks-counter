@@ -65,6 +65,9 @@ export function DrinkPicker({
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Pick a drink"
     >
       <div
         ref={containerRef}

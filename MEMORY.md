@@ -115,6 +115,21 @@
 - `app/s/[slug]/summary/page.tsx` — evening summary (screenshot-friendly)
 - `app/api/bars/search/route.ts` — OSM Nominatim bar search
 
+## Code Quality Review (2026-05-20)
+
+- ✅ FIXED: Admin route PATCH/DELETE now uses adminPatchSchema + UUID validation
+- ✅ FIXED: Slug fields have regex constraint /^[a-z0-9-]+$/ + reserved path blocklist
+- ✅ FIXED: drinks.sort() in summary page no longer mutates state ([...drinks].sort())
+- ✅ FIXED: PATCH race condition resolved with atomic SQL (DELETE WHERE count<=1, UPDATE WHERE count>1)
+- ✅ FIXED: error.tsx/loading.tsx use theme-aware bg-background/text-foreground
+- ✅ FIXED: Stats page runs 6 queries in parallel with Promise.all
+- ✅ FIXED: DrinkPicker modal has role="dialog", aria-modal, aria-label
+- ✅ FIXED: Review step inputs have aria-label
+- ✅ FIXED: Slug space kept at 24K (3-part format) — sufficient with 48h TTL + cron cleanup
+- ✅ FIXED: Bar menu items capped at 200
+- ✅ FIXED: Timer extracted to ElapsedTimer component (no full page re-render)
+- Slug test updated to match new 4-part format
+
 ## CI/CD
 
 - Vitest: 20 tests
@@ -133,3 +148,16 @@
 - Not implemented — requires native app or complex OAuth flows
 - Alternative: screenshot-friendly summary page that users can share
 - Could revisit with a "copy as text" export for manual logging in health apps
+
+## Code Review (2026-05-20)
+
+- Admin PATCH/DELETE: no input validation (adminPatchSchema defined but unused)
+- Slug schema: no regex constraint, allows any characters (XSS/route collision risk)
+- summary/page.tsx: `drinks.sort()` mutates React state directly
+- PATCH race: concurrent -1 on count=2 can leave count=0 (never deleted)
+- error.tsx/loading.tsx: hardcoded dark colors, ignores theme
+- Stats page: 5 sequential DB queries (should be Promise.all)
+- DrinkPicker: missing role="dialog" aria-modal
+- Slug space: only 24,576 combos (32×32×24), 5 retries
+- Bar menu items: grow unbounded via POST drinks (no cap)
+- Timer setInterval re-renders entire session page every 60s

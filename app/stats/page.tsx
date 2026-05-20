@@ -5,30 +5,28 @@ import { CATEGORY_EMOJI } from "@/lib/constants";
 export const revalidate = 60;
 
 export default async function StatsPage() {
-  const [menuCount] = await db.select({ count: count() }).from(barMenus);
-  const [sessionCount] = await db.select({ count: count() }).from(sessions);
-  const [drinkTotal] = await db
-    .select({ total: sql<number>`COALESCE(SUM(${drinks.count}), 0)` })
-    .from(drinks);
-
-  const topDrinks = await db
-    .select({ name: drinks.name, total: sql<number>`SUM(${drinks.count})` })
-    .from(drinks)
-    .groupBy(drinks.name)
-    .orderBy(desc(sql`SUM(${drinks.count})`))
-    .limit(10);
-
-  const byCategory = await db
-    .select({ category: drinks.category, total: sql<number>`SUM(${drinks.count})` })
-    .from(drinks)
-    .groupBy(drinks.category)
-    .orderBy(desc(sql`SUM(${drinks.count})`));
-
-  const topBarsRaw = await db
-    .select()
-    .from(barMenus)
-    .orderBy(desc(sql`jsonb_array_length(${barMenus.items})`))
-    .limit(10);
+  const [[menuCount], [sessionCount], [drinkTotal], topDrinks, byCategory, topBarsRaw] =
+    await Promise.all([
+      db.select({ count: count() }).from(barMenus),
+      db.select({ count: count() }).from(sessions),
+      db.select({ total: sql<number>`COALESCE(SUM(${drinks.count}), 0)` }).from(drinks),
+      db
+        .select({ name: drinks.name, total: sql<number>`SUM(${drinks.count})` })
+        .from(drinks)
+        .groupBy(drinks.name)
+        .orderBy(desc(sql`SUM(${drinks.count})`))
+        .limit(10),
+      db
+        .select({ category: drinks.category, total: sql<number>`SUM(${drinks.count})` })
+        .from(drinks)
+        .groupBy(drinks.category)
+        .orderBy(desc(sql`SUM(${drinks.count})`)),
+      db
+        .select()
+        .from(barMenus)
+        .orderBy(desc(sql`jsonb_array_length(${barMenus.items})`))
+        .limit(10),
+    ]);
 
   const topBars = topBarsRaw.map((b) => ({
     barName: b.barName,

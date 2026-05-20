@@ -410,6 +410,7 @@ function HomeContent() {
                   value={item.name}
                   onChange={(e) => editItem(idx, e.target.value)}
                   className="flex-1 bg-transparent outline-none text-sm text-foreground"
+                  aria-label={`Edit drink name: ${item.name}`}
                 />
                 <Button
                   variant="ghost"

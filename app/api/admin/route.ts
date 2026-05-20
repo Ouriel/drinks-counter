@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db, barMenus, sessions, drinks, normalizeMenuItems } from "@/lib/db";
-import type { MenuItem } from "@/lib/db";
 import { eq, sql, count } from "drizzle-orm";
 import { verifySecret } from "@/lib/auth";
+import { adminPatchSchema, parseBody } from "@/lib/schemas";
+import { z } from "zod";
 
 function checkAuth(req: NextRequest) {
   return verifySecret(req.headers.get("authorization"), process.env.ADMIN_SECRET);
@@ -30,16 +31,14 @@ export async function GET(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   if (!checkAuth(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { id, items, barName } = await req.json();
-  if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
+  const body = await req.json();
+  const parsed = parseBody(adminPatchSchema, body);
+  if ("error" in parsed) return NextResponse.json({ error: parsed.error }, { status: 400 });
+  const { id, items, barName } = parsed.data;
 
-  const updates: { items?: MenuItem[]; barName?: string } = {};
-  if (Array.isArray(items)) {
-    updates.items = items.map((i: MenuItem | string) =>
-      typeof i === "string" ? { name: i, category: "other" } : i
-    );
-  }
-  if (typeof barName === "string") updates.barName = barName;
+  const updates: { items?: { name: string; category: string }[]; barName?: string } = {};
+  if (items) updates.items = items;
+  if (barName) updates.barName = barName;
 
   if (Object.keys(updates).length === 0) {
     return NextResponse.json({ error: "No valid fields to update" }, { status: 400 });
@@ -52,8 +51,10 @@ export async function PATCH(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   if (!checkAuth(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { id } = await req.json();
-  if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
+  const body = await req.json();
+  const parsed = parseBody(z.object({ id: z.string().uuid() }), body);
+  if ("error" in parsed) return NextResponse.json({ error: parsed.error }, { status: 400 });
+  const { id } = parsed.data;
 
   await db.update(sessions).set({ barMenuId: null }).where(eq(sessions.barMenuId, id));
   await db.delete(barMenus).where(eq(barMenus.id, id));
