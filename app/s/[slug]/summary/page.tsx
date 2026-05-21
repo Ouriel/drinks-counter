@@ -11,8 +11,8 @@ import {
   getPace,
   getPersonalBest,
 } from "@/lib/gamification";
-
-type Drink = { name: string; count: number; category: string | null; createdAt: string };
+import { api } from "@/lib/api";
+import type { Drink } from "@/lib/types";
 
 export default function SummaryPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -24,20 +24,17 @@ export default function SummaryPage() {
 
   useEffect(() => {
     async function load() {
-      const [dRes, sRes] = await Promise.all([
-        fetch(`/api/drinks?slug=${slug}`),
-        fetch(`/api/sessions?slug=${slug}`),
+      const [drinksData, sessionData] = await Promise.all([
+        api.getDrinks(slug),
+        api.getSession(slug),
       ]);
-      if (!dRes.ok) {
+      if (!drinksData) {
         setExpired(true);
         setLoading(false);
         return;
       }
-      setDrinks((await dRes.json()).drinks);
-      if (sRes.ok) {
-        const s = await sRes.json();
-        if (s.session?.barName) setBarName(s.session.barName);
-      }
+      setDrinks(drinksData.drinks);
+      if (sessionData?.session.barName) setBarName(sessionData.session.barName);
       setLoading(false);
     }
     load();
@@ -78,11 +75,11 @@ export default function SummaryPage() {
   }, {});
 
   const firstDrink = drinks.reduce<string | null>(
-    (e, d) => (!e || d.createdAt < e ? d.createdAt : e),
+    (e, d) => (!d.createdAt ? e : !e || d.createdAt < e ? d.createdAt : e),
     null
   );
   const lastDrink = drinks.reduce<string | null>(
-    (l, d) => (!l || d.createdAt > l ? d.createdAt : l),
+    (l, d) => (!d.createdAt ? l : !l || d.createdAt > l ? d.createdAt : l),
     null
   );
   const durationMins =
@@ -97,7 +94,10 @@ export default function SummaryPage() {
   function copyAsText() {
     const lines = [...drinks]
       .sort((a, b) => b.count - a.count)
-      .map((d) => `${CATEGORY_EMOJI[d.category || "other"] || "🍹"} ${d.name} ×${d.count}`);
+      .map(
+        (drink) =>
+          `${CATEGORY_EMOJI[drink.category || "other"] || "🍹"} ${drink.name} ×${drink.count}`
+      );
     const text = [
       `🍻 ${total} drinks${barName ? ` at ${titleCase(barName)}` : ""}`,
       durationMins > 0 ? `⏱ ${durationStr}` : "",
@@ -160,9 +160,9 @@ export default function SummaryPage() {
               <>
                 {badges.length > 0 && (
                   <div className="flex flex-wrap justify-center gap-2 mb-4">
-                    {badges.map((b) => (
-                      <span key={b.title} title={b.title} className="text-2xl">
-                        {b.emoji}
+                    {badges.map((badge) => (
+                      <span key={badge.title} title={badge.title} className="text-2xl">
+                        {badge.emoji}
                       </span>
                     ))}
                   </div>
@@ -178,9 +178,9 @@ export default function SummaryPage() {
                 {/* Achievements */}
                 {achievements.length > 0 && (
                   <div className="space-y-1 mb-4">
-                    {achievements.map((a) => (
-                      <p key={a.text} className="text-sm text-center">
-                        {a.emoji} {a.text}
+                    {achievements.map((achievement) => (
+                      <p key={achievement.text} className="text-sm text-center">
+                        {achievement.emoji} {achievement.text}
                       </p>
                     ))}
                   </div>
@@ -194,12 +194,12 @@ export default function SummaryPage() {
             {[...drinks]
               .sort((a, b) => b.count - a.count)
               .slice(0, 5)
-              .map((d) => (
-                <div key={d.name} className="flex justify-between text-sm px-2 py-1">
+              .map((drink) => (
+                <div key={drink.name} className="flex justify-between text-sm px-2 py-1">
                   <span>
-                    {CATEGORY_EMOJI[d.category || "other"] || "🍹"} {d.name}
+                    {CATEGORY_EMOJI[drink.category || "other"] || "🍹"} {drink.name}
                   </span>
-                  <span className="font-bold">×{d.count}</span>
+                  <span className="font-bold">×{drink.count}</span>
                 </div>
               ))}
           </div>

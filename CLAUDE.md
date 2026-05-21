@@ -2,30 +2,63 @@
 
 ## Quick Context
 
-Drinks counter PWA. Next.js 16 + HeroUI v3 + Neon Postgres + Gemini AI.
+Drinks counter PWA. Next.js 16 + HeroUI v3 + Neon Postgres + Gemini AI. Strict TypeScript, Zod everywhere.
 
 ## Before Making Changes
 
-1. Run `npx tsc --noEmit` to verify types
-2. Run `npm test` (26 tests, Vitest)
-3. Run `npx eslint . --ext .ts,.tsx`
-4. Run `npx prettier --check "**/*.{ts,tsx}"`
+1. `npx tsc --noEmit` — must pass clean
+2. `npm test` — 66 tests, all must pass
+3. `npx prettier --write` on every file you touch
+4. Check `lib/types.ts` before defining any type locally
 
-## Key Rules
+## Critical Rules
 
-- Use HeroUI v3 compound components: `Card` with `<button>` inside, `Chip` for badges, `Spinner` for loading
+### Types & Validation
+
+- Canonical types live in `lib/types.ts` (Drink, MenuItem) — import from there, never redefine
+- Client-side API calls go through `lib/api.ts` — typed helpers with Zod response validation
+- Server-side input validation via `lib/schemas.ts` (Zod)
+- Never `fetch().json()` without validation in components
+
+### React
+
+- useEffect ONLY for: DOM event subscriptions, timers, initial data fetch
+- NEVER useEffect for: derived state, reacting to state changes, event side effects
+- Use `onCloseRef` pattern to stabilize callback deps
+- Declaration order: useState → hooks → variables → useMemo → useCallback → useEffect
+- No abbreviated params: `(event)` not `(e)`, `(item)` not `(d)`, `(word)` not `(w)`
+
+### UI
+
+- All notifications via `toast()` from `@heroui/react` — never custom toast components
+- `Toast.Provider` is in layout.tsx (global)
+- Confetti fires on badge milestones via `onBadge` callback from `useOptimisticDrinks`
+- DrinkCard uses `useLongPress` from `react-aria` (not manual timer logic)
 - Button uses `onPress` not `onClick`
-- Never import `lib/db.ts` in test files (triggers DB connection). Use `lib/menu-items.ts` for pure logic.
-- All drink/bar names are lowercased via `lib/sanitize.ts`
-- `normalizeMenuItems()` handles legacy `string[]` → `MenuItem[]` conversion
-- Categories: beer, cocktail, wine, spirit, soft, food, other
-- Sessions expire after 48h. Slug = access token (no auth).
 
-## Architecture
+### Testing
 
-- `app/page.tsx` — Home (start → bar search → photo → review → create session)
-- `app/s/[slug]/page.tsx` — Session counter (tap +1, long press -1)
-- `app/s/[slug]/summary/page.tsx` — Evening summary (screenshot-friendly)
-- `app/api/bars/search/route.ts` — OSM Nominatim (geolocation-biased)
-- `app/api/parse-menu/route.ts` — AI menu extraction
-- `lib/menu-items.ts` — `MenuItem` type + `normalizeMenuItems()`
+- Every test must exercise real code — no placeholder assertions
+- Don't import `lib/db.ts` in tests (triggers DB connection)
+- Test pure functions: gamification, sanitize, schemas, slugs, auth, normalizeMenuItems
+
+## Key Files
+
+| File                         | Role                                                          |
+| ---------------------------- | ------------------------------------------------------------- |
+| `lib/types.ts`               | Canonical Drink, MenuItem types                               |
+| `lib/api.ts`                 | Typed fetch client + Zod response schemas                     |
+| `lib/useOptimisticDrinks.ts` | Hook: drinks state + optimistic updates + undo + gamification |
+| `lib/schemas.ts`             | Zod input validation for all API routes                       |
+| `lib/gamification.ts`        | Pure functions: badges, pace, nudges, achievements            |
+| `app/layout.tsx`             | Toast.Provider + PwaInstallPrompt                             |
+| `app/s/[slug]/error.tsx`     | Error boundary                                                |
+
+## Common Mistakes to Avoid
+
+- Don't add useEffect to react to state changes — put logic in the event handler that causes the change
+- Don't build custom notification UI — HeroUI toast handles queuing, stacking, auto-dismiss
+- Don't define types locally when they exist in lib/types.ts
+- Don't use `(e) =>` or `(d) =>` — spell out parameter names
+- Don't write tests that assert `null === null` or `Date.now() > Date.now() - 1000`
+- Don't forget to run prettier after editing

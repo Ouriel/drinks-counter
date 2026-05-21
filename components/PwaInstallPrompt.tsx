@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Button } from "@heroui/react";
 
 interface BeforeInstallPromptEvent extends Event {
@@ -8,27 +8,41 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
+function isStandalone() {
+  if (typeof window === "undefined") return false;
+  return (
+    window.matchMedia("(display-mode: standalone)").matches ||
+    (navigator as unknown as { standalone?: boolean }).standalone === true
+  );
+}
+
 export function PwaInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
-  const [dismissed, setDismissed] = useState(false);
+  const [visible, setVisible] = useState(true);
+  const timerRef = useRef<NodeJS.Timeout>(null);
 
+  // beforeinstallprompt is a one-shot browser event — useEffect is the only way to capture it
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    // Don't show if already dismissed this session
+    if (isStandalone()) return;
     if (sessionStorage.getItem("pwa-dismissed")) return;
 
-    const handler = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e as BeforeInstallPromptEvent);
+    const handler = (event: Event) => {
+      event.preventDefault();
+      setDeferredPrompt(event as BeforeInstallPromptEvent);
+      // Auto-dismiss after 8 seconds
+      timerRef.current = setTimeout(() => setVisible(false), 8000);
     };
     window.addEventListener("beforeinstallprompt", handler);
-    return () => window.removeEventListener("beforeinstallprompt", handler);
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handler);
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
   }, []);
 
-  if (!deferredPrompt || dismissed) return null;
+  if (!deferredPrompt || !visible) return null;
 
   return (
-    <div className="fixed bottom-20 left-4 right-4 bg-surface border border-border rounded-xl p-4 shadow-xl z-40 flex items-center gap-3">
+    <div className="fixed bottom-20 left-4 right-4 bg-surface border border-border rounded-xl p-4 shadow-xl z-40 flex items-center gap-3 animate-in fade-in slide-in-from-bottom-4">
       <div className="flex-1">
         <p className="font-medium text-sm">Install TipsyTap</p>
         <p className="text-xs text-muted">Add to home screen for quick access</p>
@@ -45,7 +59,7 @@ export function PwaInstallPrompt() {
       </Button>
       <button
         onClick={() => {
-          setDismissed(true);
+          setVisible(false);
           sessionStorage.setItem("pwa-dismissed", "1");
         }}
         className="text-muted text-lg"

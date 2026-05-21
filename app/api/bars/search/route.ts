@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
+// Simple rate limiter: 1 req/sec globally (Nominatim policy)
+let lastNominatimCall = 0;
+
 export async function GET(req: NextRequest) {
   const q = req.nextUrl.searchParams.get("q");
   const lat = req.nextUrl.searchParams.get("lat");
@@ -22,6 +25,12 @@ export async function GET(req: NextRequest) {
   }
 
   try {
+    const now = Date.now();
+    if (now - lastNominatimCall < 1000) {
+      return NextResponse.json({ results: [] });
+    }
+    lastNominatimCall = now;
+
     const res = await fetch(`https://nominatim.openstreetmap.org/search?${params.toString()}`, {
       headers: { "User-Agent": "TipsyTap/1.0 (drinks-counter app)" },
       next: { revalidate: 3600 },

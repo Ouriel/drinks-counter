@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { ThemeProvider } from "next-themes";
+import { Toast } from "@heroui/react";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { PwaInstallPrompt } from "@/components/PwaInstallPrompt";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -34,6 +36,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="bg-background text-foreground antialiased touch-manipulation min-h-screen">
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           {children}
+          <Toast.Provider placement="top" />
+          <PwaInstallPrompt />
         </ThemeProvider>
         <Analytics />
         <SpeedInsights />

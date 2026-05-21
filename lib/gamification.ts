@@ -1,4 +1,6 @@
-type Drink = { name: string; count: number; category: string | null; createdAt?: string };
+import type { Drink } from "@/lib/types";
+
+type DrinkLike = Pick<Drink, "name" | "count" | "category" | "createdAt">;
 
 // === MILESTONE BADGES ===
 
@@ -39,7 +41,7 @@ export function getSessionHue(total: number): string {
 
 export type Pace = { emoji: string; label: string };
 
-export function getPace(drinks: Drink[]): Pace | null {
+export function getPace(drinks: DrinkLike[]): Pace | null {
   const firstDrink = drinks.reduce<string | null>(
     (earliest, d) =>
       !earliest || (d.createdAt && d.createdAt < earliest) ? d.createdAt || earliest : earliest,
@@ -61,9 +63,9 @@ export function getPace(drinks: Drink[]): Pace | null {
 
 export type Achievement = { emoji: string; text: string };
 
-export function getDrinkAchievements(drinks: Drink[]): Achievement[] {
+export function getDrinkAchievements(drinks: DrinkLike[]): Achievement[] {
   const achievements: Achievement[] = [];
-  const categories = new Set(drinks.map((d) => d.category || "other"));
+  const categories = new Set(drinks.map((drink) => drink.category || "other"));
   const uniqueDrinks = drinks.length;
   const total = drinks.reduce((sum, d) => sum + d.count, 0);
 
@@ -81,19 +83,19 @@ export function getDrinkAchievements(drinks: Drink[]): Achievement[] {
   }
 
   // Signature drink: one drink with 4+ count
-  const signature = drinks.find((d) => d.count >= 4);
+  const signature = drinks.find((drink) => drink.count >= 4);
   if (signature) {
     achievements.push({ emoji: "⭐", text: `Signature: ${signature.name}` });
   }
 
   // Loyal: same drink 7+ times
-  const loyal = drinks.find((d) => d.count >= 7);
+  const loyal = drinks.find((drink) => drink.count >= 7);
   if (loyal) {
     achievements.push({ emoji: "💎", text: `Devoted to ${loyal.name}` });
   }
 
   // Wildcard: never ordered same drink twice (all counts = 1)
-  if (uniqueDrinks >= 4 && drinks.every((d) => d.count === 1)) {
+  if (uniqueDrinks >= 4 && drinks.every((drink) => drink.count === 1)) {
     achievements.push({ emoji: "🎲", text: "Wildcard — never the same drink twice!" });
   }
 

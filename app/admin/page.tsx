@@ -3,8 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button, Input, Card } from "@heroui/react";
 import { CATEGORIES } from "@/lib/constants";
-
-type MenuItem = { name: string; category: string };
+import type { MenuItem } from "@/lib/types";
 type BarMenu = { id: string; barName: string; items: MenuItem[]; createdAt: string };
 type Stats = { totalBarMenus: number; totalSessions: number; totalDrinks: number };
 
@@ -58,7 +57,7 @@ export default function AdminPage() {
   const categories = CATEGORIES;
 
   async function saveItems(id: string) {
-    const items = editRows.filter((r) => r.name.trim());
+    const items = editRows.filter((row) => row.name.trim());
     await fetch("/api/admin", {
       method: "PATCH",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${secret}` },
@@ -73,8 +72,8 @@ export default function AdminPage() {
       <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-6">
         <h1 className="text-2xl font-bold mb-6">Admin</h1>
         <form
-          onSubmit={(e) => {
-            e.preventDefault();
+          onSubmit={(event) => {
+            event.preventDefault();
             load();
           }}
           className="w-full max-w-xs space-y-3"
@@ -83,7 +82,7 @@ export default function AdminPage() {
             type="password"
             placeholder="Admin secret…"
             value={secret}
-            onChange={(e) => setSecret(e.target.value)}
+            onChange={(event) => setSecret(event.target.value)}
             className="w-full"
           />
           <Button variant="primary" size="lg" className="w-full" onPress={() => load()}>
@@ -153,7 +152,7 @@ export default function AdminPage() {
                   <Input
                     placeholder="Bar name"
                     value={editBarName}
-                    onChange={(e) => setEditBarName(e.target.value)}
+                    onChange={(event) => setEditBarName(event.target.value)}
                   />
                   <div className="space-y-1">
                     {editRows.map((row, i) => (
@@ -161,9 +160,9 @@ export default function AdminPage() {
                         <Input
                           placeholder="Drink name"
                           value={row.name}
-                          onChange={(e) => {
+                          onChange={(event) => {
                             const next = [...editRows];
-                            next[i] = { ...next[i], name: e.target.value };
+                            next[i] = { ...next[i], name: event.target.value };
                             setEditRows(next);
                           }}
                           className="flex-1"
@@ -171,16 +170,16 @@ export default function AdminPage() {
                         <select
                           aria-label="Category"
                           value={row.category}
-                          onChange={(e) => {
+                          onChange={(event) => {
                             const next = [...editRows];
-                            next[i] = { ...next[i], category: e.target.value };
+                            next[i] = { ...next[i], category: event.target.value };
                             setEditRows(next);
                           }}
                           className="w-32 bg-default-100 rounded-lg px-2 py-2 text-sm text-foreground outline-none"
                         >
-                          {categories.map((c) => (
-                            <option key={c} value={c}>
-                              {c}
+                          {categories.map((cat) => (
+                            <option key={cat} value={cat}>
+                              {cat}
                             </option>
                           ))}
                         </select>
@@ -212,7 +211,7 @@ export default function AdminPage() {
                 </div>
               ) : (
                 <p className="text-sm text-muted truncate">
-                  {menu.items.map((i) => i.name).join(", ")}
+                  {menu.items.map((item) => item.name).join(", ")}
                 </p>
               )}
             </div>

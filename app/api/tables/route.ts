@@ -23,7 +23,7 @@ async function uniqueNicknameForTable(tableId: string): Promise<string> {
     .select({ nickname: sessions.nickname })
     .from(sessions)
     .where(eq(sessions.tableId, tableId));
-  const taken = new Set(existing.map((e) => e.nickname));
+  const taken = new Set(existing.map((entry) => entry.nickname));
   for (let i = 0; i < 10; i++) {
     const nick = generateNickname();
     if (!taken.has(nick)) return nick;

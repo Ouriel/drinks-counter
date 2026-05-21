@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { sanitizeBarName, sanitizeDrinkName } from "@/lib/sanitize";
+import { sanitizeBarName, sanitizeDrinkName, titleCase } from "@/lib/sanitize";
 
 describe("sanitizeBarName", () => {
   it("trims and lowercases", () => {
@@ -49,5 +49,19 @@ describe("sanitizeDrinkName", () => {
 
   it("preserves special characters in drink names", () => {
     expect(sanitizeDrinkName("Piña Colada")).toBe("piña colada");
+  });
+});
+
+describe("titleCase", () => {
+  it("capitalizes each word", () => {
+    expect(titleCase("le petit bar")).toBe("Le Petit Bar");
+  });
+
+  it("handles single word", () => {
+    expect(titleCase("mojito")).toBe("Mojito");
+  });
+
+  it("handles empty string", () => {
+    expect(titleCase("")).toBe("");
   });
 });

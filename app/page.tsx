@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useRef, useEffect, Suspense } from "react";
+import { useState, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
-import { Button, Input, Card, Chip, Spinner } from "@heroui/react";
+import { Button, Input, Card, Chip, Spinner, toast } from "@heroui/react";
 import { ThemeSwitch } from "@/lib/theme-switch";
 import { CATEGORY_EMOJI } from "@/lib/constants";
-import imageCompression from "browser-image-compression";
+import { api } from "@/lib/api";
 
 export default function Home() {
   return (
@@ -43,20 +43,6 @@ function HomeContent() {
   const cameraRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<NodeJS.Timeout>(null);
   const geoRef = useRef<{ lat: number; lng: number } | null>(null);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-
-  // Get geolocation once on mount
-  useEffect(() => {
-    if (typeof navigator !== "undefined" && navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          geoRef.current = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-        },
-        () => {},
-        { timeout: 5000 }
-      );
-    }
-  }, []);
 
   const searchBars = (q: string) => {
     setBarName(q);
@@ -68,25 +54,30 @@ function HomeContent() {
     }
     debounceRef.current = setTimeout(async () => {
       try {
-        // Search existing DB
-        const res = await fetch(`/api/menus?q=${encodeURIComponent(q)}`);
-        if (!res.ok) return;
-        const data = await res.json();
+        const data = await api.searchMenus(q);
+        if (!data) return;
         setBarSuggestions(data.menus);
 
         // Search OSM if no DB results
         if (data.menus.length === 0) {
+          // Lazy geolocation: request only when needed for OSM search
+          if (!geoRef.current && navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+              (pos) => {
+                geoRef.current = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+              },
+              () => {},
+              { timeout: 5000 }
+            );
+          }
           const geo = geoRef.current;
           const params = new URLSearchParams({ q });
           if (geo) {
             params.set("lat", String(geo.lat));
             params.set("lng", String(geo.lng));
           }
-          const osmRes = await fetch(`/api/bars/search?${params}`);
-          if (osmRes.ok) {
-            const osmData = await osmRes.json();
-            setOsmResults(osmData.results || []);
-          }
+          const osmData = await api.searchBars(params);
+          setOsmResults(osmData?.results || []);
         } else {
           setOsmResults([]);
         }
@@ -96,24 +87,19 @@ function HomeContent() {
     }, 300);
   };
 
-  useEffect(() => {
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-    };
-  }, []);
-
   const selectBar = (bar: { barName: string; items: { name: string; category: string }[] }) => {
     setBarName(bar.barName);
     setBarSuggestions([]);
     setMenuItems(bar.items);
   };
 
-  const handlePhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
+  const handlePhoto = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
     if (!files.length) return;
     setParsing(true);
+    const { default: imageCompression } = await import("browser-image-compression");
     const allItems: { name: string; category: string }[] = [...menuItems];
-    const seen = new Set(allItems.map((i) => i.name.toLowerCase()));
+    const seen = new Set(allItems.map((item) => item.name.toLowerCase()));
 
     for (const file of files) {
       const compressed = await imageCompression(file, {
@@ -124,9 +110,8 @@ function HomeContent() {
       const formData = new FormData();
       formData.append("photo", compressed);
       try {
-        const res = await fetch("/api/parse-menu", { method: "POST", body: formData });
-        const data = await res.json();
-        for (const item of data.items || []) {
+        const data = await api.parseMenu(formData);
+        for (const item of data.items) {
           const name = item.name.toLowerCase().trim();
           if (name && !seen.has(name)) {
             seen.add(name);
@@ -151,37 +136,32 @@ function HomeContent() {
     setCreating(true);
     try {
       const finalItems = items ?? menuItems;
-      const res = await fetch("/api/sessions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          barName: barName.trim() || null,
-          menuItems: finalItems,
-          slug: preferredSlug || undefined,
-        }),
+      const data = await api.createSession({
+        barName: barName.trim() || null,
+        menuItems: finalItems,
+        slug: preferredSlug || undefined,
       });
-      if (!res.ok) throw new Error("Failed");
-      const { slug } = await res.json();
+      if (!data) throw new Error("Failed");
+      const { slug } = data;
       // Save to recent sessions
       try {
         const recent = JSON.parse(localStorage.getItem("tipsytap_recent") || "[]");
         const entry = { slug, barName: barName || slug, date: new Date().toISOString() };
-        const updated = [entry, ...recent.filter((s: { slug: string }) => s.slug !== slug)].slice(
-          0,
-          10
-        );
+        const updated = [
+          entry,
+          ...recent.filter((session: { slug: string }) => session.slug !== slug),
+        ].slice(0, 10);
         localStorage.setItem("tipsytap_recent", JSON.stringify(updated));
       } catch {}
       router.push(`/s/${slug}`);
     } catch {
       setCreating(false);
-      setErrorMsg("Could not create session. Please try again.");
-      setTimeout(() => setErrorMsg(null), 4000);
+      toast.danger("Could not create session. Please try again.");
     }
   };
 
   const removeItem = (idx: number) => {
-    setMenuItems((prev) => prev.filter((_, i) => i !== idx));
+    setMenuItems((prev) => prev.filter((_, index) => index !== idx));
   };
 
   const editItem = (idx: number, newName: string) => {
@@ -192,7 +172,6 @@ function HomeContent() {
   if (step === "start") {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 gap-8 relative">
-        {errorMsg && <ErrorToast message={errorMsg} onClose={() => setErrorMsg(null)} />}
         <div className="absolute right-4 top-4">
           <ThemeSwitch />
         </div>
@@ -206,8 +185,8 @@ function HomeContent() {
             New evening
           </Button>
           <form
-            onSubmit={(e) => {
-              e.preventDefault();
+            onSubmit={(event) => {
+              event.preventDefault();
               if (slugInput.trim()) router.push(`/s/${slugInput.trim().toLowerCase()}`);
             }}
             className="relative"
@@ -216,7 +195,7 @@ function HomeContent() {
               className="w-full"
               placeholder="Session code…"
               value={slugInput}
-              onChange={(e) => setSlugInput(e.target.value)}
+              onChange={(event) => setSlugInput(event.target.value)}
             />
             {slugInput.trim() && (
               <button
@@ -232,16 +211,16 @@ function HomeContent() {
             <div className="pt-2">
               <p className="text-xs text-muted mb-2">Recent sessions</p>
               <div className="space-y-1">
-                {recentSessions.map((s) => (
-                  <Card key={s.slug}>
+                {recentSessions.map((session) => (
+                  <Card key={session.slug}>
                     <button
                       type="button"
-                      onClick={() => router.push(`/s/${s.slug}`)}
+                      onClick={() => router.push(`/s/${session.slug}`)}
                       className="w-full text-left px-3 py-2 cursor-pointer"
                     >
-                      <span className="font-medium text-sm">{s.barName}</span>
+                      <span className="font-medium text-sm">{session.barName}</span>
                       <span className="text-muted text-xs ml-2">
-                        {new Date(s.date).toLocaleDateString()}
+                        {new Date(session.date).toLocaleDateString()}
                       </span>
                     </button>
                   </Card>
@@ -258,7 +237,6 @@ function HomeContent() {
   if (step === "bar") {
     return (
       <div className="min-h-screen p-6">
-        {errorMsg && <ErrorToast message={errorMsg} onClose={() => setErrorMsg(null)} />}
         <div className="flex items-center gap-2 mb-4">
           <Image src="/icon.svg" alt="" width={24} height={24} />
           <h2 className="text-xl font-bold">Where are you?</h2>
@@ -268,7 +246,7 @@ function HomeContent() {
           className="w-full mb-3"
           placeholder="Bar name…"
           value={barName}
-          onChange={(e) => searchBars(e.target.value)}
+          onChange={(event) => searchBars(event.target.value)}
           autoComplete="off"
           autoFocus
         />
@@ -408,7 +386,7 @@ function HomeContent() {
                 <input
                   type="text"
                   value={item.name}
-                  onChange={(e) => editItem(idx, e.target.value)}
+                  onChange={(event) => editItem(idx, event.target.value)}
                   className="flex-1 bg-transparent outline-none text-sm text-foreground"
                   aria-label={`Edit drink name: ${item.name}`}
                 />
@@ -435,20 +413,6 @@ function HomeContent() {
           {creating ? "Creating…" : "Start counting 🍺"}
         </Button>
       </div>
-    </div>
-  );
-}
-
-function ErrorToast({ message, onClose }: { message: string; onClose: () => void }) {
-  return (
-    <div
-      role="alert"
-      className="fixed top-4 left-1/2 -translate-x-1/2 bg-danger/10 border border-danger/30 text-danger rounded-lg px-4 py-3 flex items-center gap-3 shadow-lg z-50"
-    >
-      <span className="text-sm">{message}</span>
-      <button onClick={onClose} className="text-danger/60 hover:text-danger font-bold">
-        ×
-      </button>
     </div>
   );
 }

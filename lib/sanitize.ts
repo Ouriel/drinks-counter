@@ -18,6 +18,6 @@ export function sanitizeDrinkName(input: string): string {
 export function titleCase(input: string): string {
   return input
     .split(" ")
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 }

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Button, Input, Card } from "@heroui/react";
+import { api } from "@/lib/api";
 
 type Member = { nickname: string; total: number };
 
@@ -14,26 +15,30 @@ export function TableView({
   tableCode: string | null;
   nickname: string | null;
 }) {
-  const [tableCode, setTableCode] = useState(initialCode);
+  const [localCode, setLocalCode] = useState<string | null>(null);
   const [nickname] = useState(initialNickname);
+  const tableCode = localCode || initialCode;
   const [showJoin, setShowJoin] = useState(false);
   const [joinCode, setJoinCode] = useState("");
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const fetchRanking = useCallback(async () => {
-    if (!tableCode) return;
-    const res = await fetch(`/api/tables?code=${tableCode}`);
-    if (res.ok) {
-      const data = await res.json();
-      setMembers(data.members);
-    }
-  }, [tableCode]);
+  const fetchRanking = useCallback(
+    async (code?: string) => {
+      const c = code || tableCode;
+      if (!c) return;
+      const data = await api.getTableRanking(c);
+      if (data) setMembers(data.members);
+    },
+    [tableCode]
+  );
 
   useEffect(() => {
-    queueMicrotask(() => fetchRanking());
     if (!tableCode) return;
+    // Initial fetch + polling interval (legitimate data sync with external system)
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchRanking();
     const id = setInterval(() => {
       if (document.visibilityState === "visible") fetchRanking();
     }, 60_000);
@@ -43,37 +48,29 @@ export function TableView({
   async function handleCreate() {
     setLoading(true);
     setError("");
-    const res = await fetch("/api/tables", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ slug }),
-    });
-    const data = await res.json();
+    const data = await api.createTable(slug);
     setLoading(false);
-    if (!res.ok) {
-      setError(data.error);
+    if (!data) {
+      setError("Could not create table");
       return;
     }
-    setTableCode(data.code);
+    setLocalCode(data.code);
+    fetchRanking(data.code);
   }
 
   async function handleJoin() {
     if (!joinCode.trim()) return;
     setLoading(true);
     setError("");
-    const res = await fetch("/api/tables", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ slug, code: joinCode.trim() }),
-    });
-    const data = await res.json();
+    const data = await api.joinTable(slug, joinCode.trim());
     setLoading(false);
-    if (!res.ok) {
-      setError(data.error);
+    if (!data) {
+      setError("Table not found");
       return;
     }
-    setTableCode(data.code);
+    setLocalCode(data.code);
     setShowJoin(false);
+    fetchRanking(data.code);
   }
 
   // Already in a table — show ranking
@@ -128,7 +125,7 @@ export function TableView({
             className="w-32"
             placeholder="Code"
             value={joinCode}
-            onChange={(e) => setJoinCode(e.target.value.toUpperCase().slice(0, 6))}
+            onChange={(event) => setJoinCode(event.target.value.toUpperCase().slice(0, 6))}
             aria-label="Table code"
           />
           <Button

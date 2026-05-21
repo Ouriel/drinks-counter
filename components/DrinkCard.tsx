@@ -2,15 +2,11 @@
 
 import { useRef } from "react";
 import { Card, Chip } from "@heroui/react";
+import { useLongPress } from "react-aria";
 import { CATEGORY_EMOJI } from "@/lib/constants";
+import type { Drink } from "@/lib/types";
 
-export type Drink = {
-  id: string;
-  name: string;
-  count: number;
-  category: string | null;
-  createdAt?: string;
-};
+export type { Drink } from "@/lib/types";
 
 function categoryEmoji(cat: string | null): string {
   return CATEGORY_EMOJI[cat || "other"] || "🍹";
@@ -27,34 +23,23 @@ export function DrinkCard({
   onLongPress: () => void;
   isTop?: boolean;
 }) {
-  const timerRef = useRef<NodeJS.Timeout>(null);
   const longPressed = useRef(false);
-  const isTouchDevice = useRef(false);
 
-  const handleTouchStart = () => {
-    isTouchDevice.current = true;
-    longPressed.current = false;
-    timerRef.current = setTimeout(() => {
+  const { longPressProps } = useLongPress({
+    accessibilityDescription: "Long press to remove",
+    threshold: 500,
+    onLongPress: () => {
       longPressed.current = true;
       onLongPress();
-    }, 500);
-  };
-  const handleTouchEnd = () => {
-    if (timerRef.current) clearTimeout(timerRef.current);
-    if (!longPressed.current) onTap();
-  };
-  const handleMouseDown = () => {
-    if (isTouchDevice.current) return;
-    longPressed.current = false;
-    timerRef.current = setTimeout(() => {
-      longPressed.current = true;
-      onLongPress();
-    }, 500);
-  };
-  const handleMouseUp = () => {
-    if (isTouchDevice.current) return;
-    if (timerRef.current) clearTimeout(timerRef.current);
-    if (!longPressed.current) onTap();
+    },
+  });
+
+  const handleClick = () => {
+    if (longPressed.current) {
+      longPressed.current = false;
+      return;
+    }
+    onTap();
   };
 
   return (
@@ -62,12 +47,9 @@ export function DrinkCard({
       <button
         type="button"
         className="w-full p-4 flex items-center justify-between select-none cursor-pointer active:scale-[0.98] transition-transform"
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-        onTouchCancel={handleTouchEnd}
-        onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}
-        onContextMenu={(e) => e.preventDefault()}
+        {...longPressProps}
+        onClick={handleClick}
+        onContextMenu={(event) => event.preventDefault()}
         aria-label={`${drink.name}, ${drink.count}. Tap to add, long press to remove`}
       >
         <div className="flex items-center gap-2">

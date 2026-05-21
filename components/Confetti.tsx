@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const EMOJIS = ["🎉", "🍻", "✨", "🥂", "🎊", "⭐", "🔥"];
 
@@ -16,10 +16,16 @@ export function Confetti({ onDone }: { onDone: () => void }) {
     }))
   );
 
+  const onDoneRef = useRef(onDone);
+
   useEffect(() => {
-    const t = setTimeout(onDone, 2500);
+    onDoneRef.current = onDone;
+  });
+
+  useEffect(() => {
+    const t = setTimeout(() => onDoneRef.current(), 2500);
     return () => clearTimeout(t);
-  }, [onDone]);
+  }, []);
 
   return (
     <div className="fixed inset-0 pointer-events-none z-[60] overflow-hidden" aria-hidden="true">

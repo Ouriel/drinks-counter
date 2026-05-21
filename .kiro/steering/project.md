@@ -10,12 +10,12 @@ Mobile-first web app to count drinks during a night out. Users snap a bar menu p
 
 ## Stack
 
-- **Framework**: Next.js 16 (App Router) + TypeScript
+- **Framework**: Next.js 16 (App Router) + TypeScript 6 (strict mode)
 - **Styling**: HeroUI v3 + Tailwind CSS 4
 - **Database**: Neon Postgres + Drizzle ORM
 - **AI**: Vercel AI SDK + Google Gemini 2.5 Flash Lite (or Groq as alternative)
 - **Deploy**: Vercel free tier
-- **Test**: Vitest (26 tests)
+- **Test**: Vitest (66 tests)
 - **Lint**: ESLint + Prettier
 - **Pre-commit**: Husky + lint-staged
 
@@ -24,49 +24,83 @@ Mobile-first web app to count drinks during a night out. Users snap a bar menu p
 ```
 app/
 ├── page.tsx                       # Home: new evening flow (bar search → photo → review)
-├── layout.tsx                     # Root layout, PWA meta
+├── layout.tsx                     # Root layout, Toast.Provider, PwaInstallPrompt
 ├── s/[slug]/page.tsx              # Session page: drink counter UI
 ├── s/[slug]/summary/page.tsx      # Evening summary (screenshot-friendly)
 ├── s/[slug]/error.tsx             # Error boundary
-├── s/[slug]/loading.tsx           # Loading state
 ├── admin/page.tsx                 # Admin: manage bar menus (ADMIN_SECRET)
 ├── stats/page.tsx                 # Public stats
 └── api/
     ├── sessions/route.ts          # POST: create session, GET: session info + menu
     ├── drinks/route.ts            # GET/POST/PATCH: drink CRUD with ownership checks
     ├── menus/route.ts             # GET: fuzzy bar menu search (DB)
-    ├── bars/search/route.ts       # GET: OSM Nominatim bar search (geolocation)
+    ├── bars/search/route.ts       # GET: OSM Nominatim bar search (rate-limited 1/sec)
     ├── parse-menu/route.ts        # POST: photo → AI → structured drink list
     ├── admin/route.ts             # GET/PATCH/DELETE: admin CRUD (protected)
     └── cron/cleanup/route.ts      # GET: delete expired sessions (daily cron)
 lib/
-├── db.ts                          # Drizzle schema (bar_menus, sessions, drinks)
-├── menu-items.ts                  # MenuItem type + normalizeMenuItems() (testable)
+├── types.ts                       # Canonical types: Drink, MenuItem
+├── api.ts                         # Typed fetch client with Zod response validation
+├── useOptimisticDrinks.ts         # Hook: drinks state + optimistic updates + gamification
+├── db.ts                          # Drizzle schema (bar_menus, sessions, drinks, tables)
+├── schemas.ts                     # Zod input validation for API routes
+├── menu-items.ts                  # normalizeMenuItems() with runtime JSONB validation
+├── gamification.ts                # Badges, pace, nudges, achievements (pure functions)
 ├── ai.ts                          # Configurable AI provider (gemini/groq)
-├── slugs.ts                       # Fun slug generator (adjective-noun-extra)
+├── slugs.ts                       # Fun slug generator (adjective-noun)
 ├── sanitize.ts                    # Shared input sanitization
+├── nicknames.ts                   # Animal nickname generator for tables
+├── constants.ts                   # Category emoji map
+├── auth.ts                        # timingSafeEqual secret verification
 └── theme-switch.tsx               # Dark/light toggle component
+components/
+├── DrinkCard.tsx                   # Tap/long-press card (react-aria useLongPress)
+├── DrinkPicker.tsx                 # Modal drink search/add
+├── TableView.tsx                   # Table ranking (create/join/leaderboard)
+├── Confetti.tsx                    # Celebration animation on milestones
+├── QrCode.tsx                      # QR code generator
+└── PwaInstallPrompt.tsx            # Install banner (auto-dismiss, hidden in standalone)
 ```
 
-## Data Model
+## Code Conventions (MUST FOLLOW)
 
-- `bar_menus`: permanent, shared. Bar name (sanitized, lowercase) + items (jsonb `MenuItem[]`)
-- `sessions`: personal, 48h TTL. Slug (unique) + optional bar_menu FK.
-- `drinks`: per-session. Name (lowercase) + count + optional category. Cascade delete with session.
-- `MenuItem`: `{ name: string; category: string }` — categories: beer, cocktail, wine, spirit, soft, food, other
+### TypeScript
 
-## Key Design Decisions
+- `strict: true` — zero `any` allowed
+- Use `type` not `interface`
+- All API responses validated with Zod at runtime (lib/api.ts)
+- Canonical types in `lib/types.ts` — never define Drink/MenuItem locally
 
-- No authentication — the slug URL IS the access token
-- Menu items stored as `{name, category}[]` in DB. Legacy `string[]` handled by `normalizeMenuItems()`
-- PATCH endpoint requires slug for ownership verification
-- AI provider switchable via `AI_PROVIDER` env var
-- Input sanitization on all user inputs — shared in lib/sanitize.ts
-- Drink names lowercased and matched case-insensitively
-- Fuzzy search: multi-token ILIKE with AND logic
-- OSM Nominatim for bar search (free, no API key, geolocation-biased)
-- Recent sessions in localStorage (no DB bloat, max 10)
-- Session timer computed from first drink timestamp (no interval)
+### React Patterns
+
+- **useEffect ONLY for**: DOM event subscriptions, timers/intervals, initial data fetch in client components
+- **NEVER useEffect for**: derived state, reacting to state changes, triggering side effects from events
+- Use refs (`onCloseRef` pattern) to stabilize callback deps in useEffects
+- Declaration order: useState → custom hooks → variables → useMemo → useCallback → useEffect
+- One component per file
+
+### Naming
+
+- **No abbreviated parameters**: `(event)` not `(e)`, `(item)` not `(d)`, `(word)` not `(w)`
+- Named exports for lib/ files (pages use default export as required by Next.js)
+
+### Notifications
+
+- Use HeroUI `toast()` for ALL notifications (undo, badges, nudges, errors)
+- Never build custom toast/notification UI — use the framework's built-in
+- Confetti component for visual celebration on milestones only
+
+### API Client
+
+- All client-side fetches go through `lib/api.ts` typed helpers
+- Never raw `fetch()` + `.json()` in components — always `api.getDrinks()`, `api.createSession()`, etc.
+- API responses are Zod-validated at runtime — catches contract drift immediately
+
+### Testing
+
+- Test pure logic functions (gamification, sanitize, schemas, slugs, auth, normalizeMenuItems)
+- Don't write placeholder tests that assert inline math — every test must exercise real code
+- Don't import `lib/db.ts` in tests (triggers DB connection)
 
 ## HeroUI v3 Conventions
 
@@ -74,28 +108,29 @@ lib/
 - `Chip` for category emoji badges
 - `Spinner` for loading states
 - `Button` uses `onPress` not `onClick`
-- Variants: `primary`, `ghost`
+- `toast()` / `toast.danger()` / `toast.success()` for notifications
+- `Toast.Provider` in layout.tsx
+- `useLongPress` from `react-aria` for long-press interactions
+
+## Data Model
+
+- `bar_menus`: permanent, shared. Bar name (sanitized, lowercase) + items (jsonb `MenuItem[]`)
+- `sessions`: personal, 48h TTL. Slug (unique) + optional bar_menu FK + optional table FK
+- `drinks`: per-session. Name (lowercase) + count + optional category. Cascade delete with session.
+- `tables`: shared group. 6-char code. Members get animal nicknames.
+- `MenuItem`: `{ name: string; category: string }` — categories: beer, cocktail, wine, spirit, shot, mocktail, soft, food, other
 
 ## Commands
 
 ```bash
 npm run dev          # Local dev server
-npm run build        # Production build
-npm test             # Run Vitest (26 tests)
+npm run build        # Production build (needs POSTGRES_URL)
+npm test             # Run Vitest (66 tests)
 npm run lint         # ESLint
 npm run format:check # Prettier check
+npx tsc --noEmit    # Type check
 npx drizzle-kit push # Push schema to DB
 ```
-
-## Mandatory: Verify Before Diagnosing
-
-When something fails (API error, build error, runtime error):
-
-1. **Read the actual error message completely** — don't truncate or guess
-2. **Check the library's current documentation** via Context7 or web search BEFORE proposing a fix
-3. **Never assume model names, API versions, or rate limits from memory** — always verify against current docs
-4. **If the error mentions a quota/limit/version**: check the provider's current pricing/limits page FIRST
-5. **One diagnosis attempt max** before checking docs — if the first fix doesn't work, STOP and research
 
 ## Environment Variables
 

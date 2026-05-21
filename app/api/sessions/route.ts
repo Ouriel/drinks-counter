@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db, sessions, barMenus, tables, normalizeMenuItems } from "@/lib/db";
-import type { MenuItem } from "@/lib/db";
+import type { MenuItem } from "@/lib/types";
 import { generateSlug } from "@/lib/slugs";
 import { sanitizeBarName } from "@/lib/sanitize";
 import { eq } from "drizzle-orm";
@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
       barMenuId = existing[0].id;
       if (menuItems?.length) {
         const currentItems = normalizeMenuItems(existing[0].items);
-        const existingLower = new Set(currentItems.map((i) => i.name.toLowerCase()));
+        const existingLower = new Set(currentItems.map((item) => item.name.toLowerCase()));
         const incoming: MenuItem[] = menuItems.map((item: MenuItem | string) =>
           typeof item === "string" ? { name: item, category: "other" } : item
         );
@@ -63,11 +63,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ slug: session.slug });
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "";
-      if (msg.includes("unique") || msg.includes("duplicate")) continue;
+      if (msg.includes("unique") || msg.includes("duplicate")) {
+        console.warn(`[sessions] Slug collision: "${slug}"`);
+        continue;
+      }
       throw e;
     }
   }
 
+  console.error(`[sessions] All ${slugsToTry.length} slug attempts failed`);
   return NextResponse.json({ error: "Could not generate unique session" }, { status: 500 });
 }
 

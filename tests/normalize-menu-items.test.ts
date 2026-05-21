@@ -39,4 +39,13 @@ describe("normalizeMenuItems", () => {
   it("handles empty array", () => {
     expect(normalizeMenuItems([])).toEqual([]);
   });
+
+  it("skips malformed objects without name field", () => {
+    const result = normalizeMenuItems([
+      { category: "beer" },
+      { name: "valid", category: "wine" },
+      42,
+    ]);
+    expect(result).toEqual([{ name: "valid", category: "wine" }]);
+  });
 });

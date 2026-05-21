@@ -7,7 +7,7 @@ const slugField = z
   .min(1)
   .max(50)
   .regex(/^[a-z0-9-]+$/, "Slug must be lowercase alphanumeric with dashes")
-  .refine((s) => !RESERVED_PATHS.includes(s), "Reserved path");
+  .refine((slug) => !RESERVED_PATHS.includes(slug), "Reserved path");
 
 export const createSessionSchema = z.object({
   barName: z.string().max(100).nullable().optional(),

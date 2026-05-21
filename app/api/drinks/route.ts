@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
       const currentItems = normalizeMenuItems(menu.items);
       if (
         currentItems.length < 200 &&
-        !currentItems.some((i) => i.name.toLowerCase() === cleanName)
+        !currentItems.some((item) => item.name.toLowerCase() === cleanName)
       ) {
         await db
           .update(barMenus)
