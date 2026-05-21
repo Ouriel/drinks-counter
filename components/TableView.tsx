@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Button, Input, Card } from "@heroui/react";
+import { QrCode } from "@/components/QrCode";
 import { api } from "@/lib/api";
 
 type Member = { nickname: string; total: number };
@@ -23,6 +24,7 @@ export function TableView({
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showQr, setShowQr] = useState(false);
 
   const fetchRanking = useCallback(
     async (code?: string) => {
@@ -103,6 +105,23 @@ export function TableView({
         <p className="text-xs text-muted text-center mt-3">
           Share code <strong>{tableCode}</strong> with friends
         </p>
+        {showQr ? (
+          <div className="mt-3 text-center">
+            <QrCode
+              url={`${typeof window !== "undefined" ? window.location.origin : ""}/join/${tableCode}`}
+              size={140}
+            />
+            <Button variant="ghost" size="sm" className="mt-2" onPress={() => setShowQr(false)}>
+              Hide QR
+            </Button>
+          </div>
+        ) : (
+          <div className="text-center mt-2">
+            <Button variant="ghost" size="sm" onPress={() => setShowQr(true)}>
+              📱 Show QR code
+            </Button>
+          </div>
+        )}
       </div>
     );
   }
