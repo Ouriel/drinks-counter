@@ -182,7 +182,7 @@ function HomeContent() {
         </div>
         <div className="w-full max-w-xs space-y-3">
           <Button variant="primary" size="lg" className="w-full" onPress={() => setStep("bar")}>
-            New evening
+            Start counting
           </Button>
           <form
             onSubmit={(event) => {

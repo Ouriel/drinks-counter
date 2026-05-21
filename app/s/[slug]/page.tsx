@@ -110,7 +110,7 @@ export default function SessionPage() {
         {showConfetti && <Confetti onDone={() => setShowConfetti(false)} />}
         <div className="absolute left-0 top-0">
           <Button variant="ghost" size="sm" onPress={() => router.push("/")}>
-            + New
+            New
           </Button>
         </div>
         <div className="absolute right-0 top-0 flex items-center gap-1">
