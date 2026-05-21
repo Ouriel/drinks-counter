@@ -1,33 +1,33 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { Spinner, Button } from "@heroui/react";
+import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 import { api } from "@/lib/api";
 
 export default function JoinTablePage() {
   const { code } = useParams<{ code: string }>();
   const router = useRouter();
+  const t = useTranslations("join");
   const [error, setError] = useState("");
 
   useEffect(() => {
     async function join() {
-      // Check if user already has a session
       let slug: string | null = null;
       try {
         const recent = JSON.parse(localStorage.getItem("tipsytap_recent") || "[]");
         if (recent.length > 0) slug = recent[0].slug;
       } catch {}
 
-      // No existing session → create one
       if (!slug) {
         const session = await api.createSession({});
         if (!session) {
-          setError("Could not create session");
+          setError(t("failed"));
           return;
         }
         slug = session.slug;
-        // Save to recent
         try {
           const recent = JSON.parse(localStorage.getItem("tipsytap_recent") || "[]");
           const entry = { slug, barName: slug, date: new Date().toISOString() };
@@ -35,10 +35,8 @@ export default function JoinTablePage() {
         } catch {}
       }
 
-      // Join the table
       const result = await api.joinTable(slug, code);
       if (!result) {
-        // Maybe already in a table — just redirect
         router.replace(`/s/${slug}`);
         return;
       }
@@ -47,16 +45,16 @@ export default function JoinTablePage() {
     }
 
     join();
-  }, [code, router]);
+  }, [code, router, t]);
 
   if (error) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 gap-4">
         <p className="text-4xl">😕</p>
-        <p className="text-lg font-bold">Could not join table</p>
+        <p className="text-lg font-bold">{t("failed")}</p>
         <p className="text-muted text-sm">{error}</p>
         <Button variant="primary" onPress={() => router.push("/")}>
-          Start fresh
+          {t("startFresh")}
         </Button>
       </div>
     );
@@ -65,7 +63,7 @@ export default function JoinTablePage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-3">
       <Spinner size="lg" />
-      <p className="text-muted">Joining table…</p>
+      <p className="text-muted">{t("joining")}</p>
     </div>
   );
 }

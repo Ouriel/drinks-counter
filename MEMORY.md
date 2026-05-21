@@ -1,5 +1,16 @@
 # MEMORY
 
+## Internationalization (i18n)
+
+- next-intl@4 with 6 locales: en, fr, de, es, ca, it
+- Pages in `app/[locale]/`, API routes stay at `app/api/`
+- Config: `i18n/routing.ts`, `i18n/request.ts`, `i18n/navigation.ts`, `middleware.ts`
+- Translation files: `messages/{locale}.json` (~175 keys each)
+- LocaleSwitcher component on home page start screen
+- next.config.ts uses `createNextIntlPlugin` wrapper
+- Client pages: `useTranslations()`, server pages: `getTranslations()`
+- Navigation: `useRouter` from `@/i18n/navigation` (locale-aware)
+
 ## Architecture
 
 - Canonical types in `lib/types.ts` (Drink, MenuItem) — all components/hooks import from there
@@ -38,6 +49,12 @@
 - DrinkPicker: 1 useEffect with stable deps (keyboard listener, onCloseRef pattern)
 - TableView: 1 useEffect (polling interval — legitimate)
 - PwaInstallPrompt: 1 useEffect (browser event — no alternative)
+
+## Table Feature (v1.1)
+
+- QR code in TableView, hidden behind "📱 Show QR code" button tap
+- `/join/[code]` page: checks localStorage for existing session → creates if needed → joins table → redirects
+- QR encodes `{origin}/join/{tableCode}`
 
 ## Vercel
 

@@ -29,12 +29,13 @@ export function getAllEarnedBadges(total: number): Badge[] {
 
 // === COLOR SHIFT ===
 
-export function getSessionHue(total: number): string {
+export function getSessionHue(total: number, isDark = true): string {
   // Cool (blue 210) → warm (amber 30) as drinks increase, capped at 20
   const t = Math.min(total, 20) / 20;
   const hue = Math.round(210 - t * 180); // 210 → 30
   const saturation = Math.round(20 + t * 40); // 20% → 60%
-  return `hsl(${hue}, ${saturation}%, 8%)`;
+  const lightness = isDark ? 8 : 96;
+  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
 }
 
 // === PACE INDICATOR ===

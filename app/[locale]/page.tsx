@@ -1,10 +1,13 @@
 "use client";
 
 import { useState, useRef, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Button, Input, Card, Chip, Spinner, toast } from "@heroui/react";
+import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 import { ThemeSwitch } from "@/lib/theme-switch";
+import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { CATEGORY_EMOJI } from "@/lib/constants";
 import { api } from "@/lib/api";
 
@@ -19,6 +22,7 @@ export default function Home() {
 function HomeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const t = useTranslations();
   const preferredSlug = searchParams.get("slug") || "";
   const [step, setStep] = useState<"start" | "bar" | "review">(preferredSlug ? "bar" : "start");
   const [barName, setBarName] = useState("");
@@ -58,9 +62,7 @@ function HomeContent() {
         if (!data) return;
         setBarSuggestions(data.menus);
 
-        // Search OSM if no DB results
         if (data.menus.length === 0) {
-          // Lazy geolocation: request only when needed for OSM search
           if (!geoRef.current && navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
               (pos) => {
@@ -143,7 +145,6 @@ function HomeContent() {
       });
       if (!data) throw new Error("Failed");
       const { slug } = data;
-      // Save to recent sessions
       try {
         const recent = JSON.parse(localStorage.getItem("tipsytap_recent") || "[]");
         const entry = { slug, barName: barName || slug, date: new Date().toISOString() };
@@ -156,7 +157,7 @@ function HomeContent() {
       router.push(`/s/${slug}`);
     } catch {
       setCreating(false);
-      toast.danger("Could not create session. Please try again.");
+      toast.danger(t("session.couldNotCreate"));
     }
   };
 
@@ -172,17 +173,18 @@ function HomeContent() {
   if (step === "start") {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 gap-8 relative">
-        <div className="absolute right-4 top-4">
+        <div className="absolute right-4 top-4 flex items-center gap-2">
+          <LocaleSwitcher />
           <ThemeSwitch />
         </div>
         <div className="text-center">
           <Image src="/icon.svg" alt="TipsyTap" width={120} height={120} className="mx-auto mb-4" />
-          <h1 className="text-4xl font-bold">TipsyTap</h1>
-          <p className="text-muted mt-2">Tap to track the tipsy</p>
+          <h1 className="text-4xl font-bold">{t("app.title")}</h1>
+          <p className="text-muted mt-2">{t("app.tagline")}</p>
         </div>
         <div className="w-full max-w-xs space-y-3">
           <Button variant="primary" size="lg" className="w-full" onPress={() => setStep("bar")}>
-            Start counting
+            {t("home.startCounting")}
           </Button>
           <form
             onSubmit={(event) => {
@@ -193,7 +195,7 @@ function HomeContent() {
           >
             <Input
               className="w-full"
-              placeholder="Session code…"
+              placeholder={t("home.sessionCode")}
               value={slugInput}
               onChange={(event) => setSlugInput(event.target.value)}
             />
@@ -201,7 +203,7 @@ function HomeContent() {
               <button
                 type="submit"
                 className="absolute right-2 top-1/2 -translate-y-1/2 text-accent font-bold text-lg"
-                aria-label="Go to session"
+                aria-label={t("home.goToSession")}
               >
                 →
               </button>
@@ -209,7 +211,7 @@ function HomeContent() {
           </form>
           {recentSessions.length > 0 && (
             <div className="pt-2">
-              <p className="text-xs text-muted mb-2">Recent sessions</p>
+              <p className="text-xs text-muted mb-2">{t("home.recentSessions")}</p>
               <div className="space-y-1">
                 {recentSessions.map((session) => (
                   <Card key={session.slug}>
@@ -239,12 +241,12 @@ function HomeContent() {
       <div className="min-h-screen p-6">
         <div className="flex items-center gap-2 mb-4">
           <Image src="/icon.svg" alt="" width={24} height={24} />
-          <h2 className="text-xl font-bold">Where are you?</h2>
+          <h2 className="text-xl font-bold">{t("bar.whereAreYou")}</h2>
         </div>
 
         <Input
           className="w-full mb-3"
-          placeholder="Bar name…"
+          placeholder={t("bar.barName")}
           value={barName}
           onChange={(event) => searchBars(event.target.value)}
           autoComplete="off"
@@ -261,7 +263,9 @@ function HomeContent() {
                   className="w-full text-left p-3 cursor-pointer"
                 >
                   <span className="font-medium">{bar.barName}</span>
-                  <span className="text-muted text-sm ml-2">{bar.items.length} items</span>
+                  <span className="text-muted text-sm ml-2">
+                    {t("bar.items", { count: bar.items.length })}
+                  </span>
                 </button>
               </Card>
             ))}
@@ -270,7 +274,7 @@ function HomeContent() {
 
         {osmResults.length > 0 && barSuggestions.length === 0 && (
           <div className="mb-4 space-y-2">
-            <p className="text-xs text-muted">📍 Nearby places</p>
+            <p className="text-xs text-muted">{t("bar.nearbyPlaces")}</p>
             {osmResults.map((place, i) => (
               <Card key={i}>
                 <button
@@ -295,9 +299,7 @@ function HomeContent() {
           barSuggestions.length === 0 &&
           osmResults.length === 0 &&
           !parsing && (
-            <p className="text-sm text-muted text-center mb-4">
-              📸 No results — take a photo of the menu to get started!
-            </p>
+            <p className="text-sm text-muted text-center mb-4">{t("bar.noResultsPhoto")}</p>
           )}
 
         <div className="space-y-3 mt-6">
@@ -309,14 +311,14 @@ function HomeContent() {
               isDisabled={creating}
               onPress={() => createSession()}
             >
-              {creating ? "Creating…" : `Start (${menuItems.length} drinks)`}
+              {creating ? t("bar.creating") : t("bar.start", { count: menuItems.length })}
             </Button>
           )}
 
           {parsing ? (
             <div className="w-full text-center py-4 flex items-center justify-center gap-2 text-foreground">
               <Spinner size="sm" />
-              <span>Reading menu…</span>
+              <span>{t("bar.readingMenu")}</span>
             </div>
           ) : (
             <div className="flex gap-2">
@@ -327,7 +329,7 @@ function HomeContent() {
                 isDisabled={barName.trim().length < 2}
                 onPress={() => cameraRef.current?.click()}
               >
-                📸 Camera
+                {t("bar.camera")}
               </Button>
               <Button
                 variant="ghost"
@@ -336,7 +338,7 @@ function HomeContent() {
                 isDisabled={barName.trim().length < 2}
                 onPress={() => fileRef.current?.click()}
               >
-                📁 Gallery
+                {t("bar.gallery")}
               </Button>
             </div>
           )}
@@ -348,7 +350,7 @@ function HomeContent() {
             isDisabled={barName.trim().length < 2 || creating}
             onPress={() => createSession([])}
           >
-            Skip — I&apos;ll add manually
+            {t("bar.skipManual")}
           </Button>
         </div>
 
@@ -375,7 +377,7 @@ function HomeContent() {
   // === REVIEW STEP ===
   return (
     <div className="min-h-screen p-6 pb-24">
-      <h2 className="text-xl font-bold mb-4">Review menu items</h2>
+      <h2 className="text-xl font-bold mb-4">{t("review.title")}</h2>
 
       {menuItems.length > 0 && (
         <div className="space-y-1 mb-6">
@@ -388,13 +390,13 @@ function HomeContent() {
                   value={item.name}
                   onChange={(event) => editItem(idx, event.target.value)}
                   className="flex-1 bg-transparent outline-none text-sm text-foreground"
-                  aria-label={`Edit drink name: ${item.name}`}
+                  aria-label={t("review.editDrink", { name: item.name })}
                 />
                 <Button
                   variant="ghost"
                   size="sm"
                   onPress={() => removeItem(idx)}
-                  aria-label={`Remove ${item.name}`}
+                  aria-label={t("review.removeDrink", { name: item.name })}
                 >
                   ×
                 </Button>
@@ -404,13 +406,11 @@ function HomeContent() {
         </div>
       )}
 
-      <p className="text-muted text-sm mb-6">
-        Tap a name to edit. Remove junk. You can add more later.
-      </p>
+      <p className="text-muted text-sm mb-6">{t("review.hint")}</p>
 
       <div className="fixed bottom-6 left-0 right-0 flex justify-center px-6 pb-[env(safe-area-inset-bottom)]">
         <Button variant="primary" size="lg" isDisabled={creating} onPress={() => createSession()}>
-          {creating ? "Creating…" : "Start counting 🍺"}
+          {creating ? t("bar.creating") : t("review.startCounting")}
         </Button>
       </div>
     </div>

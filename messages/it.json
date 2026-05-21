@@ -1,0 +1,175 @@
+{
+  "app": {
+    "title": "TipsyTap",
+    "tagline": "Tocca per contare i drink"
+  },
+  "home": {
+    "startCounting": "Inizia a contare",
+    "sessionCode": "Codice sessione…",
+    "goToSession": "Vai alla sessione",
+    "recentSessions": "Sessioni recenti"
+  },
+  "bar": {
+    "whereAreYou": "Dove sei?",
+    "barName": "Nome del bar…",
+    "items": "{count} bevande",
+    "nearbyPlaces": "📍 Luoghi vicini",
+    "noResultsPhoto": "📸 Nessun risultato — scatta una foto del menu per iniziare!",
+    "start": "Inizia ({count} bevande)",
+    "creating": "Creazione…",
+    "readingMenu": "Lettura menu…",
+    "camera": "📸 Fotocamera",
+    "gallery": "📁 Galleria",
+    "skipManual": "Salta — aggiungerò manualmente"
+  },
+  "review": {
+    "title": "Controlla le bevande",
+    "editDrink": "Modifica nome: {name}",
+    "removeDrink": "Rimuovi {name}",
+    "hint": "Tocca un nome per modificarlo. Rimuovi quelli sbagliati. Puoi aggiungerne altri dopo.",
+    "startCounting": "Inizia a contare 🍺"
+  },
+  "session": {
+    "drinks": "{count, plural, one {# drink} other {# drink}}",
+    "justStarted": "appena iniziato",
+    "noDrinks": "Nessun drink ancora",
+    "noDrinksHint": "Tocca + per aggiungere il tuo primo drink",
+    "longPressHint": "Tieni premuto per rimuovere",
+    "addDrink": "+ Aggiungi drink",
+    "new": "Nuovo",
+    "share": "Condividi",
+    "linkCopied": "Link copiato!",
+    "joinSession": "Unisciti alla mia sessione a {bar}",
+    "eveningSummary": "📊 Riepilogo serata",
+    "couldNotCreate": "Impossibile creare la sessione. Riprova."
+  },
+  "summary": {
+    "title": "Riepilogo serata",
+    "drinksTotal": "{count, plural, one {drink} other {drink}} in totale",
+    "personalBest": "🏅 Record personale!",
+    "pace": "Ritmo: {emoji} {label}",
+    "share": "Condividi 📤",
+    "copyText": "Copia testo 📋",
+    "copied": "Copiato ✓",
+    "back": "Indietro",
+    "expired": "Sessione scaduta",
+    "expiredMessage": "Questa sessione è scaduta (limite 48h). Inizia una nuova serata!",
+    "newEvening": "Nuova serata"
+  },
+  "table": {
+    "title": "🍻 Tavolo",
+    "loading": "Caricamento...",
+    "shareCode": "Condividi il codice {code} con gli amici",
+    "showQr": "📱 Mostra QR",
+    "hideQr": "Nascondi QR",
+    "createTable": "🍻 Crea tavolo",
+    "joinTable": "Unisciti al tavolo",
+    "code": "Codice",
+    "join": "Unisciti",
+    "couldNotCreate": "Impossibile creare il tavolo",
+    "notFound": "Tavolo non trovato"
+  },
+  "picker": {
+    "title": "Scegli un drink",
+    "search": "Cerca o scrivi un nuovo drink…",
+    "addCustom": "+ Aggiungi \"{name}\"",
+    "alreadyOrdered": "Già ordinato · tocca per +1",
+    "emptyTitle": "Scrivi un nome di bevanda sopra",
+    "emptyHint": "per cercare o aggiungere",
+    "close": "Chiudi"
+  },
+  "drinkCard": {
+    "aria": "{name}, {count}. Tocca per aggiungere, tieni premuto per rimuovere",
+    "longPress": "Tieni premuto per rimuovere"
+  },
+  "pwa": {
+    "install": "Installa TipsyTap",
+    "description": "Aggiungi alla schermata home",
+    "button": "Installa",
+    "dismiss": "Chiudi"
+  },
+  "error": {
+    "title": "Qualcosa è andato storto",
+    "message": "La pagina si è bloccata. Prova a ricaricare.",
+    "tryAgain": "Riprova"
+  },
+  "join": {
+    "joining": "Unione al tavolo…",
+    "failed": "Impossibile unirsi al tavolo",
+    "startFresh": "Ricomincia"
+  },
+  "stats": {
+    "title": "📊 Stats TipsyTap",
+    "bars": "Bar",
+    "sessions": "Sessioni",
+    "drinks": "Drink",
+    "byCategory": "Per categoria",
+    "topDrinks": "🍺 Top drink",
+    "topBars": "🍸 Top bar",
+    "noDrinks": "Nessun drink ancora",
+    "noBars": "Nessun bar ancora"
+  },
+  "badges": {
+    "firstSip": "Primo sorso",
+    "firstSipSub": "La serata inizia!",
+    "hatTrick": "Hat Trick",
+    "hatTrickSub": "Ti stai scaldando",
+    "onFire": "On Fire",
+    "onFireSub": "Nessuno ti ferma",
+    "deepEnd": "Acque profonde",
+    "deepEndSub": "Sei nella zona",
+    "legend": "Leggenda",
+    "legendSub": "Doppia cifra!",
+    "toTheMoon": "Alla luna",
+    "toTheMoonSub": "Houston, abbiamo una festa",
+    "noRegrets": "Nessun rimpianto",
+    "noRegretsSub": "Domani è un problema di domani"
+  },
+  "pace": {
+    "chill": "Rilassato",
+    "steady": "Costante",
+    "brisk": "Vivace",
+    "turbo": "Turbo",
+    "warpSpeed": "Velocità warp"
+  },
+  "achievements": {
+    "rainbow": "Arcobaleno — 4+ categorie!",
+    "categoryMaster": "Maestro di categorie — provato quasi tutto!",
+    "explorer": "Esploratore — 5+ drink diversi",
+    "adventurer": "Avventuriero — 10+ drink diversi!",
+    "signature": "Firma: {name}",
+    "devoted": "Fedele a {name}",
+    "wildcard": "Jolly — mai lo stesso drink due volte!",
+    "escalation": "Escalation — iniziato leggero, finito forte",
+    "nightOwl": "Gufo notturno — ancora in piedi dopo mezzanotte",
+    "savoring": "Assaporando — sessione di 4h+",
+    "speedRound": "Speed Round — 3+ drink in 30 min"
+  },
+  "nudges": {
+    "water": "Un bicchiere d'acqua?",
+    "taxi": "Forse salva il numero del taxi",
+    "sleep": "Il te del futuro ti ringrazia per fermarti presto"
+  },
+  "admin": {
+    "title": "Admin",
+    "login": "Accedi",
+    "secret": "Segreto admin…",
+    "barMenus": "Menu dei bar",
+    "edit": "Modifica",
+    "delete": "Elimina",
+    "save": "Salva",
+    "cancel": "Annulla",
+    "addItem": "+ Aggiungi",
+    "confirmDelete": "Eliminare questo menu?",
+    "drinkName": "Nome bevanda",
+    "barNameLabel": "Nome del bar"
+  },
+  "locale": {
+    "en": "English",
+    "fr": "Français",
+    "de": "Deutsch",
+    "es": "Español",
+    "ca": "Català",
+    "it": "Italiano"
+  }
+}

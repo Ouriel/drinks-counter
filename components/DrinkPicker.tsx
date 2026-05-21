@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Button, Input, Card, Chip } from "@heroui/react";
+import { useTranslations } from "next-intl";
 import { CATEGORY_EMOJI } from "@/lib/constants";
 import type { Drink, MenuItem } from "@/lib/types";
 
@@ -19,12 +20,12 @@ export function DrinkPicker({
   const [search, setSearch] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
   const onCloseRef = useRef(onClose);
+  const t = useTranslations("picker");
 
   useEffect(() => {
     onCloseRef.current = onClose;
   });
 
-  // Close on Escape + trap focus
   useEffect(() => {
     const handleKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") onCloseRef.current();
@@ -79,9 +80,9 @@ export function DrinkPicker({
         <div className="w-10 h-1 bg-muted/40 rounded-full mx-auto mb-3" />
         <div className="flex justify-between items-center mb-4">
           <h2 id="picker-title" className="text-xl font-bold">
-            Pick a drink
+            {t("title")}
           </h2>
-          <Button variant="ghost" size="sm" onPress={onClose} aria-label="Close">
+          <Button variant="ghost" size="sm" onPress={onClose} aria-label={t("close")}>
             ×
           </Button>
         </div>
@@ -95,7 +96,7 @@ export function DrinkPicker({
         >
           <Input
             className="w-full"
-            placeholder="Search or type a new drink…"
+            placeholder={t("search")}
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             autoFocus
@@ -108,14 +109,13 @@ export function DrinkPicker({
             className="w-full mb-4 border border-accent/50 text-accent"
             onPress={() => onSelect(search.trim())}
           >
-            + Add &quot;{search.trim()}&quot;
+            {t("addCustom", { name: search.trim() })}
           </Button>
         )}
 
-        {/* Already ordered — at the top for quick +1 */}
         {currentDrinks.length > 0 && (
           <div className="mb-4">
-            <h3 className="text-sm text-muted uppercase mb-2">Already ordered · tap for +1</h3>
+            <h3 className="text-sm text-muted uppercase mb-2">{t("alreadyOrdered")}</h3>
             <div className="space-y-1">
               {currentDrinks.map((drink) => (
                 <Card key={drink.id}>
@@ -135,7 +135,6 @@ export function DrinkPicker({
           </div>
         )}
 
-        {/* Menu items by category */}
         {Object.entries(grouped).map(([category, items]) => (
           <div key={category} className="mb-4">
             <div className="flex items-center gap-2 mb-2">
@@ -161,8 +160,8 @@ export function DrinkPicker({
         {!filtered.length && !showAddCustom && !search && currentDrinks.length === 0 && (
           <div className="text-center mt-12">
             <p className="text-4xl mb-3">🔍</p>
-            <p className="text-muted">Type a drink name above</p>
-            <p className="text-muted text-sm mt-1">to search or add it</p>
+            <p className="text-muted">{t("emptyTitle")}</p>
+            <p className="text-muted text-sm mt-1">{t("emptyHint")}</p>
           </div>
         )}
       </div>

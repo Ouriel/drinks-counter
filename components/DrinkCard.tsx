@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { Card, Chip } from "@heroui/react";
 import { useLongPress } from "react-aria";
+import { useTranslations } from "next-intl";
 import { CATEGORY_EMOJI } from "@/lib/constants";
 import type { Drink } from "@/lib/types";
 
@@ -24,9 +25,10 @@ export function DrinkCard({
   isTop?: boolean;
 }) {
   const longPressed = useRef(false);
+  const t = useTranslations("drinkCard");
 
   const { longPressProps } = useLongPress({
-    accessibilityDescription: "Long press to remove",
+    accessibilityDescription: t("longPress"),
     threshold: 500,
     onLongPress: () => {
       longPressed.current = true;
@@ -50,7 +52,7 @@ export function DrinkCard({
         {...longPressProps}
         onClick={handleClick}
         onContextMenu={(event) => event.preventDefault()}
-        aria-label={`${drink.name}, ${drink.count}. Tap to add, long press to remove`}
+        aria-label={t("aria", { name: drink.name, count: drink.count })}
       >
         <div className="flex items-center gap-2">
           <Chip size="sm">{categoryEmoji(drink.category)}</Chip>

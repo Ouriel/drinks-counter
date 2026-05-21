@@ -1,9 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Image from "next/image";
 import { Button, Spinner, toast } from "@heroui/react";
+import { useTranslations } from "next-intl";
+import { useTheme } from "next-themes";
+import { useRouter } from "@/i18n/navigation";
 import { ThemeSwitch } from "@/lib/theme-switch";
 import { titleCase } from "@/lib/sanitize";
 import { DrinkCard } from "@/components/DrinkCard";
@@ -22,7 +25,7 @@ function formatElapsed(drinks: Drink[]): string | null {
   }, null);
   if (!firstDrink) return null;
   const mins = Math.floor((Date.now() - new Date(firstDrink).getTime()) / 60000);
-  if (mins < 1) return "just started";
+  if (mins < 1) return null;
   const h = Math.floor(mins / 60);
   const m = mins % 60;
   return h > 0 ? `${h}h${m > 0 ? `${m}m` : ""}` : `${m}m`;
@@ -42,6 +45,7 @@ function ElapsedTimer({ drinks }: { drinks: Drink[] }) {
 export default function SessionPage() {
   const { slug } = useParams<{ slug: string }>();
   const router = useRouter();
+  const t = useTranslations();
   const [showConfetti, setShowConfetti] = useState(false);
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [barName, setBarName] = useState("");
@@ -90,7 +94,8 @@ export default function SessionPage() {
 
   const total = drinks.reduce((sum, d) => sum + d.count, 0);
   const pace = getPace(drinks);
-  const bgColor = getSessionHue(total);
+  const { resolvedTheme } = useTheme();
+  const bgColor = getSessionHue(total, resolvedTheme === "dark");
 
   if (loading) {
     return (
@@ -110,7 +115,7 @@ export default function SessionPage() {
         {showConfetti && <Confetti onDone={() => setShowConfetti(false)} />}
         <div className="absolute left-0 top-0">
           <Button variant="ghost" size="sm" onPress={() => router.push("/")}>
-            New
+            {t("session.new")}
           </Button>
         </div>
         <div className="absolute right-0 top-0 flex items-center gap-1">
@@ -120,16 +125,16 @@ export default function SessionPage() {
             onPress={() => {
               if (navigator.share) {
                 navigator.share({
-                  title: "TipsyTap",
-                  text: `Join my session at ${titleCase(barName || slug)}`,
+                  title: t("app.title"),
+                  text: t("session.joinSession", { bar: titleCase(barName || slug) }),
                   url: window.location.href,
                 });
               } else {
                 navigator.clipboard.writeText(window.location.href);
-                toast("Link copied!");
+                toast(t("session.linkCopied"));
               }
             }}
-            aria-label="Share"
+            aria-label={t("session.share")}
           >
             📤
           </Button>
@@ -137,7 +142,7 @@ export default function SessionPage() {
         </div>
         <h1 className={`text-3xl font-bold ${total >= 10 ? "animate-wobble" : ""}`} key={total}>
           <Image src="/icon.svg" alt="" width={32} height={32} className="inline mr-2" />
-          {total} drink{total !== 1 ? "s" : ""}
+          {t("session.drinks", { count: total })}
         </h1>
         {barName && <p className="text-base mt-1 text-foreground/70">{titleCase(barName)}</p>}
         <p className="text-sm mt-0.5 font-mono text-muted">
@@ -146,7 +151,7 @@ export default function SessionPage() {
           {pace && (
             <>
               {" "}
-              · {pace.emoji} {pace.label}
+              · {pace.emoji} {t(`pace.${pace.label.toLowerCase().replace(" ", "")}`)}
             </>
           )}
         </p>
@@ -156,7 +161,7 @@ export default function SessionPage() {
       {drinks.length > 0 && (
         <div className="text-center mb-4">
           <Button variant="ghost" size="sm" onPress={() => router.push(`/s/${slug}/summary`)}>
-            📊 Evening summary
+            {t("session.eveningSummary")}
           </Button>
         </div>
       )}
@@ -164,8 +169,8 @@ export default function SessionPage() {
       {/* Drinks list */}
       {drinks.length === 0 ? (
         <div className="text-center text-muted mt-12">
-          <p className="text-lg">No drinks yet</p>
-          <p className="text-sm mt-2">Tap + to add your first drink</p>
+          <p className="text-lg">{t("session.noDrinks")}</p>
+          <p className="text-sm mt-2">{t("session.noDrinksHint")}</p>
         </div>
       ) : (
         <>
@@ -184,7 +189,7 @@ export default function SessionPage() {
               ));
             })()}
           </div>
-          <p className="text-center text-muted text-xs mt-4">Long press to remove</p>
+          <p className="text-center text-muted text-xs mt-4">{t("session.longPressHint")}</p>
         </>
       )}
 
@@ -194,7 +199,7 @@ export default function SessionPage() {
       {/* FAB */}
       <div className="fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom))] left-0 right-0 flex justify-center">
         <Button variant="primary" size="lg" onPress={() => setShowPicker(true)}>
-          + Add a drink
+          {t("session.addDrink")}
         </Button>
       </div>
 

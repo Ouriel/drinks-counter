@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { db, barMenus, sessions, drinks, normalizeMenuItems } from "@/lib/db";
 import { sql, count, desc } from "drizzle-orm";
 import { CATEGORY_EMOJI } from "@/lib/constants";
@@ -5,6 +6,7 @@ import { CATEGORY_EMOJI } from "@/lib/constants";
 export const revalidate = 60;
 
 export default async function StatsPage() {
+  const t = await getTranslations("stats");
   const [[menuCount], [sessionCount], [drinkTotal], topDrinks, byCategory, topBarsRaw] =
     await Promise.all([
       db.select({ count: count() }).from(barMenus),
@@ -35,26 +37,26 @@ export default async function StatsPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground p-6">
-      <h1 className="text-2xl font-bold mb-6">📊 TipsyTap Stats</h1>
+      <h1 className="text-2xl font-bold mb-6">{t("title")}</h1>
 
       <div className="grid grid-cols-3 gap-3 mb-8">
         <div className="bg-surface rounded-xl p-4 text-center">
           <p className="text-3xl font-bold">{menuCount.count}</p>
-          <p className="text-sm text-muted mt-1">Bars</p>
+          <p className="text-sm text-muted mt-1">{t("bars")}</p>
         </div>
         <div className="bg-surface rounded-xl p-4 text-center">
           <p className="text-3xl font-bold">{sessionCount.count}</p>
-          <p className="text-sm text-muted mt-1">Sessions</p>
+          <p className="text-sm text-muted mt-1">{t("sessions")}</p>
         </div>
         <div className="bg-surface rounded-xl p-4 text-center">
           <p className="text-3xl font-bold">{drinkTotal.total}</p>
-          <p className="text-sm text-muted mt-1">Drinks</p>
+          <p className="text-sm text-muted mt-1">{t("drinks")}</p>
         </div>
       </div>
 
       {byCategory.length > 0 && (
         <>
-          <h2 className="text-lg font-bold mb-3">By Category</h2>
+          <h2 className="text-lg font-bold mb-3">{t("byCategory")}</h2>
           <div className="grid grid-cols-2 gap-2 mb-8">
             {byCategory.map((c) => (
               <div
@@ -70,7 +72,7 @@ export default async function StatsPage() {
         </>
       )}
 
-      <h2 className="text-lg font-bold mb-3">🍺 Top Drinks</h2>
+      <h2 className="text-lg font-bold mb-3">{t("topDrinks")}</h2>
       <div className="space-y-2 mb-8">
         {topDrinks.map((d, i) => (
           <div key={d.name} className="flex justify-between bg-surface rounded-lg px-4 py-3">
@@ -81,10 +83,10 @@ export default async function StatsPage() {
             <span className="font-bold tabular-nums text-base">{d.total}</span>
           </div>
         ))}
-        {topDrinks.length === 0 && <p className="text-muted">No drinks yet</p>}
+        {topDrinks.length === 0 && <p className="text-muted">{t("noDrinks")}</p>}
       </div>
 
-      <h2 className="text-lg font-bold mb-3">🍸 Top Bars</h2>
+      <h2 className="text-lg font-bold mb-3">{t("topBars")}</h2>
       <div className="space-y-2">
         {topBars.map((b, i) => (
           <div key={b.barName} className="flex justify-between bg-surface rounded-lg px-4 py-3">
@@ -95,7 +97,7 @@ export default async function StatsPage() {
             <span className="text-muted text-base">{b.itemCount} items</span>
           </div>
         ))}
-        {topBars.length === 0 && <p className="text-muted">No bars yet</p>}
+        {topBars.length === 0 && <p className="text-muted">{t("noBars")}</p>}
       </div>
     </div>
   );

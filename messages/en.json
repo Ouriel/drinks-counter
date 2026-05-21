@@ -1,0 +1,175 @@
+{
+  "app": {
+    "title": "TipsyTap",
+    "tagline": "Tap to track the tipsy"
+  },
+  "home": {
+    "startCounting": "Start counting",
+    "sessionCode": "Session code…",
+    "goToSession": "Go to session",
+    "recentSessions": "Recent sessions"
+  },
+  "bar": {
+    "whereAreYou": "Where are you?",
+    "barName": "Bar name…",
+    "items": "{count} items",
+    "nearbyPlaces": "📍 Nearby places",
+    "noResultsPhoto": "📸 No results — take a photo of the menu to get started!",
+    "start": "Start ({count} drinks)",
+    "creating": "Creating…",
+    "readingMenu": "Reading menu…",
+    "camera": "📸 Camera",
+    "gallery": "📁 Gallery",
+    "skipManual": "Skip — I'll add manually"
+  },
+  "review": {
+    "title": "Review menu items",
+    "editDrink": "Edit drink name: {name}",
+    "removeDrink": "Remove {name}",
+    "hint": "Tap a name to edit. Remove junk. You can add more later.",
+    "startCounting": "Start counting 🍺"
+  },
+  "session": {
+    "drinks": "{count, plural, one {# drink} other {# drinks}}",
+    "justStarted": "just started",
+    "noDrinks": "No drinks yet",
+    "noDrinksHint": "Tap + to add your first drink",
+    "longPressHint": "Long press to remove",
+    "addDrink": "+ Add a drink",
+    "new": "New",
+    "share": "Share",
+    "linkCopied": "Link copied!",
+    "joinSession": "Join my session at {bar}",
+    "eveningSummary": "📊 Evening summary",
+    "couldNotCreate": "Could not create session. Please try again."
+  },
+  "summary": {
+    "title": "Evening Summary",
+    "drinksTotal": "{count, plural, one {drink} other {drinks}} total",
+    "personalBest": "🏅 Personal best!",
+    "pace": "Pace: {emoji} {label}",
+    "share": "Share 📤",
+    "copyText": "Copy text 📋",
+    "copied": "Copied ✓",
+    "back": "Back",
+    "expired": "Session expired",
+    "expiredMessage": "This session has expired (48h limit). Start a new evening to keep counting!",
+    "newEvening": "New evening"
+  },
+  "table": {
+    "title": "🍻 Table",
+    "loading": "Loading...",
+    "shareCode": "Share code {code} with friends",
+    "showQr": "📱 Show QR code",
+    "hideQr": "Hide QR",
+    "createTable": "🍻 Create table",
+    "joinTable": "Join table",
+    "code": "Code",
+    "join": "Join",
+    "couldNotCreate": "Could not create table",
+    "notFound": "Table not found"
+  },
+  "picker": {
+    "title": "Pick a drink",
+    "search": "Search or type a new drink…",
+    "addCustom": "+ Add \"{name}\"",
+    "alreadyOrdered": "Already ordered · tap for +1",
+    "emptyTitle": "Type a drink name above",
+    "emptyHint": "to search or add it",
+    "close": "Close"
+  },
+  "drinkCard": {
+    "aria": "{name}, {count}. Tap to add, long press to remove",
+    "longPress": "Long press to remove"
+  },
+  "pwa": {
+    "install": "Install TipsyTap",
+    "description": "Add to home screen for quick access",
+    "button": "Install",
+    "dismiss": "Dismiss"
+  },
+  "error": {
+    "title": "Something went wrong",
+    "message": "The session page crashed. Try reloading.",
+    "tryAgain": "Try again"
+  },
+  "join": {
+    "joining": "Joining table…",
+    "failed": "Could not join table",
+    "startFresh": "Start fresh"
+  },
+  "stats": {
+    "title": "📊 TipsyTap Stats",
+    "bars": "Bars",
+    "sessions": "Sessions",
+    "drinks": "Drinks",
+    "byCategory": "By Category",
+    "topDrinks": "🍺 Top Drinks",
+    "topBars": "🍸 Top Bars",
+    "noDrinks": "No drinks yet",
+    "noBars": "No bars yet"
+  },
+  "badges": {
+    "firstSip": "First Sip",
+    "firstSipSub": "The night begins!",
+    "hatTrick": "Hat Trick",
+    "hatTrickSub": "You're warming up",
+    "onFire": "On Fire",
+    "onFireSub": "No stopping now",
+    "deepEnd": "Deep End",
+    "deepEndSub": "You're in the zone",
+    "legend": "Legend",
+    "legendSub": "Double digits!",
+    "toTheMoon": "To The Moon",
+    "toTheMoonSub": "Houston, we have a party",
+    "noRegrets": "No Regrets",
+    "noRegretsSub": "Tomorrow is a problem for tomorrow"
+  },
+  "pace": {
+    "chill": "Chill",
+    "steady": "Steady",
+    "brisk": "Brisk",
+    "turbo": "Turbo",
+    "warpSpeed": "Warp speed"
+  },
+  "achievements": {
+    "rainbow": "Rainbow drinker — 4+ categories!",
+    "categoryMaster": "Category master — tried almost everything!",
+    "explorer": "Explorer — 5+ different drinks",
+    "adventurer": "Adventurer — 10+ different drinks!",
+    "signature": "Signature: {name}",
+    "devoted": "Devoted to {name}",
+    "wildcard": "Wildcard — never the same drink twice!",
+    "escalation": "Escalation — started light, ended strong",
+    "nightOwl": "Night Owl — still going past midnight",
+    "savoring": "Savoring It — 4+ hour session",
+    "speedRound": "Speed Round — 3+ drinks in 30 min"
+  },
+  "nudges": {
+    "water": "Water break?",
+    "taxi": "Maybe save that taxi number",
+    "sleep": "Future you says thanks for stopping soon"
+  },
+  "admin": {
+    "title": "Admin",
+    "login": "Login",
+    "secret": "Admin secret…",
+    "barMenus": "Bar Menus",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel",
+    "addItem": "+ Add item",
+    "confirmDelete": "Delete this bar menu?",
+    "drinkName": "Drink name",
+    "barNameLabel": "Bar name"
+  },
+  "locale": {
+    "en": "English",
+    "fr": "Français",
+    "de": "Deutsch",
+    "es": "Español",
+    "ca": "Català",
+    "it": "Italiano"
+  }
+}

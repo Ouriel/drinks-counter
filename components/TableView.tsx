@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Button, Input, Card } from "@heroui/react";
+import { useTranslations } from "next-intl";
 import { QrCode } from "@/components/QrCode";
 import { api } from "@/lib/api";
 
@@ -25,6 +26,7 @@ export function TableView({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showQr, setShowQr] = useState(false);
+  const t = useTranslations("table");
 
   const fetchRanking = useCallback(
     async (code?: string) => {
@@ -38,7 +40,6 @@ export function TableView({
 
   useEffect(() => {
     if (!tableCode) return;
-    // Initial fetch + polling interval (legitimate data sync with external system)
     // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchRanking();
     const id = setInterval(() => {
@@ -53,7 +54,7 @@ export function TableView({
     const data = await api.createTable(slug);
     setLoading(false);
     if (!data) {
-      setError("Could not create table");
+      setError(t("couldNotCreate"));
       return;
     }
     setLocalCode(data.code);
@@ -67,7 +68,7 @@ export function TableView({
     const data = await api.joinTable(slug, joinCode.trim());
     setLoading(false);
     if (!data) {
-      setError("Table not found");
+      setError(t("notFound"));
       return;
     }
     setLocalCode(data.code);
@@ -75,18 +76,17 @@ export function TableView({
     fetchRanking(data.code);
   }
 
-  // Already in a table — show ranking
   if (tableCode) {
     return (
       <div className="mt-6">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-bold">🍻 Table</h2>
+          <h2 className="text-lg font-bold">{t("title")}</h2>
           <span className="text-xs font-mono text-muted bg-surface px-2 py-1 rounded">
             {tableCode}
           </span>
         </div>
         {members.length === 0 ? (
-          <p className="text-muted text-sm">Loading...</p>
+          <p className="text-muted text-sm">{t("loading")}</p>
         ) : (
           <div className="space-y-2">
             {members.map((m, i) => (
@@ -102,9 +102,7 @@ export function TableView({
             ))}
           </div>
         )}
-        <p className="text-xs text-muted text-center mt-3">
-          Share code <strong>{tableCode}</strong> with friends
-        </p>
+        <p className="text-xs text-muted text-center mt-3">{t("shareCode", { code: tableCode })}</p>
         {showQr ? (
           <div className="mt-3 text-center">
             <QrCode
@@ -112,13 +110,13 @@ export function TableView({
               size={140}
             />
             <Button variant="ghost" size="sm" className="mt-2" onPress={() => setShowQr(false)}>
-              Hide QR
+              {t("hideQr")}
             </Button>
           </div>
         ) : (
           <div className="text-center mt-2">
             <Button variant="ghost" size="sm" onPress={() => setShowQr(true)}>
-              📱 Show QR code
+              {t("showQr")}
             </Button>
           </div>
         )}
@@ -126,26 +124,25 @@ export function TableView({
     );
   }
 
-  // Not in a table
   return (
     <div className="mt-6 text-center">
       {!showJoin ? (
         <div className="flex gap-2 justify-center">
           <Button variant="ghost" size="sm" isDisabled={loading} onPress={handleCreate}>
-            {loading ? "..." : "🍻 Create table"}
+            {loading ? "..." : t("createTable")}
           </Button>
           <Button variant="ghost" size="sm" onPress={() => setShowJoin(true)}>
-            Join table
+            {t("joinTable")}
           </Button>
         </div>
       ) : (
         <div className="flex gap-2 justify-center items-center">
           <Input
             className="w-32"
-            placeholder="Code"
+            placeholder={t("code")}
             value={joinCode}
             onChange={(event) => setJoinCode(event.target.value.toUpperCase().slice(0, 6))}
-            aria-label="Table code"
+            aria-label={t("code")}
           />
           <Button
             variant="primary"
@@ -153,7 +150,7 @@ export function TableView({
             isDisabled={loading || !joinCode.trim()}
             onPress={handleJoin}
           >
-            {loading ? "..." : "Join"}
+            {loading ? "..." : t("join")}
           </Button>
           <Button variant="ghost" size="sm" onPress={() => setShowJoin(false)}>
             ×

@@ -1,0 +1,175 @@
+{
+  "app": {
+    "title": "TipsyTap",
+    "tagline": "Toca per comptar les copes"
+  },
+  "home": {
+    "startCounting": "Començar a comptar",
+    "sessionCode": "Codi de sessió…",
+    "goToSession": "Anar a la sessió",
+    "recentSessions": "Sessions recents"
+  },
+  "bar": {
+    "whereAreYou": "On ets?",
+    "barName": "Nom del bar…",
+    "items": "{count} begudes",
+    "nearbyPlaces": "📍 Llocs propers",
+    "noResultsPhoto": "📸 Sense resultats — fes una foto del menú per començar!",
+    "start": "Començar ({count} begudes)",
+    "creating": "Creant…",
+    "readingMenu": "Llegint el menú…",
+    "camera": "📸 Càmera",
+    "gallery": "📁 Galeria",
+    "skipManual": "Saltar — afegiré manualment"
+  },
+  "review": {
+    "title": "Revisar begudes",
+    "editDrink": "Editar nom: {name}",
+    "removeDrink": "Eliminar {name}",
+    "hint": "Toca un nom per editar-lo. Elimina el que sobri. Pots afegir-ne més després.",
+    "startCounting": "Començar a comptar 🍺"
+  },
+  "session": {
+    "drinks": "{count, plural, one {# copa} other {# copes}}",
+    "justStarted": "acaba de començar",
+    "noDrinks": "Encara no hi ha copes",
+    "noDrinksHint": "Toca + per afegir la teva primera copa",
+    "longPressHint": "Mantén premut per treure",
+    "addDrink": "+ Afegir copa",
+    "new": "Nova",
+    "share": "Compartir",
+    "linkCopied": "Enllaç copiat!",
+    "joinSession": "Uneix-te a la meva sessió a {bar}",
+    "eveningSummary": "📊 Resum del vespre",
+    "couldNotCreate": "No s'ha pogut crear la sessió. Torna-ho a provar."
+  },
+  "summary": {
+    "title": "Resum del vespre",
+    "drinksTotal": "{count, plural, one {copa} other {copes}} en total",
+    "personalBest": "🏅 Rècord personal!",
+    "pace": "Ritme: {emoji} {label}",
+    "share": "Compartir 📤",
+    "copyText": "Copiar text 📋",
+    "copied": "Copiat ✓",
+    "back": "Tornar",
+    "expired": "Sessió expirada",
+    "expiredMessage": "Aquesta sessió ha expirat (límit 48h). Comença un nou vespre!",
+    "newEvening": "Nou vespre"
+  },
+  "table": {
+    "title": "🍻 Taula",
+    "loading": "Carregant...",
+    "shareCode": "Comparteix el codi {code} amb els amics",
+    "showQr": "📱 Mostrar QR",
+    "hideQr": "Amagar QR",
+    "createTable": "🍻 Crear taula",
+    "joinTable": "Unir-se a taula",
+    "code": "Codi",
+    "join": "Unir-se",
+    "couldNotCreate": "No s'ha pogut crear la taula",
+    "notFound": "Taula no trobada"
+  },
+  "picker": {
+    "title": "Tria una copa",
+    "search": "Cercar o escriure una nova beguda…",
+    "addCustom": "+ Afegir \"{name}\"",
+    "alreadyOrdered": "Ja demanat · toca per +1",
+    "emptyTitle": "Escriu un nom de beguda a dalt",
+    "emptyHint": "per cercar o afegir",
+    "close": "Tancar"
+  },
+  "drinkCard": {
+    "aria": "{name}, {count}. Toca per afegir, mantén premut per treure",
+    "longPress": "Mantén premut per treure"
+  },
+  "pwa": {
+    "install": "Instal·lar TipsyTap",
+    "description": "Afegir a la pantalla d'inici",
+    "button": "Instal·lar",
+    "dismiss": "Tancar"
+  },
+  "error": {
+    "title": "Alguna cosa ha anat malament",
+    "message": "La pàgina ha fallat. Prova de recarregar.",
+    "tryAgain": "Tornar a provar"
+  },
+  "join": {
+    "joining": "Unint-se a la taula…",
+    "failed": "No s'ha pogut unir a la taula",
+    "startFresh": "Començar de nou"
+  },
+  "stats": {
+    "title": "📊 Stats TipsyTap",
+    "bars": "Bars",
+    "sessions": "Sessions",
+    "drinks": "Copes",
+    "byCategory": "Per categoria",
+    "topDrinks": "🍺 Top begudes",
+    "topBars": "🍸 Top bars",
+    "noDrinks": "Encara no hi ha copes",
+    "noBars": "Encara no hi ha bars"
+  },
+  "badges": {
+    "firstSip": "Primer glop",
+    "firstSipSub": "Comença la nit!",
+    "hatTrick": "Hat Trick",
+    "hatTrickSub": "T'estàs escalfant",
+    "onFire": "En flames",
+    "onFireSub": "No hi ha qui et pari",
+    "deepEnd": "Aigües profundes",
+    "deepEndSub": "Estàs a la zona",
+    "legend": "Llegenda",
+    "legendSub": "Doble dígit!",
+    "toTheMoon": "A la lluna",
+    "toTheMoonSub": "Houston, tenim festa",
+    "noRegrets": "Sense penediments",
+    "noRegretsSub": "Demà és problema de demà"
+  },
+  "pace": {
+    "chill": "Tranquil",
+    "steady": "Constant",
+    "brisk": "Animat",
+    "turbo": "Turbo",
+    "warpSpeed": "Velocitat warp"
+  },
+  "achievements": {
+    "rainbow": "Arc de Sant Martí — 4+ categories!",
+    "categoryMaster": "Mestre de categories — gairebé tot provat!",
+    "explorer": "Explorador — 5+ begudes diferents",
+    "adventurer": "Aventurer — 10+ begudes diferents!",
+    "signature": "Signatura: {name}",
+    "devoted": "Fidel a {name}",
+    "wildcard": "Comodí — mai la mateixa beguda dues vegades!",
+    "escalation": "Escalada — va començar suau, va acabar fort",
+    "nightOwl": "Mussol nocturn — encara dret després de mitjanit",
+    "savoring": "Assaborint — sessió de 4h+",
+    "speedRound": "Ronda ràpida — 3+ copes en 30 min"
+  },
+  "nudges": {
+    "water": "Un got d'aigua?",
+    "taxi": "Potser guarda el número del taxi",
+    "sleep": "El teu jo del futur t'agraeix parar aviat"
+  },
+  "admin": {
+    "title": "Admin",
+    "login": "Entrar",
+    "secret": "Secret admin…",
+    "barMenus": "Menús de bars",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "save": "Desar",
+    "cancel": "Cancel·lar",
+    "addItem": "+ Afegir",
+    "confirmDelete": "Eliminar aquest menú?",
+    "drinkName": "Nom de la beguda",
+    "barNameLabel": "Nom del bar"
+  },
+  "locale": {
+    "en": "English",
+    "fr": "Français",
+    "de": "Deutsch",
+    "es": "Español",
+    "ca": "Català",
+    "it": "Italiano"
+  }
+}

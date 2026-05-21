@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Button, Card, Chip, Spinner } from "@heroui/react";
+import { useTranslations } from "next-intl";
 import { CATEGORY_EMOJI } from "@/lib/constants";
 import { titleCase } from "@/lib/sanitize";
 import {
@@ -16,6 +17,7 @@ import type { Drink } from "@/lib/types";
 
 export default function SummaryPage() {
   const { slug } = useParams<{ slug: string }>();
+  const t = useTranslations();
   const [drinks, setDrinks] = useState<Drink[]>([]);
   const [barName, setBarName] = useState("");
   const [loading, setLoading] = useState(true);
@@ -54,12 +56,10 @@ export default function SummaryPage() {
         <Card className="w-full max-w-sm">
           <div className="p-6 text-center">
             <p className="text-5xl mb-4">⏰</p>
-            <h1 className="text-xl font-bold mb-2">Session expired</h1>
-            <p className="text-muted">
-              This session has expired (48h limit). Start a new evening to keep counting!
-            </p>
+            <h1 className="text-xl font-bold mb-2">{t("summary.expired")}</h1>
+            <p className="text-muted">{t("summary.expiredMessage")}</p>
             <Button variant="primary" className="mt-6" onPress={() => (window.location.href = "/")}>
-              New evening
+              {t("summary.newEvening")}
             </Button>
           </div>
         </Card>
@@ -120,7 +120,7 @@ export default function SummaryPage() {
           {/* Header */}
           <div className="text-center mb-6">
             <p className="text-5xl mb-2">🍻</p>
-            <h1 className="text-2xl font-bold">Evening Summary</h1>
+            <h1 className="text-2xl font-bold">{t("summary.title")}</h1>
             {barName && <p className="text-foreground/70 mt-1">{titleCase(barName)}</p>}
             {firstDrink && (
               <p className="text-sm text-muted mt-1">
@@ -132,9 +132,9 @@ export default function SummaryPage() {
           {/* Total */}
           <div className="text-center mb-6">
             <p className="text-6xl font-bold">{total}</p>
-            <p className="text-muted">drink{total !== 1 ? "s" : ""} total</p>
+            <p className="text-muted">{t("summary.drinksTotal", { count: total })}</p>
             {total === getPersonalBest() && total > 0 && (
-              <p className="text-sm mt-1">🏅 Personal best!</p>
+              <p className="text-sm mt-1">{t("summary.personalBest")}</p>
             )}
           </div>
 
@@ -168,14 +168,12 @@ export default function SummaryPage() {
                   </div>
                 )}
 
-                {/* Pace */}
                 {pace && (
                   <p className="text-center text-sm text-muted mb-4">
-                    Pace: {pace.emoji} {pace.label}
+                    {t("summary.pace", { emoji: pace.emoji, label: pace.label })}
                   </p>
                 )}
 
-                {/* Achievements */}
                 {achievements.length > 0 && (
                   <div className="space-y-1 mb-4">
                     {achievements.map((achievement) => (
@@ -215,7 +213,7 @@ export default function SummaryPage() {
           onPress={() => {
             if (navigator.share) {
               navigator.share({
-                title: "My TipsyTap Evening",
+                title: t("app.title"),
                 text: `${total} drinks at ${titleCase(barName || "the bar")} 🍻`,
                 url: window.location.href,
               });
@@ -224,13 +222,13 @@ export default function SummaryPage() {
             }
           }}
         >
-          Share 📤
+          {t("summary.share")}
         </Button>
         <Button variant="ghost" onPress={copyAsText}>
-          {copied ? "Copied ✓" : "Copy text 📋"}
+          {copied ? t("summary.copied") : t("summary.copyText")}
         </Button>
         <Button variant="ghost" onPress={() => (window.location.href = `/s/${slug}`)}>
-          Back
+          {t("summary.back")}
         </Button>
       </div>
     </div>
