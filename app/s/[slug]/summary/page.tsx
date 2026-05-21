@@ -133,7 +133,7 @@ export default function SummaryPage() {
           <div className="text-center mb-6">
             <p className="text-6xl font-bold">{total}</p>
             <p className="text-muted">drink{total !== 1 ? "s" : ""} total</p>
-            {total >= getPersonalBest() && total > 0 && (
+            {total === getPersonalBest() && total > 0 && (
               <p className="text-sm mt-1">🏅 Personal best!</p>
             )}
           </div>

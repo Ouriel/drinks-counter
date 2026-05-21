@@ -63,3 +63,22 @@
 
 - Slug entropy ~10K combos — collision retry loop (5 attempts) mitigates, sufficient for current scale
 - No session expiry handling during active use — 48h TTL is generous for a night out
+
+## Code Review #2 (2026-05-21)
+
+### Open Issues (minor)
+
+- `useOptimisticDrinks` temp ID uses `Date.now()` — sub-ms collision possible; use `crypto.randomUUID()`
+- Summary page PB check uses `>=` instead of `===` — shows "Personal best!" on every visit, not just new records
+- Admin page uses raw `fetch()` without Zod validation (convention violation, low-risk since admin-only)
+- Rate limiters (Nominatim, parse-menu) reset on serverless cold starts — acceptable for current scale
+
+### Verified Clean
+
+- All conventions followed: strict TS, no any, canonical types, Zod at all API boundaries
+- useEffect audit: all legitimate (DOM events, timers, initial fetch only)
+- No abbreviated params anywhere
+- Tests: 69 tests, all exercise real code, no db.ts imports, no placeholder assertions
+- React patterns correct: onCloseRef, onDoneRef, declaration order, no derived-state useEffects
+- Security: timingSafeEqual auth, Zod input validation on all routes, session ownership checks on PATCH
+- Accessibility: aria-modal, aria-labelledby, keyboard trap in DrinkPicker, aria-labels on all buttons

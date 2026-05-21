@@ -76,7 +76,7 @@ export function useOptimisticDrinks(slug: string, onBadge?: () => void) {
     } else {
       setDrinks((prev) => [
         ...prev,
-        { id: `temp-${Date.now()}`, name, count: 1, category: category || null },
+        { id: `temp-${crypto.randomUUID()}`, name, count: 1, category: category || null },
       ]);
     }
     triggerGamification(totalRef.current + 1);
