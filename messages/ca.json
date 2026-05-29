@@ -115,7 +115,11 @@
     "topDrinks": "🍺 Top begudes",
     "topBars": "🍸 Top bars",
     "noDrinks": "Encara no hi ha copes",
-    "noBars": "Encara no hi ha bars"
+    "noBars": "Encara no hi ha bars",
+    "active": "Active now",
+    "today": "Today",
+    "thisWeek": "This week",
+    "avgPerSession": "~{avg} drinks per session on average"
   },
   "badges": {
     "firstSip": "Primer glop",

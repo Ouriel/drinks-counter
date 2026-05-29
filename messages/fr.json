@@ -115,7 +115,11 @@
     "topDrinks": "🍺 Top boissons",
     "topBars": "🍸 Top bars",
     "noDrinks": "Pas encore de verres",
-    "noBars": "Pas encore de bars"
+    "noBars": "Pas encore de bars",
+    "active": "Active now",
+    "today": "Today",
+    "thisWeek": "This week",
+    "avgPerSession": "~{avg} drinks per session on average"
   },
   "badges": {
     "firstSip": "Première gorgée",

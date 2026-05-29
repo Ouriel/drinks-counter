@@ -115,7 +115,11 @@
     "topDrinks": "🍺 Top bebidas",
     "topBars": "🍸 Top bares",
     "noDrinks": "Aún no hay copas",
-    "noBars": "Aún no hay bares"
+    "noBars": "Aún no hay bares",
+    "active": "Active now",
+    "today": "Today",
+    "thisWeek": "This week",
+    "avgPerSession": "~{avg} drinks per session on average"
   },
   "badges": {
     "firstSip": "Primer sorbo",
