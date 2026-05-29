@@ -64,31 +64,29 @@ function HomeContent() {
     }
     debounceRef.current = setTimeout(async () => {
       try {
-        const data = await api.searchMenus(q);
-        if (!data) return;
-        setBarSuggestions(data.menus);
+        // Fire DB and OSM searches in parallel
+        const menuPromise = api.searchMenus(q);
 
-        if (data.menus.length === 0) {
-          if (!geoRef.current && navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-              (pos) => {
-                geoRef.current = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-              },
-              () => {},
-              { timeout: 5000 }
-            );
-          }
-          const geo = geoRef.current;
-          const params = new URLSearchParams({ q });
-          if (geo) {
-            params.set("lat", String(geo.lat));
-            params.set("lng", String(geo.lng));
-          }
-          const osmData = await api.searchBars(params);
-          setOsmResults(osmData?.results || []);
-        } else {
-          setOsmResults([]);
+        if (!geoRef.current && navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              geoRef.current = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+            },
+            () => {},
+            { timeout: 5000 }
+          );
         }
+        const geo = geoRef.current;
+        const params = new URLSearchParams({ q });
+        if (geo) {
+          params.set("lat", String(geo.lat));
+          params.set("lng", String(geo.lng));
+        }
+        const osmPromise = api.searchBars(params);
+
+        const [data, osmData] = await Promise.all([menuPromise, osmPromise]);
+        if (data) setBarSuggestions(data.menus);
+        setOsmResults(osmData?.results || []);
       } catch {
         // Network error — silently ignore for search
       }

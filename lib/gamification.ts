@@ -34,7 +34,7 @@ export function getSessionHue(total: number, isDark = true): string {
   const t = Math.min(total, 20) / 20;
   const hue = Math.round(210 - t * 180); // 210 → 30
   const saturation = Math.round(30 + t * 50); // 30% → 80%
-  const lightness = isDark ? 12 + t * 4 : 94 - t * 6; // dark: 12→16%, light: 94→88%
+  const lightness = isDark ? 10 + t * 5 : 94 - t * 6; // dark: 10→15%, light: 94→88%
   return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
 }
 

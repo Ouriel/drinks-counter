@@ -208,7 +208,11 @@ export default function SessionPage() {
               ));
             })()}
           </div>
-          <p className="text-center text-default-500 text-xs mt-4">{t("session.longPressHint")}</p>
+          {total <= 3 && (
+            <p className="text-center text-default-500 text-xs mt-4">
+              {t("session.longPressHint")}
+            </p>
+          )}
         </>
       )}
 

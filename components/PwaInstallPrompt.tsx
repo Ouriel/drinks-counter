@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { Button } from "@heroui/react";
 import { useTranslations } from "next-intl";
+import { usePathname } from "next/navigation";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
@@ -22,6 +23,11 @@ export function PwaInstallPrompt() {
   const [visible, setVisible] = useState(true);
   const timerRef = useRef<NodeJS.Timeout>(null);
   const t = useTranslations("pwa");
+  const pathname = usePathname();
+
+  // Only show on home page or join page
+  const isHomePage = /^\/[a-z]{2}\/?$/.test(pathname);
+  const isJoinPage = pathname.includes("/join/");
 
   useEffect(() => {
     if (isStandalone()) return;
@@ -39,6 +45,7 @@ export function PwaInstallPrompt() {
     };
   }, []);
 
+  if (!isHomePage && !isJoinPage) return null;
   if (!deferredPrompt || !visible) return null;
 
   return (
