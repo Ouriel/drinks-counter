@@ -79,6 +79,7 @@ export function useOptimisticDrinks(slug: string, onBadge?: () => void) {
     await withPendingOp(async () => {
       const data = await api.addDrink({ slug, name, category });
       if (!data) {
+        totalRef.current = Math.max(0, totalRef.current - 1);
         fetchDrinks();
         return;
       }
@@ -109,6 +110,7 @@ export function useOptimisticDrinks(slug: string, onBadge?: () => void) {
         category: drink.category || undefined,
       });
       if (!data) {
+        totalRef.current = Math.max(0, totalRef.current - 1);
         setDrinks((prev) =>
           prev.map((item) => (item.id === drink.id ? { ...item, count: item.count - 1 } : item))
         );

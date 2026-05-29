@@ -6,6 +6,13 @@
   font-size: 18px;
 }
 
+/* Ensure primary buttons meet WCAG AA contrast (4.5:1) */
+.dark [data-slot="button"].button--primary,
+.dark button[class*="bg-primary"] {
+  color: #000;
+  font-weight: 600;
+}
+
 @keyframes confetti-fall {
   0% {
     transform: translateY(-20px) rotate(0deg);

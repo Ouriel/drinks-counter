@@ -7,7 +7,12 @@ import { eq } from "drizzle-orm";
 import { createSessionSchema, parseBody } from "@/lib/schemas";
 
 export async function POST(req: NextRequest) {
-  const body = await req.json();
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
   const parsed = parseBody(createSessionSchema, body);
   if ("error" in parsed) return NextResponse.json({ error: parsed.error }, { status: 400 });
   const { barName, menuItems, slug: preferredSlug } = parsed.data;

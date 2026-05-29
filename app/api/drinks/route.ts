@@ -22,7 +22,12 @@ export async function GET(req: NextRequest) {
 
 // POST: add a new drink or increment existing
 export async function POST(req: NextRequest) {
-  const body = await req.json();
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
   const parsed = parseBody(addDrinkSchema, body);
   if ("error" in parsed) return NextResponse.json({ error: parsed.error }, { status: 400 });
   const { slug, name, category } = parsed.data;
@@ -36,19 +41,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Session expired" }, { status: 404 });
   }
 
-  // Case-insensitive match using lower()
+  // Atomic upsert: increment if exists, insert if not
   const [existing] = await db
-    .select()
-    .from(drinks)
+    .update(drinks)
+    .set({ count: sql`${drinks.count} + 1` })
     .where(and(eq(drinks.sessionId, session.id), sql`lower(${drinks.name}) = ${cleanName}`))
-    .limit(1);
+    .returning();
 
   if (existing) {
-    await db
-      .update(drinks)
-      .set({ count: sql`${drinks.count} + 1` })
-      .where(eq(drinks.id, existing.id));
-    return NextResponse.json({ count: existing.count + 1 });
+    return NextResponse.json({ count: existing.count });
   }
 
   const [drink] = await db
@@ -82,7 +83,12 @@ export async function POST(req: NextRequest) {
 
 // PATCH: increment or decrement (with session ownership check)
 export async function PATCH(req: NextRequest) {
-  const body = await req.json();
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
   const parsed = parseBody(patchDrinkSchema, body);
   if ("error" in parsed) return NextResponse.json({ error: parsed.error }, { status: 400 });
   const { slug, drinkId, delta } = parsed.data;

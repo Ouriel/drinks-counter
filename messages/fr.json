@@ -70,10 +70,10 @@
     "join": "Rejoindre",
     "couldNotCreate": "Impossible de créer la table",
     "notFound": "Table introuvable",
-    "refresh": "Refresh",
-    "you": "you",
-    "noDrinks": "No drinks yet",
-    "leave": "Leave table"
+    "refresh": "Actualiser",
+    "you": "toi",
+    "noDrinks": "Pas encore de verres",
+    "leave": "Quitter la table"
   },
   "picker": {
     "title": "Choisis un verre",
@@ -85,10 +85,10 @@
     "close": "Fermer"
   },
   "drinkCard": {
-    "aria": "{name}, {count}. Tap + to add, tap − to remove",
+    "aria": "{name}, {count}. Tape + pour ajouter, tape − pour retirer",
     "longPress": "Appui long pour retirer",
-    "add": "Add one",
-    "remove": "Remove one"
+    "add": "Ajouter un",
+    "remove": "Retirer un"
   },
   "pwa": {
     "install": "Installer TipsyTap",
@@ -116,10 +116,10 @@
     "topBars": "🍸 Top bars",
     "noDrinks": "Pas encore de verres",
     "noBars": "Pas encore de bars",
-    "active": "Active now",
-    "today": "Today",
-    "thisWeek": "This week",
-    "avgPerSession": "~{avg} drinks per session on average"
+    "active": "Actives maintenant",
+    "today": "Aujourd'hui",
+    "thisWeek": "Cette semaine",
+    "avgPerSession": "~{avg} verres par session en moyenne"
   },
   "badges": {
     "firstSip": "Première gorgée",

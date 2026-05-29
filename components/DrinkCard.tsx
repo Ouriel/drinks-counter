@@ -55,7 +55,7 @@ export function DrinkCard({
         <div className="flex items-center gap-2">
           <button
             type="button"
-            className="w-7 h-7 flex items-center justify-center rounded-full text-default-400 hover:text-danger hover:bg-danger/10 text-sm transition-colors"
+            className="w-11 h-11 flex items-center justify-center rounded-full text-default-400 hover:text-danger hover:bg-danger/10 text-sm transition-colors"
             onClick={onLongPress}
             aria-label={t("remove")}
           >

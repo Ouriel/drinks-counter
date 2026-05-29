@@ -35,7 +35,12 @@ async function uniqueNicknameForTable(tableId: string): Promise<string> {
 
 // POST: create a table and link current session
 export async function POST(req: NextRequest) {
-  const body = await req.json();
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
   const parsed = parseBody(createTableSchema, body);
   if ("error" in parsed) return NextResponse.json({ error: parsed.error }, { status: 400 });
   const { slug } = parsed.data;
@@ -69,7 +74,12 @@ export async function POST(req: NextRequest) {
 
 // PATCH: join an existing table
 export async function PATCH(req: NextRequest) {
-  const body = await req.json();
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
   const parsed = parseBody(joinTableSchema, body);
   if ("error" in parsed) return NextResponse.json({ error: parsed.error }, { status: 400 });
   const { slug, code } = parsed.data;

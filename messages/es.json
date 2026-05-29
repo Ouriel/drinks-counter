@@ -70,10 +70,10 @@
     "join": "Unirse",
     "couldNotCreate": "No se pudo crear la mesa",
     "notFound": "Mesa no encontrada",
-    "refresh": "Refresh",
-    "you": "you",
-    "noDrinks": "No drinks yet",
-    "leave": "Leave table"
+    "refresh": "Actualizar",
+    "you": "tú",
+    "noDrinks": "Sin bebidas aún",
+    "leave": "Dejar la mesa"
   },
   "picker": {
     "title": "Elige una copa",
@@ -85,10 +85,10 @@
     "close": "Cerrar"
   },
   "drinkCard": {
-    "aria": "{name}, {count}. Tap + to add, tap − to remove",
+    "aria": "{name}, {count}. Toca + para añadir, toca − para quitar",
     "longPress": "Mantén pulsado para quitar",
-    "add": "Add one",
-    "remove": "Remove one"
+    "add": "Añadir una",
+    "remove": "Quitar una"
   },
   "pwa": {
     "install": "Instalar TipsyTap",
@@ -116,10 +116,10 @@
     "topBars": "🍸 Top bares",
     "noDrinks": "Aún no hay copas",
     "noBars": "Aún no hay bares",
-    "active": "Active now",
-    "today": "Today",
-    "thisWeek": "This week",
-    "avgPerSession": "~{avg} drinks per session on average"
+    "active": "Activas ahora",
+    "today": "Hoy",
+    "thisWeek": "Esta semana",
+    "avgPerSession": "~{avg} bebidas por sesión de media"
   },
   "badges": {
     "firstSip": "Primer sorbo",

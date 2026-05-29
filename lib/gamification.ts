@@ -64,14 +64,16 @@ export type Pace = { emoji: string; label: string };
 
 export function getPace(drinks: DrinkLike[]): Pace | null {
   const firstDrink = drinks.reduce<string | null>(
-    (earliest, d) =>
-      !earliest || (d.createdAt && d.createdAt < earliest) ? d.createdAt || earliest : earliest,
+    (earliest, drink) =>
+      !earliest || (drink.createdAt && drink.createdAt < earliest)
+        ? drink.createdAt || earliest
+        : earliest,
     null
   );
   if (!firstDrink) return null;
   const hours = (Date.now() - new Date(firstDrink).getTime()) / 3_600_000;
   if (hours < 0.08) return null; // less than 5 min
-  const total = drinks.reduce((sum, d) => sum + d.count, 0);
+  const total = drinks.reduce((sum, drink) => sum + drink.count, 0);
   const dph = total / hours;
   if (dph <= 1) return { emoji: "🐢", label: "Chill" };
   if (dph <= 2) return { emoji: "🚶", label: "Steady" };
@@ -135,11 +137,15 @@ export function getDrinkAchievements(drinks: DrinkLike[]): Achievement[] {
 
   // Time-based
   const firstDrink = drinks.reduce<string | null>(
-    (e, d) => (!e || (d.createdAt && d.createdAt < e) ? d.createdAt || e : e),
+    (earliest, drink) =>
+      !earliest || (drink.createdAt && drink.createdAt < earliest)
+        ? drink.createdAt || earliest
+        : earliest,
     null
   );
   const lastDrink = drinks.reduce<string | null>(
-    (l, d) => (!l || (d.createdAt && d.createdAt > l) ? d.createdAt || l : l),
+    (latest, drink) =>
+      !latest || (drink.createdAt && drink.createdAt > latest) ? drink.createdAt || latest : latest,
     null
   );
 

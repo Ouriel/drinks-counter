@@ -66,7 +66,12 @@ export async function GET(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   if (!checkAuth(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const body = await req.json();
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
   const parsed = parseBody(adminPatchSchema, body);
   if ("error" in parsed) return NextResponse.json({ error: parsed.error }, { status: 400 });
   const { id, items, barName } = parsed.data;
@@ -86,8 +91,13 @@ export async function PATCH(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   if (!checkAuth(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const body = await req.json();
-  const type = body.type || "bar";
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
+  const type = (body as { type?: string }).type || "bar";
 
   if (type === "session") {
     const parsed = parseBody(z.object({ type: z.literal("session"), id: z.string().uuid() }), body);

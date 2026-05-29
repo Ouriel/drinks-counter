@@ -1,52 +1,31 @@
-# TipsyTap — MEMORY
+# MEMORY
 
-## Deployment Fix (i18n)
+## Full Review (2026-05-29)
 
-- PwaInstallPrompt used `useTranslations` outside `NextIntlClientProvider` (was in root layout, moved to `[locale]` layout)
-- Admin page wrapped in server component with `export const dynamic = "force-dynamic"` (client component in `AdminClient.tsx`)
-- Added `app/not-found.tsx` for the `/_not-found` prerender
-- Middleware deprecation warning (Next.js 16 wants "proxy" instead of "middleware") — non-blocking
+- Lighthouse: accessibility 90/100, best practices 100, SEO 100, LCP 289ms, CLS 0.00
+- Critical: missing lang attr on html (FIXED), dangerouslySetInnerHTML in QrCode.tsx (low risk, kept)
+- Medium: 5 routes missing try/catch on req.json() (FIXED), TOCTOU race in drinks POST (FIXED), 12 untranslated keys (FIXED), DrinkCard minus button 28px (FIXED to 44px), no main landmark (FIXED), primary button contrast (FIXED), barrel imports (non-issue, HeroUI v3 is single package), admin uses raw fetch (not a bug, skipped)
+- Low: abbreviated params in gamification.ts (FIXED), hardcoded strings in admin/stats/loading (cosmetic, skipped)
+- Passes: zero any types, parameterized queries, auth on protected routes, typed API client with Zod
 
-## Dependabot
+## Fixes Applied (2026-05-29)
 
-- PRs #7 and #8 merged (ai-sdk 3.0.79, ai 6.0.191, qrcode-generator 1.5.2, vitest 4.1.7, @types/node 25.9.1, @types/react 19.2.15)
+- Moved <html lang={locale}> and <body> into app/[locale]/layout.tsx (fixes lang + main landmark)
+- Root layout now just returns children (no html/body wrapper)
+- Added try/catch on req.json() in: sessions POST, drinks POST/PATCH, tables POST/PATCH, admin PATCH/DELETE
+- Fixed TOCTOU race in drinks POST: atomic update-then-insert instead of select-then-insert
+- Fixed totalRef decrement on server rejection in useOptimisticDrinks (addDrink + increment)
+- Added debounce cleanup useEffect in home page
+- Fixed DrinkCard minus button touch target: w-7 h-7 → w-11 h-11 (44px)
+- Added dark mode primary button contrast CSS override
+- Translated 12 missing keys in fr/es/ca/de/it locale files (table._, drinkCard._, stats.\*)
+- Fixed abbreviated params in gamification.ts (e→earliest, d→drink, l→latest, sum→sum)
+- All 69 tests pass, tsc --noEmit clean
 
-## Bug Fixes
+## UX/UI Production Test (tipsy-tap.vercel.app)
 
-- QR code join: PATCH `/api/tables` now inherits `barMenuId` from existing table members
-- Leaderboard: stable sort (by nickname on ties), multiple crowns for tied top score
-- Leaderboard: current user highlighted with ring + "(you)" label
-- Leaderboard: refresh button + 30s auto-refresh (was 60s)
-- Leaderboard: click on member opens modal with their drinks list
-- DrinkCard: visible − button + larger + button (removed long-press-only pattern)
-- Light mode: replaced `text-muted` → `text-default-500`, `bg-surface` → `bg-default-100` (theme-aware)
-- Text size: base font-size set to 18px in globals.css
-
-## New Features
-
-- Summary timeline: chronological drink list with timestamps
-- Badge tooltips: HeroUI Tooltip compound component shows title + subtitle on hover/tap
-- Member drinks modal: click any leaderboard member to see their drink list
-
-## HeroUI v3 API Notes
-
-- Button variants: `primary`, `secondary`, `tertiary`, `ghost`, `outline`, `danger`, `danger-soft`
-- Tooltip: compound `<Tooltip>` > `<Tooltip.Trigger>` + `<Tooltip.Content>`
-- Modal: compound `<Modal state={}>` > `<Modal.Backdrop>` > `<Modal.Container>` > `<Modal.Dialog>` > `<Modal.Header>` / `<Modal.Body>`
-- Modal needs `useOverlayState()` hook for state management
-
-## Remaining
-
-- Leaderboard alcohol consideration: needs drink volume data (not in current schema). Could add estimated "standard drinks" per category as a future feature.
-
-## Code Review (2025-05-29)
-
-- Bug: pace "Warp speed" → key mismatch (`warpspeed` vs `warpSpeed`) in session page line 155
-- `bg-muted/40` leftover in DrinkPicker.tsx:80 — invalid class
-- `proxy.ts` is dead code (never imported, no middleware.ts exists)
-- `useOverlayState` + `Modal.*` compound pattern in TableView.tsx needs verification against HeroUI v3 API
-- Unused translation keys: badges._, achievements._, nudges.\*, session.justStarted, drinkCard.add
-- Unused exports: DrinkCard re-exports Drink type, all api.ts schema exports, fetchDrinks from useOptimisticDrinks
-- `--accent-foreground` CSS variable unused
-- Summary page uses `window.location.href` bypassing i18n locale routing
-- gamification.ts hardcodes rgba white for text-shadow (won't adapt to light theme)
+- All core flows work on mobile 375x812: home, bar search, session, drinks +/-, badges, table, QR, summary, stats
+- Light/dark mode both render correctly
+- Locale switching works (French verified)
+- Badge popover works on mobile tap
+- Admin login form renders correctly

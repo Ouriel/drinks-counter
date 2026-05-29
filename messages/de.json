@@ -70,10 +70,10 @@
     "join": "Beitreten",
     "couldNotCreate": "Tisch konnte nicht erstellt werden",
     "notFound": "Tisch nicht gefunden",
-    "refresh": "Refresh",
-    "you": "you",
-    "noDrinks": "No drinks yet",
-    "leave": "Leave table"
+    "refresh": "Aktualisieren",
+    "you": "du",
+    "noDrinks": "Noch keine Getränke",
+    "leave": "Tisch verlassen"
   },
   "picker": {
     "title": "Wähle einen Drink",
@@ -85,10 +85,10 @@
     "close": "Schließen"
   },
   "drinkCard": {
-    "aria": "{name}, {count}. Tap + to add, tap − to remove",
+    "aria": "{name}, {count}. Tippe + zum Hinzufügen, tippe − zum Entfernen",
     "longPress": "Lang drücken zum Entfernen",
-    "add": "Add one",
-    "remove": "Remove one"
+    "add": "Eins hinzufügen",
+    "remove": "Eins entfernen"
   },
   "pwa": {
     "install": "TipsyTap installieren",
@@ -116,10 +116,10 @@
     "topBars": "🍸 Top Bars",
     "noDrinks": "Noch keine Drinks",
     "noBars": "Noch keine Bars",
-    "active": "Active now",
-    "today": "Today",
-    "thisWeek": "This week",
-    "avgPerSession": "~{avg} drinks per session on average"
+    "active": "Gerade aktiv",
+    "today": "Heute",
+    "thisWeek": "Diese Woche",
+    "avgPerSession": "~{avg} Getränke pro Sitzung im Durchschnitt"
   },
   "badges": {
     "firstSip": "Erster Schluck",
