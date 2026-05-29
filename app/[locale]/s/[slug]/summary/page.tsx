@@ -271,7 +271,7 @@ export default function SummaryPage() {
                   <h3 className="text-sm font-bold text-center mb-3">{t("summary.timeline")}</h3>
                   <div className="relative">
                     {/* Vertical line */}
-                    <div className="absolute left-[15px] top-2 bottom-2 w-0.5 bg-primary" />
+                    <div className="absolute left-[15px] top-0 bottom-0 w-[2px] bg-primary/40" />
                     <div className="space-y-3">
                       {timeline.map((entry, index) => {
                         const time = new Date(entry.time).toLocaleTimeString([], {
@@ -284,7 +284,7 @@ export default function SummaryPage() {
                           <div key={index} className="relative flex items-center gap-3 pl-9">
                             {/* Dot */}
                             <div
-                              className={`absolute left-[10px] w-3 h-3 rounded-full ${isFirst || isLast ? "bg-primary" : "bg-primary/50"} ring-2 ring-default-100`}
+                              className={`absolute left-[10px] w-3 h-3 rounded-full ${isFirst || isLast ? "bg-primary" : "bg-primary/60"} ring-2 ring-background`}
                             />
                             {/* Entry */}
                             <div className="flex-1 bg-default-100 rounded-xl px-3 py-2 flex items-center justify-between">
@@ -298,10 +298,6 @@ export default function SummaryPage() {
                                 {time}
                               </span>
                             </div>
-                            {/* Drink number */}
-                            <span className="text-xs text-default-300 w-5 text-right">
-                              #{index + 1}
-                            </span>
                           </div>
                         );
                       })}
