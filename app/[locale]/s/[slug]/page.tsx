@@ -236,15 +236,6 @@ export default function SessionPage() {
         )}
       </div>
 
-      {/* Summary link */}
-      {drinks.length > 0 && (
-        <div className="text-center mb-4">
-          <Button variant="ghost" size="sm" onPress={() => router.push(`/s/${slug}/summary`)}>
-            {t("session.eveningSummary")}
-          </Button>
-        </div>
-      )}
-
       {/* Drinks list */}
       {drinks.length === 0 ? (
         <div className="text-center text-default-500 mt-12">
@@ -274,6 +265,15 @@ export default function SessionPage() {
             </p>
           )}
         </>
+      )}
+
+      {/* Summary link */}
+      {drinks.length > 0 && (
+        <div className="text-center mt-4 mb-4">
+          <Button variant="ghost" size="sm" onPress={() => router.push(`/s/${slug}/summary`)}>
+            {t("session.eveningSummary")}
+          </Button>
+        </div>
       )}
 
       {/* Table */}
