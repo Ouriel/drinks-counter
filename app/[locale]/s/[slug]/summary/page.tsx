@@ -117,23 +117,27 @@ export default function SummaryPage() {
     .sort((a, b) => a.time.localeCompare(b.time));
 
   function copyAsText() {
-    const lines = [...drinks]
-      .sort((a, b) => b.count - a.count)
-      .map(
-        (drink) =>
-          `${CATEGORY_EMOJI[drink.category || "other"] || "🍹"} ${drink.name} ×${drink.count}`
-      );
-    const categories = Object.entries(byCategory)
-      .sort((a, b) => b[1] - a[1])
-      .map(([cat, count]) => `${CATEGORY_EMOJI[cat] || "🍹"} ${cat} ×${count}`)
-      .join(", ");
+    const sorted = [...drinks].sort((a, b) => b.count - a.count);
+    const lines = sorted.map(
+      (drink) =>
+        `${CATEGORY_EMOJI[drink.category || "other"] || "🍹"} ${drink.name} ×${drink.count}`
+    );
+    const topDrink = sorted[0];
+
+    // Fun opener based on total
+    let opener = `🍻 ${total} drinks`;
+    if (total >= 15) opener = `☠️ ${total} drinks (no regrets)`;
+    else if (total >= 10) opener = `👑 ${total} drinks (legend mode)`;
+    else if (total >= 5) opener = `🔥 ${total} drinks (on fire)`;
+
     const text = [
-      `🍻 ${total} drinks${barName ? ` at ${titleCase(barName)}` : ""}`,
-      durationMins > 0 ? `⏱ ${durationStr}` : "",
-      categories ? `📊 ${categories}` : "",
+      opener + (barName ? ` at ${titleCase(barName)}` : ""),
+      durationMins > 0 ? `⏱ ${durationStr} of pure dedication` : "",
+      topDrink ? `⭐ MVP: ${topDrink.name} (×${topDrink.count})` : "",
       "",
       ...lines,
       "",
+      total >= 10 ? "💀 RIP tomorrow" : total >= 5 ? "🫡 Cheers!" : "🍺 Just getting started",
       "— tipsy-tap.vercel.app",
     ]
       .filter(Boolean)
