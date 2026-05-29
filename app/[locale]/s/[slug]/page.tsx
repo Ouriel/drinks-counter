@@ -107,7 +107,7 @@ export default function SessionPage() {
 
   return (
     <div
-      className="min-h-screen p-4 pb-[calc(6rem+env(safe-area-inset-bottom))] transition-colors duration-1000"
+      className="min-h-screen p-4 pb-[calc(6rem+env(safe-area-inset-bottom))] transition-colors duration-1000 text-foreground"
       style={{ backgroundColor: bgColor }}
     >
       {/* Header */}
@@ -145,7 +145,7 @@ export default function SessionPage() {
           {t("session.drinks", { count: total })}
         </h1>
         {barName && <p className="text-base mt-1 text-foreground/70">{titleCase(barName)}</p>}
-        <p className="text-sm mt-0.5 font-mono text-muted">
+        <p className="text-sm mt-0.5 font-mono text-default-500">
           {slug}
           <ElapsedTimer drinks={drinks} />
           {pace && (
@@ -168,7 +168,7 @@ export default function SessionPage() {
 
       {/* Drinks list */}
       {drinks.length === 0 ? (
-        <div className="text-center text-muted mt-12">
+        <div className="text-center text-default-500 mt-12">
           <p className="text-lg">{t("session.noDrinks")}</p>
           <p className="text-sm mt-2">{t("session.noDrinksHint")}</p>
         </div>
@@ -189,7 +189,7 @@ export default function SessionPage() {
               ));
             })()}
           </div>
-          <p className="text-center text-muted text-xs mt-4">{t("session.longPressHint")}</p>
+          <p className="text-center text-default-500 text-xs mt-4">{t("session.longPressHint")}</p>
         </>
       )}
 

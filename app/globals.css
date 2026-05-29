@@ -4,6 +4,7 @@
 :root {
   --accent: oklch(0.769 0.188 70.08);
   --accent-foreground: oklch(0.15 0 0);
+  font-size: 18px;
 }
 
 @keyframes confetti-fall {

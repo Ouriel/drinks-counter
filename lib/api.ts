@@ -67,6 +67,12 @@ export const TableRankingResponse = z.object({
 
 export const TableCreateResponse = z.object({ code: z.string(), nickname: z.string() });
 
+export const MemberDrinksResponse = z.object({
+  drinks: z.array(
+    z.object({ name: z.string(), count: z.number(), category: z.string().nullable() })
+  ),
+});
+
 export const ParseMenuResponse = z.object({
   items: z.array(z.object({ name: z.string(), category: z.string() })),
 });
@@ -143,6 +149,13 @@ export const api = {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ slug, code }),
     });
+  },
+
+  getMemberDrinks(tableCode: string, nickname: string) {
+    return apiFetch(
+      `/api/tables?code=${encodeURIComponent(tableCode)}&nickname=${encodeURIComponent(nickname)}`,
+      MemberDrinksResponse
+    );
   },
 
   async parseMenu(formData: FormData) {

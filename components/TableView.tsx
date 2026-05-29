@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Button, Input, Card } from "@heroui/react";
+import { Button, Input, Card, Modal, useOverlayState } from "@heroui/react";
 import { useTranslations } from "next-intl";
 import { QrCode } from "@/components/QrCode";
 import { api } from "@/lib/api";
@@ -26,6 +26,8 @@ export function TableView({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showQr, setShowQr] = useState(false);
+  const [selectedMember, setSelectedMember] = useState<string | null>(null);
+  const modalState = useOverlayState({ isOpen: !!selectedMember });
   const t = useTranslations("table");
 
   const fetchRanking = useCallback(
@@ -44,7 +46,7 @@ export function TableView({
     fetchRanking();
     const id = setInterval(() => {
       if (document.visibilityState === "visible") fetchRanking();
-    }, 60_000);
+    }, 30_000);
     return () => clearInterval(id);
   }, [tableCode, fetchRanking]);
 
@@ -77,32 +79,59 @@ export function TableView({
   }
 
   if (tableCode) {
+    const topScore = members.length > 0 ? members[0].total : 0;
+
     return (
       <div className="mt-6">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-lg font-bold">{t("title")}</h2>
-          <span className="text-xs font-mono text-muted bg-surface px-2 py-1 rounded">
-            {tableCode}
-          </span>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              isIconOnly
+              onPress={() => fetchRanking()}
+              aria-label={t("refresh")}
+            >
+              🔄
+            </Button>
+            <span className="text-xs font-mono text-default-500 bg-default-100 px-2 py-1 rounded">
+              {tableCode}
+            </span>
+          </div>
         </div>
         {members.length === 0 ? (
-          <p className="text-muted text-sm">{t("loading")}</p>
+          <p className="text-default-500 text-sm">{t("loading")}</p>
         ) : (
           <div className="space-y-2">
-            {members.map((m, i) => (
-              <Card key={m.nickname}>
-                <div className="px-4 py-3 flex items-center justify-between">
-                  <span className="text-base">
-                    {i === 0 && members.length > 1 && "👑 "}
-                    {m.nickname === nickname ? <strong>{m.nickname}</strong> : m.nickname}
-                  </span>
-                  <span className="font-bold tabular-nums text-lg">{m.total}</span>
-                </div>
-              </Card>
-            ))}
+            {members.map((member) => {
+              const isMe = member.nickname === nickname;
+              const isTied = member.total === topScore && topScore > 0 && members.length > 1;
+              return (
+                <Card key={member.nickname}>
+                  <button
+                    type="button"
+                    className="w-full px-4 py-3 flex items-center justify-between cursor-pointer"
+                    onClick={() => {
+                      setSelectedMember(member.nickname);
+                      modalState.open();
+                    }}
+                  >
+                    <span className="text-base">
+                      {isTied && "👑 "}
+                      {isMe && "👈 "}
+                      {member.nickname}
+                    </span>
+                    <span className="font-bold tabular-nums text-lg">{member.total}</span>
+                  </button>
+                </Card>
+              );
+            })}
           </div>
         )}
-        <p className="text-xs text-muted text-center mt-3">{t("shareCode", { code: tableCode })}</p>
+        <p className="text-xs text-default-500 text-center mt-3">
+          {t("shareCode", { code: tableCode })}
+        </p>
         {showQr ? (
           <div className="mt-3 text-center">
             <QrCode
@@ -120,6 +149,33 @@ export function TableView({
             </Button>
           </div>
         )}
+
+        {/* Member drinks modal */}
+        <Modal state={modalState}>
+          <Modal.Backdrop
+            isDismissable
+            onClick={() => {
+              setSelectedMember(null);
+              modalState.close();
+            }}
+          >
+            <Modal.Container size="sm">
+              <Modal.Dialog>
+                <Modal.Header>
+                  <Modal.Heading>
+                    {selectedMember}
+                    {selectedMember === nickname && ` (${t("you")})`}
+                  </Modal.Heading>
+                </Modal.Header>
+                <Modal.Body className="pb-6">
+                  {selectedMember && tableCode && (
+                    <MemberDrinks tableCode={tableCode} nickname={selectedMember} />
+                  )}
+                </Modal.Body>
+              </Modal.Dialog>
+            </Modal.Container>
+          </Modal.Backdrop>
+        </Modal>
       </div>
     );
   }
@@ -158,6 +214,37 @@ export function TableView({
         </div>
       )}
       {error && <p className="text-sm text-danger mt-2">{error}</p>}
+    </div>
+  );
+}
+
+function MemberDrinks({ tableCode, nickname }: { tableCode: string; nickname: string }) {
+  const [drinks, setDrinks] = useState<{ name: string; count: number; category: string | null }[]>(
+    []
+  );
+  const [loading, setLoading] = useState(true);
+  const t = useTranslations("table");
+
+  useEffect(() => {
+    async function load() {
+      const data = await api.getMemberDrinks(tableCode, nickname);
+      if (data) setDrinks(data.drinks);
+      setLoading(false);
+    }
+    load();
+  }, [tableCode, nickname]);
+
+  if (loading) return <p className="text-default-500 text-sm">{t("loading")}</p>;
+  if (drinks.length === 0) return <p className="text-default-500 text-sm">{t("noDrinks")}</p>;
+
+  return (
+    <div className="space-y-1">
+      {drinks.map((drink) => (
+        <div key={drink.name} className="flex justify-between text-sm px-1 py-1">
+          <span>{drink.name}</span>
+          <span className="font-bold tabular-nums">×{drink.count}</span>
+        </div>
+      ))}
     </div>
   );
 }

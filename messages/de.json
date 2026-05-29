@@ -5,9 +5,10 @@
   },
   "home": {
     "startCounting": "Los geht's",
-    "sessionCode": "Session-Code…",
+    "sessionCode": "Session fortsetzen oder eigenen Namen wählen…",
     "goToSession": "Zur Session",
-    "recentSessions": "Letzte Sessions"
+    "recentSessions": "Letzte Sessions",
+    "stats": "Stats"
   },
   "bar": {
     "whereAreYou": "Wo bist du?",
@@ -54,7 +55,8 @@
     "back": "Zurück",
     "expired": "Session abgelaufen",
     "expiredMessage": "Diese Session ist abgelaufen (48h-Limit). Starte einen neuen Abend!",
-    "newEvening": "Neuer Abend"
+    "newEvening": "Neuer Abend",
+    "timeline": "🕐 Timeline"
   },
   "table": {
     "title": "🍻 Tisch",
@@ -67,7 +69,10 @@
     "code": "Code",
     "join": "Beitreten",
     "couldNotCreate": "Tisch konnte nicht erstellt werden",
-    "notFound": "Tisch nicht gefunden"
+    "notFound": "Tisch nicht gefunden",
+    "refresh": "Refresh",
+    "you": "you",
+    "noDrinks": "No drinks yet"
   },
   "picker": {
     "title": "Wähle einen Drink",
@@ -79,8 +84,10 @@
     "close": "Schließen"
   },
   "drinkCard": {
-    "aria": "{name}, {count}. Tippen zum Hinzufügen, lang drücken zum Entfernen",
-    "longPress": "Lang drücken zum Entfernen"
+    "aria": "{name}, {count}. Tap + to add, tap − to remove",
+    "longPress": "Lang drücken zum Entfernen",
+    "add": "Add one",
+    "remove": "Remove one"
   },
   "pwa": {
     "install": "TipsyTap installieren",

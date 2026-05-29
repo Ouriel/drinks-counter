@@ -40,17 +40,17 @@ export default async function StatsPage() {
       <h1 className="text-2xl font-bold mb-6">{t("title")}</h1>
 
       <div className="grid grid-cols-3 gap-3 mb-8">
-        <div className="bg-surface rounded-xl p-4 text-center">
+        <div className="bg-default-100 rounded-xl p-4 text-center">
           <p className="text-3xl font-bold">{menuCount.count}</p>
-          <p className="text-sm text-muted mt-1">{t("bars")}</p>
+          <p className="text-sm text-default-500 mt-1">{t("bars")}</p>
         </div>
-        <div className="bg-surface rounded-xl p-4 text-center">
+        <div className="bg-default-100 rounded-xl p-4 text-center">
           <p className="text-3xl font-bold">{sessionCount.count}</p>
-          <p className="text-sm text-muted mt-1">{t("sessions")}</p>
+          <p className="text-sm text-default-500 mt-1">{t("sessions")}</p>
         </div>
-        <div className="bg-surface rounded-xl p-4 text-center">
+        <div className="bg-default-100 rounded-xl p-4 text-center">
           <p className="text-3xl font-bold">{drinkTotal.total}</p>
-          <p className="text-sm text-muted mt-1">{t("drinks")}</p>
+          <p className="text-sm text-default-500 mt-1">{t("drinks")}</p>
         </div>
       </div>
 
@@ -61,7 +61,7 @@ export default async function StatsPage() {
             {byCategory.map((c) => (
               <div
                 key={c.category || "other"}
-                className="bg-surface rounded-lg px-3 py-2 flex items-center gap-2"
+                className="bg-default-100 rounded-lg px-3 py-2 flex items-center gap-2"
               >
                 <span className="text-lg">{CATEGORY_EMOJI[c.category || "other"] || "🍹"}</span>
                 <span className="text-sm flex-1">{c.category || "other"}</span>
@@ -75,29 +75,29 @@ export default async function StatsPage() {
       <h2 className="text-lg font-bold mb-3">{t("topDrinks")}</h2>
       <div className="space-y-2 mb-8">
         {topDrinks.map((d, i) => (
-          <div key={d.name} className="flex justify-between bg-surface rounded-lg px-4 py-3">
+          <div key={d.name} className="flex justify-between bg-default-100 rounded-lg px-4 py-3">
             <span className="text-base">
-              <span className="text-muted mr-2">{i + 1}.</span>
+              <span className="text-default-500 mr-2">{i + 1}.</span>
               {d.name}
             </span>
             <span className="font-bold tabular-nums text-base">{d.total}</span>
           </div>
         ))}
-        {topDrinks.length === 0 && <p className="text-muted">{t("noDrinks")}</p>}
+        {topDrinks.length === 0 && <p className="text-default-500">{t("noDrinks")}</p>}
       </div>
 
       <h2 className="text-lg font-bold mb-3">{t("topBars")}</h2>
       <div className="space-y-2">
         {topBars.map((b, i) => (
-          <div key={b.barName} className="flex justify-between bg-surface rounded-lg px-4 py-3">
+          <div key={b.barName} className="flex justify-between bg-default-100 rounded-lg px-4 py-3">
             <span className="text-base">
-              <span className="text-muted mr-2">{i + 1}.</span>
+              <span className="text-default-500 mr-2">{i + 1}.</span>
               {b.barName}
             </span>
-            <span className="text-muted text-base">{b.itemCount} items</span>
+            <span className="text-default-500 text-base">{b.itemCount} items</span>
           </div>
         ))}
-        {topBars.length === 0 && <p className="text-muted">{t("noBars")}</p>}
+        {topBars.length === 0 && <p className="text-default-500">{t("noBars")}</p>}
       </div>
     </div>
   );

@@ -52,7 +52,7 @@ export default function JoinTablePage() {
       <div className="min-h-screen flex flex-col items-center justify-center p-6 gap-4">
         <p className="text-4xl">😕</p>
         <p className="text-lg font-bold">{t("failed")}</p>
-        <p className="text-muted text-sm">{error}</p>
+        <p className="text-default-500 text-sm">{error}</p>
         <Button variant="primary" onPress={() => router.push("/")}>
           {t("startFresh")}
         </Button>
@@ -63,7 +63,7 @@ export default function JoinTablePage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-3">
       <Spinner size="lg" />
-      <p className="text-muted">{t("joining")}</p>
+      <p className="text-default-500">{t("joining")}</p>
     </div>
   );
 }

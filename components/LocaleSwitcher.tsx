@@ -16,7 +16,7 @@ export function LocaleSwitcher() {
       onChange={(event) => {
         router.replace(pathname, { locale: event.target.value });
       }}
-      className="bg-transparent text-xs text-muted border border-border rounded px-1.5 py-1 outline-none cursor-pointer"
+      className="bg-transparent text-xs text-default-500 border border-border rounded px-1.5 py-1 outline-none cursor-pointer"
       aria-label="Language"
     >
       {routing.locales.map((loc) => (

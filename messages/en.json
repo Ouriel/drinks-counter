@@ -5,9 +5,10 @@
   },
   "home": {
     "startCounting": "Start counting",
-    "sessionCode": "Session code…",
+    "sessionCode": "Resume a session or pick a custom name…",
     "goToSession": "Go to session",
-    "recentSessions": "Recent sessions"
+    "recentSessions": "Recent sessions",
+    "stats": "Stats"
   },
   "bar": {
     "whereAreYou": "Where are you?",
@@ -48,6 +49,7 @@
     "drinksTotal": "{count, plural, one {drink} other {drinks}} total",
     "personalBest": "🏅 Personal best!",
     "pace": "Pace: {emoji} {label}",
+    "timeline": "🕐 Timeline",
     "share": "Share 📤",
     "copyText": "Copy text 📋",
     "copied": "Copied ✓",
@@ -67,7 +69,10 @@
     "code": "Code",
     "join": "Join",
     "couldNotCreate": "Could not create table",
-    "notFound": "Table not found"
+    "notFound": "Table not found",
+    "refresh": "Refresh",
+    "you": "you",
+    "noDrinks": "No drinks yet"
   },
   "picker": {
     "title": "Pick a drink",
@@ -79,8 +84,10 @@
     "close": "Close"
   },
   "drinkCard": {
-    "aria": "{name}, {count}. Tap to add, long press to remove",
-    "longPress": "Long press to remove"
+    "aria": "{name}, {count}. Tap + to add, tap − to remove",
+    "longPress": "Long press to remove",
+    "add": "Add one",
+    "remove": "Remove one"
   },
   "pwa": {
     "install": "Install TipsyTap",

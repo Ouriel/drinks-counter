@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db, tables, sessions, drinks } from "@/lib/db";
-import { eq, sql } from "drizzle-orm";
+import { eq, sql, and } from "drizzle-orm";
 import { z } from "zod";
 import { generateNickname } from "@/lib/nicknames";
 import { parseBody } from "@/lib/schemas";
@@ -88,12 +88,23 @@ export async function PATCH(req: NextRequest) {
   if (!table) return NextResponse.json({ error: "Table not found" }, { status: 404 });
 
   const nickname = await uniqueNicknameForTable(table.id);
-  await db.update(sessions).set({ tableId: table.id, nickname }).where(eq(sessions.id, session.id));
+  // Inherit bar menu from existing table members
+  const [existingMember] = await db
+    .select({ barMenuId: sessions.barMenuId })
+    .from(sessions)
+    .where(eq(sessions.tableId, table.id))
+    .limit(1);
+  const barMenuId = existingMember?.barMenuId ?? null;
+
+  await db
+    .update(sessions)
+    .set({ tableId: table.id, nickname, ...(barMenuId && { barMenuId }) })
+    .where(eq(sessions.id, session.id));
 
   return NextResponse.json({ code: table.code, nickname });
 }
 
-// GET: read-only ranking (no slugs exposed)
+// GET: read-only ranking (no slugs exposed) + member drinks
 export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get("code");
   if (!code) return NextResponse.json({ error: "Missing code" }, { status: 400 });
@@ -105,6 +116,23 @@ export async function GET(req: NextRequest) {
     .limit(1);
   if (!table) return NextResponse.json({ error: "Table not found" }, { status: 404 });
 
+  // If nickname param is provided, return that member's drinks
+  const memberNickname = req.nextUrl.searchParams.get("nickname");
+  if (memberNickname) {
+    const [session] = await db
+      .select()
+      .from(sessions)
+      .where(and(eq(sessions.tableId, table.id), eq(sessions.nickname, memberNickname)))
+      .limit(1);
+    if (!session) return NextResponse.json({ drinks: [] });
+    const memberDrinks = await db
+      .select({ name: drinks.name, count: drinks.count, category: drinks.category })
+      .from(drinks)
+      .where(eq(drinks.sessionId, session.id))
+      .orderBy(sql`${drinks.count} DESC`);
+    return NextResponse.json({ drinks: memberDrinks });
+  }
+
   const members = await db
     .select({
       nickname: sessions.nickname,
@@ -114,7 +142,7 @@ export async function GET(req: NextRequest) {
     .leftJoin(drinks, eq(drinks.sessionId, sessions.id))
     .where(eq(sessions.tableId, table.id))
     .groupBy(sessions.id, sessions.nickname)
-    .orderBy(sql`COALESCE(SUM(${drinks.count}), 0) DESC`);
+    .orderBy(sql`COALESCE(SUM(${drinks.count}), 0) DESC`, sessions.nickname);
 
   return NextResponse.json({
     code: table.code,

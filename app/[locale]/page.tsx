@@ -180,7 +180,7 @@ function HomeContent() {
         <div className="text-center">
           <Image src="/icon.svg" alt="TipsyTap" width={120} height={120} className="mx-auto mb-4" />
           <h1 className="text-4xl font-bold">{t("app.title")}</h1>
-          <p className="text-muted mt-2">{t("app.tagline")}</p>
+          <p className="text-default-500 mt-2">{t("app.tagline")}</p>
         </div>
         <div className="w-full max-w-xs space-y-3">
           <Button variant="primary" size="lg" className="w-full" onPress={() => setStep("bar")}>
@@ -211,7 +211,7 @@ function HomeContent() {
           </form>
           {recentSessions.length > 0 && (
             <div className="pt-2">
-              <p className="text-xs text-muted mb-2">{t("home.recentSessions")}</p>
+              <p className="text-xs text-default-500 mb-2">{t("home.recentSessions")}</p>
               <div className="space-y-1">
                 {recentSessions.map((session) => (
                   <Card key={session.slug}>
@@ -221,7 +221,7 @@ function HomeContent() {
                       className="w-full text-left px-3 py-2 cursor-pointer"
                     >
                       <span className="font-medium text-sm">{session.barName}</span>
-                      <span className="text-muted text-xs ml-2">
+                      <span className="text-default-500 text-xs ml-2">
                         {new Date(session.date).toLocaleDateString()}
                       </span>
                     </button>
@@ -231,6 +231,9 @@ function HomeContent() {
             </div>
           )}
         </div>
+        <Button variant="ghost" size="sm" onPress={() => router.push("/stats")}>
+          📊 {t("home.stats")}
+        </Button>
       </div>
     );
   }
@@ -263,7 +266,7 @@ function HomeContent() {
                   className="w-full text-left p-3 cursor-pointer"
                 >
                   <span className="font-medium">{bar.barName}</span>
-                  <span className="text-muted text-sm ml-2">
+                  <span className="text-default-500 text-sm ml-2">
                     {t("bar.items", { count: bar.items.length })}
                   </span>
                 </button>
@@ -274,7 +277,7 @@ function HomeContent() {
 
         {osmResults.length > 0 && barSuggestions.length === 0 && (
           <div className="mb-4 space-y-2">
-            <p className="text-xs text-muted">{t("bar.nearbyPlaces")}</p>
+            <p className="text-xs text-default-500">{t("bar.nearbyPlaces")}</p>
             {osmResults.map((place, i) => (
               <Card key={i}>
                 <button
@@ -287,7 +290,7 @@ function HomeContent() {
                 >
                   <span className="font-medium">{place.name}</span>
                   {place.address && (
-                    <span className="text-muted text-sm block">{place.address}</span>
+                    <span className="text-default-500 text-sm block">{place.address}</span>
                   )}
                 </button>
               </Card>
@@ -299,7 +302,7 @@ function HomeContent() {
           barSuggestions.length === 0 &&
           osmResults.length === 0 &&
           !parsing && (
-            <p className="text-sm text-muted text-center mb-4">{t("bar.noResultsPhoto")}</p>
+            <p className="text-sm text-default-500 text-center mb-4">{t("bar.noResultsPhoto")}</p>
           )}
 
         <div className="space-y-3 mt-6">
@@ -406,7 +409,7 @@ function HomeContent() {
         </div>
       )}
 
-      <p className="text-muted text-sm mb-6">{t("review.hint")}</p>
+      <p className="text-default-500 text-sm mb-6">{t("review.hint")}</p>
 
       <div className="fixed bottom-6 left-0 right-0 flex justify-center px-6 pb-[env(safe-area-inset-bottom)]">
         <Button variant="primary" size="lg" isDisabled={creating} onPress={() => createSession()}>

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { Button, Card, Chip, Spinner } from "@heroui/react";
+import { Button, Card, Chip, Spinner, Tooltip } from "@heroui/react";
 import { useTranslations } from "next-intl";
 import { CATEGORY_EMOJI } from "@/lib/constants";
 import { titleCase } from "@/lib/sanitize";
@@ -57,7 +57,7 @@ export default function SummaryPage() {
           <div className="p-6 text-center">
             <p className="text-5xl mb-4">⏰</p>
             <h1 className="text-xl font-bold mb-2">{t("summary.expired")}</h1>
-            <p className="text-muted">{t("summary.expiredMessage")}</p>
+            <p className="text-default-500">{t("summary.expiredMessage")}</p>
             <Button variant="primary" className="mt-6" onPress={() => (window.location.href = "/")}>
               {t("summary.newEvening")}
             </Button>
@@ -91,6 +91,11 @@ export default function SummaryPage() {
       ? `${Math.floor(durationMins / 60)}h${durationMins % 60 > 0 ? `${durationMins % 60}m` : ""}`
       : `${durationMins}m`;
 
+  // Build timeline from drinks with createdAt
+  const timeline = drinks
+    .filter((drink) => drink.createdAt)
+    .sort((a, b) => a.createdAt!.localeCompare(b.createdAt!));
+
   function copyAsText() {
     const lines = [...drinks]
       .sort((a, b) => b.count - a.count)
@@ -114,7 +119,7 @@ export default function SummaryPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-background">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-background text-foreground">
       <Card className="w-full max-w-sm">
         <div className="p-6">
           {/* Header */}
@@ -123,7 +128,7 @@ export default function SummaryPage() {
             <h1 className="text-2xl font-bold">{t("summary.title")}</h1>
             {barName && <p className="text-foreground/70 mt-1">{titleCase(barName)}</p>}
             {firstDrink && (
-              <p className="text-sm text-muted mt-1">
+              <p className="text-sm text-default-500 mt-1">
                 {new Date(firstDrink).toLocaleDateString()} · {durationStr}
               </p>
             )}
@@ -132,7 +137,7 @@ export default function SummaryPage() {
           {/* Total */}
           <div className="text-center mb-6">
             <p className="text-6xl font-bold">{total}</p>
-            <p className="text-muted">{t("summary.drinksTotal", { count: total })}</p>
+            <p className="text-default-500">{t("summary.drinksTotal", { count: total })}</p>
             {total === getPersonalBest() && total > 0 && (
               <p className="text-sm mt-1">{t("summary.personalBest")}</p>
             )}
@@ -151,7 +156,7 @@ export default function SummaryPage() {
             </div>
           )}
 
-          {/* Badges */}
+          {/* Badges with tooltips */}
           {(() => {
             const badges = getAllEarnedBadges(total);
             const pace = getPace(drinks);
@@ -159,17 +164,25 @@ export default function SummaryPage() {
             return (
               <>
                 {badges.length > 0 && (
-                  <div className="flex flex-wrap justify-center gap-2 mb-4">
+                  <div className="flex flex-wrap justify-center gap-3 mb-4">
                     {badges.map((badge) => (
-                      <span key={badge.title} title={badge.title} className="text-2xl">
-                        {badge.emoji}
-                      </span>
+                      <Tooltip key={badge.title}>
+                        <Tooltip.Trigger>
+                          <span className="text-3xl cursor-help">{badge.emoji}</span>
+                        </Tooltip.Trigger>
+                        <Tooltip.Content>
+                          <div className="text-center px-2 py-1">
+                            <p className="font-bold">{badge.title}</p>
+                            <p className="text-xs">{badge.subtitle}</p>
+                          </div>
+                        </Tooltip.Content>
+                      </Tooltip>
                     ))}
                   </div>
                 )}
 
                 {pace && (
-                  <p className="text-center text-sm text-muted mb-4">
+                  <p className="text-center text-sm text-default-500 mb-4">
                     {t("summary.pace", { emoji: pace.emoji, label: pace.label })}
                   </p>
                 )}
@@ -187,6 +200,32 @@ export default function SummaryPage() {
             );
           })()}
 
+          {/* Timeline */}
+          {timeline.length > 1 && (
+            <div className="mb-6">
+              <h3 className="text-sm font-bold text-center mb-3">{t("summary.timeline")}</h3>
+              <div className="relative pl-6 border-l-2 border-default-200 space-y-3">
+                {timeline.map((drink) => {
+                  const time = new Date(drink.createdAt!).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  });
+                  return (
+                    <div key={drink.id} className="relative">
+                      <div className="absolute -left-[1.6rem] top-1 w-3 h-3 rounded-full bg-primary" />
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm">
+                          {CATEGORY_EMOJI[drink.category || "other"] || "🍹"} {drink.name}
+                        </span>
+                        <span className="text-xs text-default-400 font-mono">{time}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           {/* Top drinks */}
           <div className="space-y-1">
             {[...drinks]
@@ -202,7 +241,7 @@ export default function SummaryPage() {
               ))}
           </div>
 
-          <p className="text-center text-xs text-muted mt-6">tipsy-tap.vercel.app</p>
+          <p className="text-center text-xs text-default-500 mt-6">tipsy-tap.vercel.app</p>
         </div>
       </Card>
 

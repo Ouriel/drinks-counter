@@ -5,9 +5,10 @@
   },
   "home": {
     "startCounting": "Inizia a contare",
-    "sessionCode": "Codice sessione…",
+    "sessionCode": "Riprendere una sessione o scegliere un nome…",
     "goToSession": "Vai alla sessione",
-    "recentSessions": "Sessioni recenti"
+    "recentSessions": "Sessioni recenti",
+    "stats": "Stats"
   },
   "bar": {
     "whereAreYou": "Dove sei?",
@@ -54,7 +55,8 @@
     "back": "Indietro",
     "expired": "Sessione scaduta",
     "expiredMessage": "Questa sessione è scaduta (limite 48h). Inizia una nuova serata!",
-    "newEvening": "Nuova serata"
+    "newEvening": "Nuova serata",
+    "timeline": "🕐 Timeline"
   },
   "table": {
     "title": "🍻 Tavolo",
@@ -67,7 +69,10 @@
     "code": "Codice",
     "join": "Unisciti",
     "couldNotCreate": "Impossibile creare il tavolo",
-    "notFound": "Tavolo non trovato"
+    "notFound": "Tavolo non trovato",
+    "refresh": "Refresh",
+    "you": "you",
+    "noDrinks": "No drinks yet"
   },
   "picker": {
     "title": "Scegli un drink",
@@ -79,8 +84,10 @@
     "close": "Chiudi"
   },
   "drinkCard": {
-    "aria": "{name}, {count}. Tocca per aggiungere, tieni premuto per rimuovere",
-    "longPress": "Tieni premuto per rimuovere"
+    "aria": "{name}, {count}. Tap + to add, tap − to remove",
+    "longPress": "Tieni premuto per rimuovere",
+    "add": "Add one",
+    "remove": "Remove one"
   },
   "pwa": {
     "install": "Installa TipsyTap",

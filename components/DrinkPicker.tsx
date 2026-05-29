@@ -75,7 +75,7 @@ export function DrinkPicker({
     >
       <div
         ref={containerRef}
-        className="bg-surface rounded-t-2xl mt-12 flex-1 overflow-y-auto overscroll-contain p-4"
+        className="bg-default-100 rounded-t-2xl mt-12 flex-1 overflow-y-auto overscroll-contain p-4"
       >
         <div className="w-10 h-1 bg-muted/40 rounded-full mx-auto mb-3" />
         <div className="flex justify-between items-center mb-4">
@@ -115,7 +115,7 @@ export function DrinkPicker({
 
         {currentDrinks.length > 0 && (
           <div className="mb-4">
-            <h3 className="text-sm text-muted uppercase mb-2">{t("alreadyOrdered")}</h3>
+            <h3 className="text-sm text-default-500 uppercase mb-2">{t("alreadyOrdered")}</h3>
             <div className="space-y-1">
               {currentDrinks.map((drink) => (
                 <Card key={drink.id}>
@@ -127,7 +127,7 @@ export function DrinkPicker({
                     <span>
                       {CATEGORY_EMOJI[drink.category || "other"] || "🍹"} {drink.name}
                     </span>
-                    <span className="text-muted">×{drink.count}</span>
+                    <span className="text-default-500">×{drink.count}</span>
                   </button>
                 </Card>
               ))}
@@ -139,7 +139,7 @@ export function DrinkPicker({
           <div key={category} className="mb-4">
             <div className="flex items-center gap-2 mb-2">
               <Chip size="sm">{CATEGORY_EMOJI[category] || "🍹"}</Chip>
-              <span className="text-sm text-muted uppercase">{category}</span>
+              <span className="text-sm text-default-500 uppercase">{category}</span>
             </div>
             <div className="space-y-1">
               {items.map((item) => (
@@ -160,8 +160,8 @@ export function DrinkPicker({
         {!filtered.length && !showAddCustom && !search && currentDrinks.length === 0 && (
           <div className="text-center mt-12">
             <p className="text-4xl mb-3">🔍</p>
-            <p className="text-muted">{t("emptyTitle")}</p>
-            <p className="text-muted text-sm mt-1">{t("emptyHint")}</p>
+            <p className="text-default-500">{t("emptyTitle")}</p>
+            <p className="text-default-500 text-sm mt-1">{t("emptyHint")}</p>
           </div>
         )}
       </div>

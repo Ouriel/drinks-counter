@@ -5,9 +5,10 @@
   },
   "home": {
     "startCounting": "Començar a comptar",
-    "sessionCode": "Codi de sessió…",
+    "sessionCode": "Reprendre una sessió o triar un nom…",
     "goToSession": "Anar a la sessió",
-    "recentSessions": "Sessions recents"
+    "recentSessions": "Sessions recents",
+    "stats": "Stats"
   },
   "bar": {
     "whereAreYou": "On ets?",
@@ -54,7 +55,8 @@
     "back": "Tornar",
     "expired": "Sessió expirada",
     "expiredMessage": "Aquesta sessió ha expirat (límit 48h). Comença un nou vespre!",
-    "newEvening": "Nou vespre"
+    "newEvening": "Nou vespre",
+    "timeline": "🕐 Timeline"
   },
   "table": {
     "title": "🍻 Taula",
@@ -67,7 +69,10 @@
     "code": "Codi",
     "join": "Unir-se",
     "couldNotCreate": "No s'ha pogut crear la taula",
-    "notFound": "Taula no trobada"
+    "notFound": "Taula no trobada",
+    "refresh": "Refresh",
+    "you": "you",
+    "noDrinks": "No drinks yet"
   },
   "picker": {
     "title": "Tria una copa",
@@ -79,8 +84,10 @@
     "close": "Tancar"
   },
   "drinkCard": {
-    "aria": "{name}, {count}. Toca per afegir, mantén premut per treure",
-    "longPress": "Mantén premut per treure"
+    "aria": "{name}, {count}. Tap + to add, tap − to remove",
+    "longPress": "Mantén premut per treure",
+    "add": "Add one",
+    "remove": "Remove one"
   },
   "pwa": {
     "install": "Instal·lar TipsyTap",

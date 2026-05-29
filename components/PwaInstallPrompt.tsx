@@ -42,10 +42,10 @@ export function PwaInstallPrompt() {
   if (!deferredPrompt || !visible) return null;
 
   return (
-    <div className="fixed bottom-20 left-4 right-4 bg-surface border border-border rounded-xl p-4 shadow-xl z-40 flex items-center gap-3 animate-in fade-in slide-in-from-bottom-4">
+    <div className="fixed bottom-20 left-4 right-4 bg-default-100 border border-border rounded-xl p-4 shadow-xl z-40 flex items-center gap-3 animate-in fade-in slide-in-from-bottom-4">
       <div className="flex-1">
         <p className="font-medium text-sm">{t("install")}</p>
-        <p className="text-xs text-muted">{t("description")}</p>
+        <p className="text-xs text-default-500">{t("description")}</p>
       </div>
       <Button
         variant="primary"
@@ -62,7 +62,7 @@ export function PwaInstallPrompt() {
           setVisible(false);
           sessionStorage.setItem("pwa-dismissed", "1");
         }}
-        className="text-muted text-lg"
+        className="text-default-500 text-lg"
         aria-label={t("dismiss")}
       >
         ×
