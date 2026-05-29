@@ -273,34 +273,30 @@ export default function SummaryPage() {
               ) : (
                 <>
                   <h3 className="text-sm font-bold text-center mb-3">{t("summary.timeline")}</h3>
-                  <div className="pl-6">
-                    <div className="space-y-3">
-                      {timeline.map((entry, index) => {
-                        const time = new Date(entry.time).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        });
-                        return (
-                          <div key={index} className="relative flex items-center gap-3">
-                            {/* Dot */}
-                            <div className="absolute -left-6 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-primary" />
-                            {/* Entry */}
-                            <div className="flex-1 bg-default-100 rounded-xl px-3 py-2 flex items-center justify-between">
-                              <div className="flex items-center gap-2">
-                                <span className="text-base">
-                                  {CATEGORY_EMOJI[entry.category || "other"] || "🍹"}
-                                </span>
-                                <span className="text-sm font-medium">{entry.name}</span>
-                              </div>
-                              <span className="text-xs text-default-400 font-mono tabular-nums">
-                                {time}
+                  <ol className="border-l-2 border-primary/40 ml-3">
+                    {timeline.map((entry, index) => {
+                      const time = new Date(entry.time).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      });
+                      return (
+                        <li key={index} className="relative ml-4 pb-3 last:pb-0">
+                          <div className="absolute -left-[21px] top-3 w-3 h-3 rounded-full bg-primary border-2 border-background" />
+                          <div className="bg-default-100 rounded-xl px-3 py-2 flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <span className="text-base">
+                                {CATEGORY_EMOJI[entry.category || "other"] || "🍹"}
                               </span>
+                              <span className="text-sm font-medium">{entry.name}</span>
                             </div>
+                            <span className="text-xs text-default-400 font-mono tabular-nums">
+                              {time}
+                            </span>
                           </div>
-                        );
-                      })}
-                    </div>
-                  </div>
+                        </li>
+                      );
+                    })}
+                  </ol>
                 </>
               )}
             </div>
