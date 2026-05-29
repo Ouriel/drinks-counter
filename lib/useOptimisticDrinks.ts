@@ -34,10 +34,6 @@ export function useOptimisticDrinks(slug: string, onBadge?: () => void) {
     if (data && pendingOps.current === 0) setDrinks(data.drinks);
   }, [slug]);
 
-  function showUndo(name: string, undoFn: () => void) {
-    toast(`${name} +1`, { timeout: 4000, actionProps: { children: "Undo", onPress: undoFn } });
-  }
-
   function triggerGamification(newTotal: number) {
     const earned = notifyGamification(newTotal, totalRef.current);
     totalRef.current = newTotal;
@@ -96,15 +92,6 @@ export function useOptimisticDrinks(slug: string, onBadge?: () => void) {
               : item
           )
         );
-        showUndo(name, async () => {
-          await api.patchDrink({ slug, drinkId: data.drink.id, delta: -1 });
-          fetchDrinks();
-        });
-      } else if (existing) {
-        showUndo(name, async () => {
-          await api.patchDrink({ slug, drinkId: existing.id, delta: -1 });
-          fetchDrinks();
-        });
       }
     });
   }
@@ -126,12 +113,7 @@ export function useOptimisticDrinks(slug: string, onBadge?: () => void) {
         setDrinks((prev) =>
           prev.map((item) => (item.id === drink.id ? { ...item, count: item.count - 1 } : item))
         );
-        return;
       }
-      showUndo(drink.name, async () => {
-        await api.patchDrink({ slug, drinkId: drink.id, delta: -1 });
-        fetchDrinks();
-      });
     });
   }
 

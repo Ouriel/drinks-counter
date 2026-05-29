@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { Button, Card, Chip, Spinner, Tooltip } from "@heroui/react";
+import { Button, Card, Chip, Spinner } from "@heroui/react";
 import { useTranslations } from "next-intl";
 import { CATEGORY_EMOJI } from "@/lib/constants";
 import { titleCase } from "@/lib/sanitize";
@@ -23,6 +23,7 @@ export default function SummaryPage() {
   const [loading, setLoading] = useState(true);
   const [expired, setExpired] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [selectedBadge, setSelectedBadge] = useState<string | null>(null);
 
   useEffect(() => {
     async function load() {
@@ -75,13 +76,20 @@ export default function SummaryPage() {
   }, {});
 
   const firstDrink = drinks.reduce<string | null>(
-    (e, d) => (!d.createdAt ? e : !e || d.createdAt < e ? d.createdAt : e),
+    (earliest, drink) =>
+      !drink.createdAt
+        ? earliest
+        : !earliest || drink.createdAt < earliest
+          ? drink.createdAt
+          : earliest,
     null
   );
   const lastDrink = drinks.reduce<string | null>(
-    (l, d) => (!d.createdAt ? l : !l || d.createdAt > l ? d.createdAt : l),
+    (latest, drink) =>
+      !drink.createdAt ? latest : !latest || drink.createdAt > latest ? drink.createdAt : latest,
     null
   );
+  // Duration: from first drink to last drink
   const durationMins =
     firstDrink && lastDrink
       ? Math.floor((new Date(lastDrink).getTime() - new Date(firstDrink).getTime()) / 60000)
@@ -103,9 +111,14 @@ export default function SummaryPage() {
         (drink) =>
           `${CATEGORY_EMOJI[drink.category || "other"] || "🍹"} ${drink.name} ×${drink.count}`
       );
+    const categories = Object.entries(byCategory)
+      .sort((a, b) => b[1] - a[1])
+      .map(([cat, count]) => `${CATEGORY_EMOJI[cat] || "🍹"} ${cat} ×${count}`)
+      .join(", ");
     const text = [
       `🍻 ${total} drinks${barName ? ` at ${titleCase(barName)}` : ""}`,
       durationMins > 0 ? `⏱ ${durationStr}` : "",
+      categories ? `📊 ${categories}` : "",
       "",
       ...lines,
       "",
@@ -164,20 +177,31 @@ export default function SummaryPage() {
             return (
               <>
                 {badges.length > 0 && (
-                  <div className="flex flex-wrap justify-center gap-3 mb-4">
-                    {badges.map((badge) => (
-                      <Tooltip key={badge.title}>
-                        <Tooltip.Trigger>
-                          <span className="text-3xl cursor-help">{badge.emoji}</span>
-                        </Tooltip.Trigger>
-                        <Tooltip.Content>
-                          <div className="text-center px-2 py-1">
-                            <p className="font-bold">{badge.title}</p>
-                            <p className="text-xs">{badge.subtitle}</p>
-                          </div>
-                        </Tooltip.Content>
-                      </Tooltip>
-                    ))}
+                  <div className="mb-4">
+                    <div className="flex flex-wrap justify-center gap-3">
+                      {badges.map((badge) => (
+                        <button
+                          key={badge.title}
+                          type="button"
+                          className={`text-3xl transition-transform ${selectedBadge === badge.title ? "scale-125" : ""}`}
+                          onClick={() =>
+                            setSelectedBadge(selectedBadge === badge.title ? null : badge.title)
+                          }
+                        >
+                          {badge.emoji}
+                        </button>
+                      ))}
+                    </div>
+                    {selectedBadge &&
+                      (() => {
+                        const badge = badges.find((b) => b.title === selectedBadge);
+                        if (!badge) return null;
+                        return (
+                          <p className="text-center text-sm mt-2">
+                            <strong>{badge.title}</strong> — {badge.subtitle}
+                          </p>
+                        );
+                      })()}
                   </div>
                 )}
 

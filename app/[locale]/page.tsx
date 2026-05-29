@@ -178,7 +178,7 @@ function HomeContent() {
           <ThemeSwitch />
         </div>
         <div className="text-center">
-          <Image src="/icon.svg" alt="TipsyTap" width={120} height={120} className="mx-auto mb-4" />
+          <Image src="/icon.svg" alt="TipsyTap" width={160} height={160} className="mx-auto mb-4" />
           <h1 className="text-4xl font-bold">{t("app.title")}</h1>
           <p className="text-default-500 mt-2">{t("app.tagline")}</p>
         </div>

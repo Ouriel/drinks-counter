@@ -119,7 +119,7 @@ export function TableView({
                   >
                     <span className="text-base">
                       {isTied && "👑 "}
-                      {isMe && "👈 "}
+                      {isMe && "👉 "}
                       {member.nickname}
                     </span>
                     <span className="font-bold tabular-nums text-lg">{member.total}</span>

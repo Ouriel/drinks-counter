@@ -1,6 +1,8 @@
 "use client";
 
+import { useRef } from "react";
 import { Card, Chip } from "@heroui/react";
+import { useLongPress } from "react-aria";
 import { useTranslations } from "next-intl";
 import { CATEGORY_EMOJI } from "@/lib/constants";
 import type { Drink } from "@/lib/types";
@@ -22,7 +24,25 @@ export function DrinkCard({
   onLongPress: () => void;
   isTop?: boolean;
 }) {
+  const longPressed = useRef(false);
   const t = useTranslations("drinkCard");
+
+  const { longPressProps } = useLongPress({
+    accessibilityDescription: t("longPress"),
+    threshold: 500,
+    onLongPress: () => {
+      longPressed.current = true;
+      onLongPress();
+    },
+  });
+
+  const handleClick = () => {
+    if (longPressed.current) {
+      longPressed.current = false;
+      return;
+    }
+    onTap();
+  };
 
   return (
     <Card>
@@ -34,25 +54,26 @@ export function DrinkCard({
           <Chip size="sm">{categoryEmoji(drink.category)}</Chip>
           <span className="text-lg font-medium truncate">{drink.name}</span>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           <button
             type="button"
-            className="w-9 h-9 flex items-center justify-center rounded-full text-lg text-danger/70 hover:bg-danger/10 active:scale-90 transition-transform"
+            className="w-7 h-7 flex items-center justify-center rounded-full text-default-400 hover:text-danger hover:bg-danger/10 text-sm transition-colors"
             onClick={onLongPress}
             aria-label={t("remove")}
           >
             −
           </button>
-          <span className="text-3xl font-bold tabular-nums w-10 text-center">{drink.count}</span>
           <button
             type="button"
-            className="w-11 h-11 flex items-center justify-center rounded-full bg-primary/15 text-2xl font-bold text-primary active:scale-90 transition-transform"
-            onClick={onTap}
-            aria-label={t("add")}
+            className="flex items-center gap-1 px-3 py-1 rounded-full active:scale-95 transition-transform cursor-pointer"
+            {...longPressProps}
+            onClick={handleClick}
+            onContextMenu={(event) => event.preventDefault()}
           >
-            +
+            <span className="text-3xl font-bold tabular-nums">{drink.count}</span>
+            <span className="text-xl font-bold text-primary">+</span>
           </button>
-          {isTop && <span className="text-lg ml-1">👑</span>}
+          {isTop && <span className="text-lg">👑</span>}
         </div>
       </div>
     </Card>

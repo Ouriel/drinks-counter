@@ -141,7 +141,7 @@ export default function SessionPage() {
           <ThemeSwitch />
         </div>
         <h1 className={`text-3xl font-bold ${total >= 10 ? "animate-wobble" : ""}`} key={total}>
-          <Image src="/icon.svg" alt="" width={32} height={32} className="inline mr-2" />
+          <Image src="/icon.svg" alt="" width={48} height={48} className="inline mr-2" />
           {t("session.drinks", { count: total })}
         </h1>
         {barName && <p className="text-base mt-1 text-foreground/70">{titleCase(barName)}</p>}
