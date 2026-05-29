@@ -8,6 +8,7 @@ export const revalidate = 60;
 
 export default async function StatsPage() {
   const t = await getTranslations("stats");
+  const tBar = await getTranslations("bar");
   const now = new Date();
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const weekStart = new Date(todayStart.getTime() - 6 * 24 * 60 * 60 * 1000);
@@ -166,7 +167,9 @@ export default async function StatsPage() {
                 </span>
               )}
             </div>
-            <span className="text-default-500 text-base">{bar.itemCount} items</span>
+            <span className="text-default-500 text-base">
+              {tBar("items", { count: bar.itemCount })}
+            </span>
           </div>
         ))}
         {topBars.length === 0 && <p className="text-default-500">{t("noBars")}</p>}

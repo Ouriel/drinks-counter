@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import { Button, Card, Chip, Spinner, Popover } from "@heroui/react";
 import { useTranslations } from "next-intl";
@@ -26,6 +26,13 @@ export default function SummaryPage() {
   const [expired, setExpired] = useState(false);
   const [copied, setCopied] = useState(false);
   const [showTimeline, setShowTimeline] = useState(false);
+  const copiedTimeout = useRef<NodeJS.Timeout>(null);
+
+  useEffect(() => {
+    return () => {
+      if (copiedTimeout.current) clearTimeout(copiedTimeout.current);
+    };
+  }, []);
 
   useEffect(() => {
     async function load() {
@@ -130,7 +137,7 @@ export default function SummaryPage() {
       .join("\n");
     navigator.clipboard.writeText(text);
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    copiedTimeout.current = setTimeout(() => setCopied(false), 2000);
   }
 
   return (
