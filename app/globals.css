@@ -3,7 +3,6 @@
 
 :root {
   --accent: oklch(0.769 0.188 70.08);
-  --accent-foreground: oklch(0.15 0 0);
   font-size: 18px;
 }
 
@@ -37,4 +36,28 @@
 
 .animate-wobble {
   animation: wobble 0.5s ease-in-out;
+}
+
+.tipsy-vignette {
+  position: relative;
+}
+.tipsy-vignette::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+  box-shadow: inset 0 0 80px 40px rgba(0, 0, 0, 0.3);
+  border-radius: 0;
+  animation: vignette-pulse 4s ease-in-out infinite;
+}
+
+@keyframes vignette-pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
 }

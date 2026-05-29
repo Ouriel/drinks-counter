@@ -137,5 +137,5 @@ export function useOptimisticDrinks(slug: string, onBadge?: () => void) {
     });
   }
 
-  return { drinks, setDrinks, totalRef, fetchDrinks, addDrink, increment, decrement };
+  return { drinks, setDrinks, totalRef, addDrink, increment, decrement };
 }

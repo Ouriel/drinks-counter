@@ -7,8 +7,6 @@ import { useTranslations } from "next-intl";
 import { CATEGORY_EMOJI } from "@/lib/constants";
 import type { Drink } from "@/lib/types";
 
-export type { Drink } from "@/lib/types";
-
 function categoryEmoji(cat: string | null): string {
   return CATEGORY_EMOJI[cat || "other"] || "🍹";
 }

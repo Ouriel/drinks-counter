@@ -158,6 +158,16 @@ export const api = {
     );
   },
 
+  leaveTable(slug: string) {
+    return apiFetch(
+      `/api/tables?slug=${encodeURIComponent(slug)}`,
+      z.object({ ok: z.literal(true) }),
+      {
+        method: "DELETE",
+      }
+    );
+  },
+
   async parseMenu(formData: FormData) {
     const res = await fetch("/api/parse-menu", { method: "POST", body: formData });
     if (!res.ok) return { items: [] as MenuItem[] };

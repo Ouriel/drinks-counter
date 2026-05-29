@@ -150,6 +150,20 @@ export function TableView({
           </div>
         )}
 
+        <div className="text-center mt-3">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-danger"
+            onPress={async () => {
+              const result = await api.leaveTable(slug);
+              if (result) window.location.reload();
+            }}
+          >
+            {t("leave")}
+          </Button>
+        </div>
+
         {/* Member drinks modal */}
         <Modal state={modalState}>
           <Modal.Backdrop

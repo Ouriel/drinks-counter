@@ -149,3 +149,20 @@ export async function GET(req: NextRequest) {
     members: members.map((m) => ({ nickname: m.nickname || "???", total: Number(m.total) })),
   });
 }
+
+// DELETE: leave a table
+export async function DELETE(req: NextRequest) {
+  const slug = req.nextUrl.searchParams.get("slug");
+  if (!slug) return NextResponse.json({ error: "Missing slug" }, { status: 400 });
+
+  const [session] = await db.select().from(sessions).where(eq(sessions.slug, slug)).limit(1);
+  if (!session) return NextResponse.json({ error: "Session not found" }, { status: 404 });
+  if (!session.tableId) return NextResponse.json({ error: "Not in a table" }, { status: 400 });
+
+  await db
+    .update(sessions)
+    .set({ tableId: null, nickname: null })
+    .where(eq(sessions.id, session.id));
+
+  return NextResponse.json({ ok: true });
+}

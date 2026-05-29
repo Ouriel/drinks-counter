@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Button, Card, Chip, Spinner } from "@heroui/react";
 import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 import { CATEGORY_EMOJI } from "@/lib/constants";
 import { titleCase } from "@/lib/sanitize";
 import {
@@ -17,6 +18,7 @@ import type { Drink } from "@/lib/types";
 
 export default function SummaryPage() {
   const { slug } = useParams<{ slug: string }>();
+  const router = useRouter();
   const t = useTranslations();
   const [drinks, setDrinks] = useState<Drink[]>([]);
   const [barName, setBarName] = useState("");
@@ -59,7 +61,7 @@ export default function SummaryPage() {
             <p className="text-5xl mb-4">⏰</p>
             <h1 className="text-xl font-bold mb-2">{t("summary.expired")}</h1>
             <p className="text-default-500">{t("summary.expiredMessage")}</p>
-            <Button variant="primary" className="mt-6" onPress={() => (window.location.href = "/")}>
+            <Button variant="primary" className="mt-6" onPress={() => router.push("/")}>
               {t("summary.newEvening")}
             </Button>
           </div>
@@ -290,7 +292,7 @@ export default function SummaryPage() {
         <Button variant="ghost" onPress={copyAsText}>
           {copied ? t("summary.copied") : t("summary.copyText")}
         </Button>
-        <Button variant="ghost" onPress={() => (window.location.href = `/s/${slug}`)}>
+        <Button variant="ghost" onPress={() => router.push(`/s/${slug}`)}>
           {t("summary.back")}
         </Button>
       </div>

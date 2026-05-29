@@ -72,7 +72,8 @@
     "notFound": "Tisch nicht gefunden",
     "refresh": "Refresh",
     "you": "you",
-    "noDrinks": "No drinks yet"
+    "noDrinks": "No drinks yet",
+    "leave": "Leave table"
   },
   "picker": {
     "title": "Wähle einen Drink",

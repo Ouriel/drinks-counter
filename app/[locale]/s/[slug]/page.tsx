@@ -13,7 +13,7 @@ import { DrinkCard } from "@/components/DrinkCard";
 import { DrinkPicker } from "@/components/DrinkPicker";
 import { Confetti } from "@/components/Confetti";
 import { TableView } from "@/components/TableView";
-import { getSessionHue, getPace } from "@/lib/gamification";
+import { getSessionHue, getPace, getTipsyStyle } from "@/lib/gamification";
 import { useOptimisticDrinks } from "@/lib/useOptimisticDrinks";
 import { api } from "@/lib/api";
 import type { Drink, MenuItem } from "@/lib/types";
@@ -96,6 +96,7 @@ export default function SessionPage() {
   const pace = getPace(drinks);
   const { resolvedTheme } = useTheme();
   const bgColor = getSessionHue(total, resolvedTheme === "dark");
+  const tipsyStyle = getTipsyStyle(total);
 
   if (loading) {
     return (
@@ -107,8 +108,8 @@ export default function SessionPage() {
 
   return (
     <div
-      className="min-h-screen p-4 pb-[calc(6rem+env(safe-area-inset-bottom))] transition-colors duration-1000 text-foreground"
-      style={{ backgroundColor: bgColor }}
+      className={`min-h-screen p-4 pb-[calc(6rem+env(safe-area-inset-bottom))] transition-all duration-1000 text-foreground ${total >= 15 ? "tipsy-vignette" : ""}`}
+      style={{ backgroundColor: bgColor, ...tipsyStyle }}
     >
       {/* Header */}
       <div className="text-center mb-6 relative">
@@ -151,7 +152,8 @@ export default function SessionPage() {
           {pace && (
             <>
               {" "}
-              · {pace.emoji} {t(`pace.${pace.label.toLowerCase().replace(" ", "")}`)}
+              · {pace.emoji}{" "}
+              {t(`pace.${pace.label.toLowerCase().replace(/ ./g, (c) => c[1].toUpperCase())}`)}
             </>
           )}
         </p>

@@ -33,9 +33,29 @@ export function getSessionHue(total: number, isDark = true): string {
   // Cool (blue 210) → warm (amber 30) as drinks increase, capped at 20
   const t = Math.min(total, 20) / 20;
   const hue = Math.round(210 - t * 180); // 210 → 30
-  const saturation = Math.round(20 + t * 40); // 20% → 60%
-  const lightness = isDark ? 8 : 96;
+  const saturation = Math.round(30 + t * 50); // 30% → 80%
+  const lightness = isDark ? 12 + t * 4 : 94 - t * 6; // dark: 12→16%, light: 94→88%
   return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+}
+
+/** Progressive visual effects based on drink count */
+export function getTipsyStyle(total: number): React.CSSProperties {
+  if (total < 5) return {};
+  if (total < 10) {
+    return { transform: `rotate(${(total - 5) * 0.1}deg)` };
+  }
+  if (total < 15) {
+    const offset = (total - 9) * 0.3;
+    return {
+      transform: `rotate(${total % 2 === 0 ? 0.4 : -0.4}deg)`,
+      textShadow: `${offset}px ${offset * 0.5}px 0 rgba(128,128,128,0.2)`,
+    };
+  }
+  const offset = 1 + (total - 14) * 0.2;
+  return {
+    transform: `rotate(${total % 2 === 0 ? 0.6 : -0.6}deg)`,
+    textShadow: `${offset}px ${offset * 0.5}px 0 rgba(128,128,128,0.3)`,
+  };
 }
 
 // === PACE INDICATOR ===

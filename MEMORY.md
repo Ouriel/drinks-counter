@@ -38,3 +38,15 @@
 ## Remaining
 
 - Leaderboard alcohol consideration: needs drink volume data (not in current schema). Could add estimated "standard drinks" per category as a future feature.
+
+## Code Review (2025-05-29)
+
+- Bug: pace "Warp speed" → key mismatch (`warpspeed` vs `warpSpeed`) in session page line 155
+- `bg-muted/40` leftover in DrinkPicker.tsx:80 — invalid class
+- `proxy.ts` is dead code (never imported, no middleware.ts exists)
+- `useOverlayState` + `Modal.*` compound pattern in TableView.tsx needs verification against HeroUI v3 API
+- Unused translation keys: badges._, achievements._, nudges.\*, session.justStarted, drinkCard.add
+- Unused exports: DrinkCard re-exports Drink type, all api.ts schema exports, fetchDrinks from useOptimisticDrinks
+- `--accent-foreground` CSS variable unused
+- Summary page uses `window.location.href` bypassing i18n locale routing
+- gamification.ts hardcodes rgba white for text-shadow (won't adapt to light theme)

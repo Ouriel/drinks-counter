@@ -72,7 +72,8 @@
     "notFound": "Mesa no encontrada",
     "refresh": "Refresh",
     "you": "you",
-    "noDrinks": "No drinks yet"
+    "noDrinks": "No drinks yet",
+    "leave": "Leave table"
   },
   "picker": {
     "title": "Elige una copa",
