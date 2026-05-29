@@ -96,6 +96,7 @@ export default function AdminPage() {
             placeholder="Admin secret…"
             value={secret}
             onChange={(event) => setSecret(event.target.value)}
+            className="w-full"
           />
           <Button variant="primary" size="lg" className="w-full" onPress={() => login(secret)}>
             Login
