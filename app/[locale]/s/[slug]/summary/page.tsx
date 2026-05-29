@@ -20,6 +20,7 @@ export default function SummaryPage() {
   const { slug } = useParams<{ slug: string }>();
   const router = useRouter();
   const t = useTranslations();
+  const tCat = useTranslations("categories");
   const [drinks, setDrinks] = useState<Drink[]>([]);
   const [barName, setBarName] = useState("");
   const [loading, setLoading] = useState(true);
@@ -172,7 +173,7 @@ export default function SummaryPage() {
                 .sort((a, b) => b[1] - a[1])
                 .map(([cat, count]) => (
                   <Chip key={cat} size="md">
-                    {CATEGORY_EMOJI[cat] || "🍹"} {cat} ×{count}
+                    {CATEGORY_EMOJI[cat] || "🍹"} {tCat(cat)} ×{count}
                   </Chip>
                 ))}
             </div>

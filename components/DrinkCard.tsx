@@ -50,7 +50,7 @@ export function DrinkCard({
       >
         <div className="flex items-center gap-2 min-w-0 flex-1">
           <Chip size="sm">{categoryEmoji(drink.category)}</Chip>
-          <span className="text-lg font-medium truncate">{drink.name}</span>
+          <span className="text-base font-medium break-words line-clamp-2">{drink.name}</span>
         </div>
         <div className="flex items-center gap-2">
           <button

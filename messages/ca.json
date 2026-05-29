@@ -185,5 +185,16 @@
     "es": "Español",
     "ca": "Català",
     "it": "Italiano"
+  },
+  "categories": {
+    "beer": "Cervesa",
+    "cocktail": "Còctel",
+    "wine": "Vi",
+    "spirit": "Licor",
+    "shot": "Xupito",
+    "mocktail": "Mocktail",
+    "soft": "Refresc",
+    "food": "Menjar",
+    "other": "Altre"
   }
 }

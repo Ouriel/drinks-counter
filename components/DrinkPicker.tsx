@@ -23,6 +23,7 @@ export function DrinkPicker({
   const containerRef = useRef<HTMLDivElement>(null);
   const onCloseRef = useRef(onClose);
   const t = useTranslations("picker");
+  const tCat = useTranslations("categories");
 
   useEffect(() => {
     onCloseRef.current = onClose;
@@ -141,7 +142,7 @@ export function DrinkPicker({
           <div key={category} className="mb-4">
             <div className="flex items-center gap-2 mb-2">
               <Chip size="sm">{CATEGORY_EMOJI[category] || "🍹"}</Chip>
-              <span className="text-sm text-default-500 uppercase">{category}</span>
+              <span className="text-sm text-default-500 uppercase">{tCat(category)}</span>
             </div>
             <div className="space-y-1">
               {items.map((item) => (

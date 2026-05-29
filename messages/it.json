@@ -185,5 +185,16 @@
     "es": "Español",
     "ca": "Català",
     "it": "Italiano"
+  },
+  "categories": {
+    "beer": "Birra",
+    "cocktail": "Cocktail",
+    "wine": "Vino",
+    "spirit": "Liquore",
+    "shot": "Shot",
+    "mocktail": "Mocktail",
+    "soft": "Bibita",
+    "food": "Cibo",
+    "other": "Altro"
   }
 }

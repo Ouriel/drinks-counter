@@ -304,6 +304,7 @@ function HomeContent() {
         {barName.length >= 2 &&
           barSuggestions.length === 0 &&
           osmResults.length === 0 &&
+          menuItems.length === 0 &&
           !parsing && (
             <p className="text-sm text-default-500 text-center mb-4">{t("bar.noResultsPhoto")}</p>
           )}

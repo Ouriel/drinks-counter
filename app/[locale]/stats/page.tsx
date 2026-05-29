@@ -9,6 +9,7 @@ export const revalidate = 60;
 export default async function StatsPage() {
   const t = await getTranslations("stats");
   const tBar = await getTranslations("bar");
+  const tCat = await getTranslations("categories");
   const now = new Date();
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const weekStart = new Date(todayStart.getTime() - 6 * 24 * 60 * 60 * 1000);
@@ -124,7 +125,7 @@ export default async function StatsPage() {
                 className="bg-default-100 rounded-lg px-3 py-2 flex items-center gap-2"
               >
                 <span className="text-lg">{CATEGORY_EMOJI[c.category || "other"] || "🍹"}</span>
-                <span className="text-sm flex-1">{c.category || "other"}</span>
+                <span className="text-sm flex-1">{tCat(c.category || "other")}</span>
                 <span className="font-bold tabular-nums">{c.total}</span>
               </div>
             ))}
@@ -156,12 +157,12 @@ export default async function StatsPage() {
             key={bar.barName}
             className="flex justify-between items-center bg-default-100 rounded-lg px-4 py-3 gap-2"
           >
-            <div className="flex-1 min-w-0 truncate">
-              <span className="text-default-500 mr-2">{i + 1}.</span>
-              <span>{bar.barName}</span>
+            <div className="flex-1 min-w-0 flex items-baseline gap-1">
+              <span className="text-default-500 shrink-0">{i + 1}.</span>
+              <span className="truncate">{bar.barName}</span>
               {bar.topCategory && (
-                <span className="text-default-500 text-sm ml-2">
-                  {CATEGORY_EMOJI[bar.topCategory] || "🍹"} {bar.topCategory}
+                <span className="text-default-500 text-sm shrink-0 ml-1">
+                  {CATEGORY_EMOJI[bar.topCategory] || "🍹"} {tCat(bar.topCategory)}
                 </span>
               )}
             </div>
