@@ -22,8 +22,8 @@ export const tables = pgTable("tables", {
 export const sessions = pgTable("sessions", {
   id: uuid("id").defaultRandom().primaryKey(),
   slug: text("slug").notNull().unique(),
-  barMenuId: uuid("bar_menu_id").references(() => barMenus.id),
-  tableId: uuid("table_id").references(() => tables.id),
+  barMenuId: uuid("bar_menu_id").references(() => barMenus.id, { onDelete: "set null" }),
+  tableId: uuid("table_id").references(() => tables.id, { onDelete: "set null" }),
   nickname: varchar("nickname", { length: 30 }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   expiresAt: timestamp("expires_at").notNull(),

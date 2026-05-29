@@ -12,16 +12,18 @@ function notifyGamification(newTotal: number, prevTotal: number): boolean {
   const badge = getBadgeForCount(newTotal);
   if (badge) {
     toast(`${badge.emoji} ${badge.title}`, { description: badge.subtitle, timeout: 3000 });
+    return true;
   }
+  if (checkPersonalBest(newTotal)) {
+    toast("🏅 Personal Best!", { description: `${newTotal} drinks — new record`, timeout: 3000 });
+    return true;
+  }
+  // Only show nudge if no badge/PB was shown
   const nudge = getNudge(newTotal, prevTotal);
   if (nudge) {
     toast(`${nudge.emoji} ${nudge.text}`, { timeout: 3500 });
   }
-  if (checkPersonalBest(newTotal) && !badge) {
-    toast("🏅 Personal Best!", { description: `${newTotal} drinks — new record`, timeout: 3000 });
-    return true;
-  }
-  return !!badge;
+  return false;
 }
 
 export function useOptimisticDrinks(slug: string, onBadge?: () => void) {

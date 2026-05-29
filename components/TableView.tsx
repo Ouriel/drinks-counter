@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Button, Input, Card, Modal, useOverlayState } from "@heroui/react";
 import { useTranslations } from "next-intl";
 import { QrCode } from "@/components/QrCode";
@@ -12,13 +12,15 @@ export function TableView({
   slug,
   tableCode: initialCode,
   nickname: initialNickname,
+  drinkTotal,
 }: {
   slug: string;
   tableCode: string | null;
   nickname: string | null;
+  drinkTotal: number;
 }) {
   const [localCode, setLocalCode] = useState<string | null>(null);
-  const [nickname] = useState(initialNickname);
+  const [nickname, setNickname] = useState(initialNickname);
   const tableCode = localCode || initialCode;
   const [showJoin, setShowJoin] = useState(false);
   const [joinCode, setJoinCode] = useState("");
@@ -50,6 +52,16 @@ export function TableView({
     return () => clearInterval(id);
   }, [tableCode, fetchRanking]);
 
+  // Refresh leaderboard when own drink count changes
+  const prevTotal = useRef(drinkTotal);
+  useEffect(() => {
+    if (drinkTotal !== prevTotal.current && tableCode) {
+      prevTotal.current = drinkTotal;
+      const timeout = setTimeout(() => fetchRanking(), 500);
+      return () => clearTimeout(timeout);
+    }
+  }, [drinkTotal, tableCode, fetchRanking]);
+
   async function handleCreate() {
     setLoading(true);
     setError("");
@@ -60,6 +72,7 @@ export function TableView({
       return;
     }
     setLocalCode(data.code);
+    setNickname(data.nickname);
     fetchRanking(data.code);
   }
 
@@ -74,6 +87,7 @@ export function TableView({
       return;
     }
     setLocalCode(data.code);
+    setNickname(data.nickname);
     setShowJoin(false);
     fetchRanking(data.code);
   }

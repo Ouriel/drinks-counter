@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { db, barMenus, sessions, drinks, normalizeMenuItems } from "@/lib/db";
-import { sql, count, desc, gt, eq } from "drizzle-orm";
+import { sql, count, desc, gt } from "drizzle-orm";
 import { CATEGORY_EMOJI } from "@/lib/constants";
 import Link from "next/link";
 

@@ -196,7 +196,7 @@ export default function SessionPage() {
       )}
 
       {/* Table */}
-      <TableView slug={slug} tableCode={tableCode} nickname={nickname} />
+      <TableView slug={slug} tableCode={tableCode} nickname={nickname} drinkTotal={total} />
 
       {/* FAB */}
       <div className="fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom))] left-0 right-0 flex justify-center">
