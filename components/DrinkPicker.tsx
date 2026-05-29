@@ -75,7 +75,7 @@ export function DrinkPicker({
     >
       <div
         ref={containerRef}
-        className="bg-default-100 rounded-t-2xl mt-12 flex-1 overflow-y-auto overscroll-contain p-4"
+        className="bg-background rounded-t-2xl mt-12 flex-1 overflow-y-auto overscroll-contain p-4"
       >
         <div className="w-10 h-1 bg-default-300/40 rounded-full mx-auto mb-3" />
         <div className="flex justify-between items-center mb-4">

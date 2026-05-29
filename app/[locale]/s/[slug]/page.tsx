@@ -113,41 +113,56 @@ export default function SessionPage() {
       style={{ backgroundColor: bgColor, ...tipsyStyle }}
     >
       {/* Header */}
-      <div className="text-center mb-6 relative">
+      <div className="mb-6 relative">
         {showConfetti && <Confetti onDone={() => setShowConfetti(false)} />}
-        <div className="absolute left-0 top-0">
-          <Button variant="ghost" size="sm" onPress={() => router.push("/")}>
-            {t("session.new")}
-          </Button>
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              onPress={() => router.push("/")}
+              aria-label={t("session.new")}
+            >
+              🏠
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onPress={() => {
+                if (navigator.share) {
+                  navigator.share({
+                    title: t("app.title"),
+                    text: t("session.joinSession", { bar: titleCase(barName || slug) }),
+                    url: window.location.href,
+                  });
+                } else {
+                  navigator.clipboard.writeText(window.location.href);
+                  toast(t("session.linkCopied"));
+                }
+              }}
+              aria-label={t("session.share")}
+            >
+              📤
+            </Button>
+          </div>
+          <div className="flex items-center gap-1">
+            <Image src="/icon.svg" alt="" width={32} height={32} />
+            <span className="font-bold text-sm">TipsyTap</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <LocaleSwitcher />
+            <ThemeSwitch />
+          </div>
         </div>
-        <div className="absolute right-0 top-0 flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            onPress={() => {
-              if (navigator.share) {
-                navigator.share({
-                  title: t("app.title"),
-                  text: t("session.joinSession", { bar: titleCase(barName || slug) }),
-                  url: window.location.href,
-                });
-              } else {
-                navigator.clipboard.writeText(window.location.href);
-                toast(t("session.linkCopied"));
-              }
-            }}
-            aria-label={t("session.share")}
-          >
-            📤
-          </Button>
-          <LocaleSwitcher />
-          <ThemeSwitch />
-        </div>
-        <h1 className={`text-3xl font-bold ${total >= 10 ? "animate-wobble" : ""}`} key={total}>
-          <Image src="/icon.svg" alt="" width={48} height={48} className="inline mr-2" />
+        <h1
+          className={`text-3xl font-bold text-center ${total >= 10 ? "animate-wobble" : ""}`}
+          key={total}
+        >
           {t("session.drinks", { count: total })}
         </h1>
-        {barName && <p className="text-base mt-1 text-foreground/70">{titleCase(barName)}</p>}
+        {barName && (
+          <p className="text-base mt-1 text-center text-foreground/70">{titleCase(barName)}</p>
+        )}
         <p className="text-sm mt-0.5 font-mono text-default-500">
           {slug}
           <ElapsedTimer drinks={drinks} />

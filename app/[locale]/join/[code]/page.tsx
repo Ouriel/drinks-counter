@@ -59,7 +59,6 @@ export default function JoinTablePage() {
       <div className="min-h-screen flex flex-col items-center justify-center p-6 gap-4">
         <p className="text-4xl">😕</p>
         <p className="text-lg font-bold">{t("failed")}</p>
-        <p className="text-default-500 text-sm">{error}</p>
         <Button variant="primary" onPress={() => router.push("/")}>
           {t("startFresh")}
         </Button>

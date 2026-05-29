@@ -13,7 +13,7 @@
   "bar": {
     "whereAreYou": "Where are you?",
     "barName": "Bar name…",
-    "items": "{count} items",
+    "items": "{count, plural, one {# item} other {# items}}",
     "nearbyPlaces": "📍 Nearby places",
     "noResultsPhoto": "📸 No results — take a photo of the menu to get started!",
     "start": "Start ({count} drinks)",

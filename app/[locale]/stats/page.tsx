@@ -154,12 +154,12 @@ export default async function StatsPage() {
         {topBars.map((bar, i) => (
           <div
             key={bar.barName}
-            className="flex justify-between items-center bg-default-100 rounded-lg px-4 py-3"
+            className="flex justify-between items-center bg-default-100 rounded-lg px-4 py-3 gap-2"
           >
-            <div>
+            <div className="flex-1 min-w-0">
               <span className="text-base">
                 <span className="text-default-500 mr-2">{i + 1}.</span>
-                {bar.barName}
+                <span className="truncate">{bar.barName}</span>
               </span>
               {bar.topCategory && (
                 <span className="text-default-500 text-sm ml-2">
@@ -167,7 +167,7 @@ export default async function StatsPage() {
                 </span>
               )}
             </div>
-            <span className="text-default-500 text-base">
+            <span className="text-default-500 text-sm whitespace-nowrap">
               {tBar("items", { count: bar.itemCount })}
             </span>
           </div>
