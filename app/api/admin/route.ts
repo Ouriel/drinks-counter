@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
         nickname: sessions.nickname,
         createdAt: sessions.createdAt,
         expiresAt: sessions.expiresAt,
-        drinkCount: sql<number>`COALESCE((SELECT SUM(${drinks.count}) FROM ${drinks} WHERE ${drinks.sessionId} = ${sessions.id}), 0)`,
+        drinkCount: sql<number>`COALESCE((SELECT SUM(${drinks.count}) FROM ${drinks} WHERE ${drinks.sessionId} = ${sessions.id}), 0)::int`,
       })
       .from(sessions)
       .orderBy(sql`${sessions.createdAt} DESC`)
@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
         id: tables.id,
         code: tables.code,
         createdAt: tables.createdAt,
-        memberCount: sql<number>`(SELECT COUNT(*) FROM ${sessions} WHERE ${sessions.tableId} = ${tables.id})`,
+        memberCount: sql<number>`(SELECT COUNT(*) FROM ${sessions} WHERE ${sessions.tableId} = ${tables.id})::int`,
       })
       .from(tables)
       .orderBy(sql`${tables.createdAt} DESC`)
