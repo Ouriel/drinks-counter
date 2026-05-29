@@ -277,16 +277,16 @@ export default function SummaryPage() {
               ) : (
                 <>
                   <h3 className="text-sm font-bold text-center mb-3">{t("summary.timeline")}</h3>
-                  <ol className="relative border-l-2 border-primary/40 ml-4">
+                  <div className="space-y-3">
                     {timeline.map((entry, index) => {
                       const time = new Date(entry.time).toLocaleTimeString([], {
                         hour: "2-digit",
                         minute: "2-digit",
                       });
                       return (
-                        <li key={index} className="ml-6 pb-3 last:pb-0">
-                          <span className="absolute -left-[7px] flex h-3.5 w-3.5 items-center justify-center rounded-full bg-primary ring-4 ring-background" />
-                          <div className="bg-default-100 rounded-xl px-3 py-2 flex items-center justify-between">
+                        <div key={index} className="flex items-center gap-3">
+                          <div className="w-3 h-3 rounded-full border-2 border-primary bg-background shrink-0" />
+                          <div className="flex-1 bg-default-100 rounded-xl px-3 py-2 flex items-center justify-between">
                             <div className="flex items-center gap-2">
                               <span className="text-base">
                                 {CATEGORY_EMOJI[entry.category || "other"] || "🍹"}
@@ -297,10 +297,10 @@ export default function SummaryPage() {
                               {time}
                             </span>
                           </div>
-                        </li>
+                        </div>
                       );
                     })}
-                  </ol>
+                  </div>
                 </>
               )}
             </div>
