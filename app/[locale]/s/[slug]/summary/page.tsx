@@ -182,6 +182,22 @@ export default function SummaryPage() {
             )}
           </div>
 
+          {/* Pace */}
+          {(() => {
+            const pace = getPace(drinks);
+            if (!pace) return null;
+            return (
+              <p className="text-center text-sm text-default-500 mb-4">
+                {t("summary.pace", {
+                  emoji: pace.emoji,
+                  label: t(
+                    `pace.${pace.label.toLowerCase().replace(/ ./g, (c) => c[1].toUpperCase())}`
+                  ),
+                })}
+              </p>
+            );
+          })()}
+
           {/* By category */}
           {Object.keys(byCategory).length > 0 && (
             <div className="flex flex-wrap justify-center gap-2 mb-6">
@@ -198,7 +214,6 @@ export default function SummaryPage() {
           {/* Badges with tooltips */}
           {(() => {
             const badges = getAllEarnedBadges(total);
-            const pace = getPace(drinks);
             const achievements = getDrinkAchievements(drinks);
             return (
               <>
@@ -222,17 +237,6 @@ export default function SummaryPage() {
                       </Popover>
                     ))}
                   </div>
-                )}
-
-                {pace && (
-                  <p className="text-center text-sm text-default-500 mb-4">
-                    {t("summary.pace", {
-                      emoji: pace.emoji,
-                      label: t(
-                        `pace.${pace.label.toLowerCase().replace(/ ./g, (c) => c[1].toUpperCase())}`
-                      ),
-                    })}
-                  </p>
                 )}
 
                 {achievements.length > 0 && (
