@@ -8,6 +8,7 @@ import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { useRouter } from "@/i18n/navigation";
 import { ThemeSwitch } from "@/lib/theme-switch";
+import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { titleCase } from "@/lib/sanitize";
 import { DrinkCard } from "@/components/DrinkCard";
 import { DrinkPicker } from "@/components/DrinkPicker";
@@ -139,6 +140,7 @@ export default function SessionPage() {
           >
             📤
           </Button>
+          <LocaleSwitcher />
           <ThemeSwitch />
         </div>
         <h1 className={`text-3xl font-bold ${total >= 10 ? "animate-wobble" : ""}`} key={total}>
