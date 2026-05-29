@@ -125,12 +125,51 @@ components/
 ```bash
 npm run dev          # Local dev server
 npm run build        # Production build (needs POSTGRES_URL)
-npm test             # Run Vitest (66 tests)
+npm test             # Run Vitest (69 tests)
 npm run lint         # ESLint
 npm run format:check # Prettier check
 npx tsc --noEmit    # Type check
 npx drizzle-kit push # Push schema to DB
 ```
+
+## Production
+
+- **URL**: https://tipsy-tap.vercel.app
+- **Deploy**: Auto-deploy from `main` branch via Vercel
+- **Build command**: `npm run db:push && next build` (production), `next build` (preview)
+- **Cron**: Daily cleanup at 06:00 UTC (`/api/cron/cleanup`)
+
+## API Route Conventions
+
+- ALL route handlers must wrap `await req.json()` in try/catch, return 400 on parse failure
+- ALL mutating routes validate input with Zod schemas via `parseBody()` from `lib/schemas.ts`
+- Prefer atomic DB operations (upsert) over check-then-act patterns to avoid TOCTOU races
+- Protected routes (admin, cron) verify secret with `timingSafeEqual` before any logic
+- Error responses: always `{ error: string }` with appropriate HTTP status code
+
+## Accessibility
+
+- Root `<html>` element MUST have `lang={locale}` attribute
+- App content MUST be wrapped in `<main>` landmark
+- All interactive elements MUST have `aria-label` when no visible text
+- Touch targets MUST be ≥44px (use `w-11 h-11` minimum for icon buttons)
+- Primary buttons in dark mode need sufficient contrast (CSS override in globals.css)
+
+## i18n
+
+- 6 locales: en, fr, de, es, ca, it
+- ALL user-facing strings must use `t()` from `next-intl` — no hardcoded text in components
+- Exception: share/copy text can stay English (universal readability for recipients)
+- LocaleSwitcher uses flag emojis + locale code, available on home page AND session page
+- Server components use `getTranslations()`, client components use `useTranslations()`
+- When a page needs keys from multiple namespaces, get multiple translators (e.g. `tBar`)
+
+## PWA Icons
+
+- Source SVG: `public/icon.svg` (dark bg + amber beer glass logo)
+- Regular PNGs generated from SVG via `sharp`: `icon-192.png`, `icon-512.png`
+- Maskable PNGs (full-bleed, no rounded corners, logo in 80% safe zone): `icon-maskable-192.png`, `icon-maskable-512.png`
+- Manifest declares both `any` and `maskable` purpose icons
 
 ## Environment Variables
 
