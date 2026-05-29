@@ -232,12 +232,24 @@ export default function SummaryPage() {
                 )}
 
                 {achievements.length > 0 && (
-                  <div className="space-y-1 mb-4">
+                  <div className="flex flex-wrap justify-center gap-3 mb-4">
                     {achievements.map((achievement) => (
-                      <p key={achievement.key} className="text-sm text-center">
-                        {achievement.emoji}{" "}
-                        {t(`achievements.${achievement.key}`, achievement.params)}
-                      </p>
+                      <Popover key={achievement.key}>
+                        <Popover.Trigger>
+                          <button type="button" className="text-3xl">
+                            {achievement.emoji}
+                          </button>
+                        </Popover.Trigger>
+                        <Popover.Content>
+                          <Popover.Dialog>
+                            <div className="px-3 py-2 text-center">
+                              <p className="font-bold text-sm">
+                                {t(`achievements.${achievement.key}`, achievement.params)}
+                              </p>
+                            </div>
+                          </Popover.Dialog>
+                        </Popover.Content>
+                      </Popover>
                     ))}
                   </div>
                 )}
