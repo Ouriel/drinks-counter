@@ -233,7 +233,7 @@ export default function SummaryPage() {
           })()}
 
           {/* Timeline */}
-          {timeline.length > 1 && (
+          {timeline.length > 0 && (
             <div className="mb-6">
               {!showTimeline ? (
                 <div className="text-center">
