@@ -145,8 +145,18 @@ export default function SummaryPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-background text-foreground">
-      <Card className="w-full max-w-sm mb-20">
+      <Card className="w-full max-w-sm">
         <div className="p-6">
+          {/* Back */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onPress={() => router.push(`/s/${slug}`)}
+            className="mb-4"
+          >
+            ← {t("summary.back")}
+          </Button>
+
           {/* Header */}
           <div className="text-center mb-6">
             <p className="text-5xl mb-2">🍻</p>
@@ -306,34 +316,31 @@ export default function SummaryPage() {
           </div>
 
           <p className="text-center text-xs text-default-500 mt-6">tipsy-tap.vercel.app</p>
+
+          {/* Actions */}
+          <div className="flex justify-center gap-3 mt-4">
+            <Button
+              variant="primary"
+              onPress={() => {
+                if (navigator.share) {
+                  navigator.share({
+                    title: t("app.title"),
+                    text: `${total} drinks at ${titleCase(barName || "the bar")} 🍻`,
+                    url: window.location.href,
+                  });
+                } else {
+                  navigator.clipboard.writeText(window.location.href);
+                }
+              }}
+            >
+              {t("summary.share")}
+            </Button>
+            <Button variant="ghost" onPress={copyAsText}>
+              {copied ? t("summary.copied") : t("summary.copyText")}
+            </Button>
+          </div>
         </div>
       </Card>
-
-      {/* Actions */}
-      <div className="fixed bottom-6 left-0 right-0 flex justify-center gap-3 px-6">
-        <Button
-          variant="primary"
-          onPress={() => {
-            if (navigator.share) {
-              navigator.share({
-                title: t("app.title"),
-                text: `${total} drinks at ${titleCase(barName || "the bar")} 🍻`,
-                url: window.location.href,
-              });
-            } else {
-              navigator.clipboard.writeText(window.location.href);
-            }
-          }}
-        >
-          {t("summary.share")}
-        </Button>
-        <Button variant="ghost" onPress={copyAsText}>
-          {copied ? t("summary.copied") : t("summary.copyText")}
-        </Button>
-        <Button variant="ghost" onPress={() => router.push(`/s/${slug}`)}>
-          {t("summary.back")}
-        </Button>
-      </div>
     </div>
   );
 }
