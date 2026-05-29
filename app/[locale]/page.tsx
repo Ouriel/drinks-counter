@@ -43,7 +43,6 @@ function HomeContent() {
       return [];
     }
   });
-  const fileRef = useRef<HTMLInputElement>(null);
   const cameraRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<NodeJS.Timeout>(null);
   const geoRef = useRef<{ lat: number; lng: number } | null>(null);
@@ -328,26 +327,17 @@ function HomeContent() {
               <span>{t("bar.readingMenu")}</span>
             </div>
           ) : (
-            <div className="flex gap-2">
+            menuItems.length === 0 && (
               <Button
                 variant="ghost"
                 size="lg"
-                className="flex-1 text-foreground"
+                className="w-full text-foreground"
                 isDisabled={barName.trim().length < 2}
                 onPress={() => cameraRef.current?.click()}
               >
                 {t("bar.camera")}
               </Button>
-              <Button
-                variant="ghost"
-                size="lg"
-                className="flex-1 text-foreground"
-                isDisabled={barName.trim().length < 2}
-                onPress={() => fileRef.current?.click()}
-              >
-                {t("bar.gallery")}
-              </Button>
-            </div>
+            )
           )}
 
           <Button
@@ -366,14 +356,6 @@ function HomeContent() {
           type="file"
           accept="image/*"
           capture="environment"
-          onChange={handlePhoto}
-          className="hidden"
-        />
-        <input
-          ref={fileRef}
-          type="file"
-          accept="image/*"
-          multiple
           onChange={handlePhoto}
           className="hidden"
         />

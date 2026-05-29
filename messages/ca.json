@@ -15,12 +15,11 @@
     "barName": "Nom del bar…",
     "items": "{count, plural, one {# beguda} other {# begudes}}",
     "nearbyPlaces": "📍 Llocs propers",
-    "noResultsPhoto": "📸 Sense resultats — fes una foto del menú per començar!",
+    "noResultsPhoto": "📸 Sense resultats — fotografía el menú per importar begudes!",
     "start": "Començar ({count} begudes)",
     "creating": "Creant…",
     "readingMenu": "Llegint el menú…",
-    "camera": "📸 Càmera",
-    "gallery": "📁 Galeria",
+    "camera": "📸 Fotografiar el menú",
     "skipManual": "Saltar — afegiré manualment"
   },
   "review": {
@@ -83,7 +82,9 @@
     "alreadyOrdered": "Ja demanat · toca per +1",
     "emptyTitle": "Escriu un nom de beguda a dalt",
     "emptyHint": "per cercar o afegir",
-    "close": "Tancar"
+    "close": "Tancar",
+    "snapHint": "No trobes la teva beguda?",
+    "snapMenu": "Fotografiar el menú"
   },
   "drinkCard": {
     "aria": "{name}, {count}. Toca + per afegir, toca − per treure",

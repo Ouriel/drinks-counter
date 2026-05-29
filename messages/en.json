@@ -15,12 +15,11 @@
     "barName": "Bar name…",
     "items": "{count, plural, one {# item} other {# items}}",
     "nearbyPlaces": "📍 Nearby places",
-    "noResultsPhoto": "📸 No results — take a photo of the menu to get started!",
+    "noResultsPhoto": "📸 No results — snap a photo of the menu to import drinks!",
     "start": "Start ({count} drinks)",
     "creating": "Creating…",
     "readingMenu": "Reading menu…",
-    "camera": "📸 Camera",
-    "gallery": "📁 Gallery",
+    "camera": "📸 Snap the menu",
     "skipManual": "Skip — I'll add manually"
   },
   "review": {
@@ -83,7 +82,9 @@
     "alreadyOrdered": "Already ordered · tap for +1",
     "emptyTitle": "Type a drink name above",
     "emptyHint": "to search or add it",
-    "close": "Close"
+    "close": "Close",
+    "snapHint": "Can't find your drink?",
+    "snapMenu": "Snap the menu"
   },
   "drinkCard": {
     "aria": "{name}, {count}. Tap + to add, tap − to remove",

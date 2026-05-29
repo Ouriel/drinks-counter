@@ -15,12 +15,11 @@
     "barName": "Nombre del bar…",
     "items": "{count, plural, one {# bebida} other {# bebidas}}",
     "nearbyPlaces": "📍 Lugares cercanos",
-    "noResultsPhoto": "📸 Sin resultados — ¡haz una foto del menú para empezar!",
+    "noResultsPhoto": "📸 Sin resultados — fotografía el menú para importar bebidas!",
     "start": "Empezar ({count} bebidas)",
     "creating": "Creando…",
     "readingMenu": "Leyendo menú…",
-    "camera": "📸 Cámara",
-    "gallery": "📁 Galería",
+    "camera": "📸 Fotografiar el menú",
     "skipManual": "Saltar — añadiré manualmente"
   },
   "review": {
@@ -83,7 +82,9 @@
     "alreadyOrdered": "Ya pedido · toca para +1",
     "emptyTitle": "Escribe un nombre de bebida arriba",
     "emptyHint": "para buscar o añadir",
-    "close": "Cerrar"
+    "close": "Cerrar",
+    "snapHint": "¿No encuentras tu bebida?",
+    "snapMenu": "Fotografiar el menú"
   },
   "drinkCard": {
     "aria": "{name}, {count}. Toca + para añadir, toca − para quitar",

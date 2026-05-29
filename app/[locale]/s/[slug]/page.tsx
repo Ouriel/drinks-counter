@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import { Button, Popover, Spinner, toast } from "@heroui/react";
@@ -54,6 +54,7 @@ export default function SessionPage() {
   const [nickname, setNickname] = useState<string | null>(null);
   const [showPicker, setShowPicker] = useState(false);
   const [loading, setLoading] = useState(true);
+  const snapRef = useRef<HTMLInputElement>(null);
 
   const { drinks, setDrinks, totalRef, addDrink, increment, decrement } = useOptimisticDrinks(
     slug,
@@ -91,6 +92,27 @@ export default function SessionPage() {
   function handleAddDrink(name: string, category?: string) {
     setShowPicker(false);
     addDrink(name, category);
+  }
+
+  async function handleSnapMenu(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setShowPicker(false);
+    const { default: imageCompression } = await import("browser-image-compression");
+    const compressed = await imageCompression(file, {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 1600,
+      useWebWorker: true,
+    });
+    const formData = new FormData();
+    formData.append("photo", compressed);
+    const data = await api.parseMenu(formData);
+    if (data.items.length > 0) {
+      const existing = new Set(menuItems.map((item) => item.name.toLowerCase()));
+      const newItems = data.items.filter((item) => !existing.has(item.name.toLowerCase()));
+      if (newItems.length > 0) setMenuItems((prev) => [...prev, ...newItems]);
+      toast(`📸 ${data.items.length} drinks imported`);
+    }
   }
 
   const total = drinks.reduce((sum, d) => sum + d.count, 0);
@@ -273,8 +295,17 @@ export default function SessionPage() {
           currentDrinks={drinks}
           onSelect={handleAddDrink}
           onClose={() => setShowPicker(false)}
+          onSnapMenu={() => snapRef.current?.click()}
         />
       )}
+      <input
+        ref={snapRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        onChange={handleSnapMenu}
+        className="hidden"
+      />
     </div>
   );
 }

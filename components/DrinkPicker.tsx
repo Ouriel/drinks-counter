@@ -11,11 +11,13 @@ export function DrinkPicker({
   currentDrinks,
   onSelect,
   onClose,
+  onSnapMenu,
 }: {
   menuItems: MenuItem[];
   currentDrinks: Drink[];
   onSelect: (name: string, category?: string) => void;
   onClose: () => void;
+  onSnapMenu?: () => void;
 }) {
   const [search, setSearch] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
@@ -162,6 +164,15 @@ export function DrinkPicker({
             <p className="text-4xl mb-3">🔍</p>
             <p className="text-default-500">{t("emptyTitle")}</p>
             <p className="text-default-500 text-sm mt-1">{t("emptyHint")}</p>
+          </div>
+        )}
+
+        {onSnapMenu && filtered.length === 0 && (
+          <div className="text-center mt-6 pt-4 border-t border-default-200">
+            <p className="text-sm text-default-500 mb-3">{t("snapHint")}</p>
+            <Button variant="ghost" onPress={onSnapMenu}>
+              📸 {t("snapMenu")}
+            </Button>
           </div>
         )}
       </div>
