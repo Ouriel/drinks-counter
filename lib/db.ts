@@ -37,6 +37,7 @@ export const drinks = pgTable("drinks", {
   name: text("name").notNull(),
   count: integer("count").notNull().default(1),
   category: text("category"),
+  tappedAt: jsonb("tapped_at").$type<string[]>().default([]).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

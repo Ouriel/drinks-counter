@@ -109,10 +109,12 @@ export default function SummaryPage() {
       ? `${Math.floor(durationMins / 60)}h${durationMins % 60 > 0 ? `${durationMins % 60}m` : ""}`
       : `${durationMins}m`;
 
-  // Build timeline from drinks with createdAt
+  // Build timeline from all individual taps
   const timeline = drinks
-    .filter((drink) => drink.createdAt)
-    .sort((a, b) => a.createdAt!.localeCompare(b.createdAt!));
+    .flatMap((drink) =>
+      (drink.tappedAt || []).map((time) => ({ name: drink.name, category: drink.category, time }))
+    )
+    .sort((a, b) => a.time.localeCompare(b.time));
 
   function copyAsText() {
     const lines = [...drinks]
@@ -249,13 +251,13 @@ export default function SummaryPage() {
                     {/* Center line */}
                     <div className="absolute left-5 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary/60 via-primary/30 to-default-200" />
                     <div className="space-y-4">
-                      {timeline.map((drink, index) => {
-                        const time = new Date(drink.createdAt!).toLocaleTimeString([], {
+                      {timeline.map((entry, index) => {
+                        const time = new Date(entry.time).toLocaleTimeString([], {
                           hour: "2-digit",
                           minute: "2-digit",
                         });
                         return (
-                          <div key={drink.id} className="relative flex items-center gap-3 pl-10">
+                          <div key={index} className="relative flex items-center gap-3 pl-10">
                             {/* Dot */}
                             <div
                               className="absolute left-[14px] w-4 h-4 rounded-full border-2 border-primary bg-background"
@@ -265,9 +267,9 @@ export default function SummaryPage() {
                             <div className="flex-1 bg-default-100 rounded-lg px-3 py-2 flex items-center justify-between">
                               <span className="text-sm">
                                 <span className="mr-1">
-                                  {CATEGORY_EMOJI[drink.category || "other"] || "🍹"}
+                                  {CATEGORY_EMOJI[entry.category || "other"] || "🍹"}
                                 </span>
-                                {drink.name}
+                                {entry.name}
                               </span>
                               <span className="text-xs text-default-400 font-mono ml-2">
                                 {time}

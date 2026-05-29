@@ -8,6 +8,7 @@ const drinkSchema = z.object({
   name: z.string(),
   count: z.number(),
   category: z.string().nullable(),
+  tappedAt: z.array(z.string()).optional(),
   createdAt: z.string().optional(),
 });
 

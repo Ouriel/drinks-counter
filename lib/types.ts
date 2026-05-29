@@ -3,6 +3,7 @@ export type Drink = {
   name: string;
   count: number;
   category: string | null;
+  tappedAt?: string[];
   createdAt?: string;
 };
 

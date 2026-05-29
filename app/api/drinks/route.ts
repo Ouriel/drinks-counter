@@ -42,9 +42,13 @@ export async function POST(req: NextRequest) {
   }
 
   // Atomic upsert: increment if exists, insert if not
+  const now = new Date().toISOString();
   const [existing] = await db
     .update(drinks)
-    .set({ count: sql`${drinks.count} + 1` })
+    .set({
+      count: sql`${drinks.count} + 1`,
+      tappedAt: sql`${drinks.tappedAt} || ${JSON.stringify([now])}::jsonb`,
+    })
     .where(and(eq(drinks.sessionId, session.id), sql`lower(${drinks.name}) = ${cleanName}`))
     .returning();
 
@@ -54,7 +58,7 @@ export async function POST(req: NextRequest) {
 
   const [drink] = await db
     .insert(drinks)
-    .values({ sessionId: session.id, name: cleanName, category: category || null })
+    .values({ sessionId: session.id, name: cleanName, category: category || null, tappedAt: [now] })
     .returning();
 
   // Add to bar menu if session has one and item isn't already in it
@@ -117,14 +121,21 @@ export async function PATCH(req: NextRequest) {
     }
     await db
       .update(drinks)
-      .set({ count: sql`${drinks.count} - 1` })
+      .set({
+        count: sql`${drinks.count} - 1`,
+        tappedAt: sql`${drinks.tappedAt} - (jsonb_array_length(${drinks.tappedAt}) - 1)`,
+      })
       .where(and(eq(drinks.id, drinkId), sql`${drinks.count} > 1`));
     return NextResponse.json({ ok: true });
   }
 
+  const now = new Date().toISOString();
   await db
     .update(drinks)
-    .set({ count: sql`${drinks.count} + 1` })
+    .set({
+      count: sql`${drinks.count} + 1`,
+      tappedAt: sql`${drinks.tappedAt} || ${JSON.stringify([now])}::jsonb`,
+    })
     .where(eq(drinks.id, drinkId));
 
   return NextResponse.json({ ok: true });
