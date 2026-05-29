@@ -203,37 +203,35 @@ export default function SessionPage() {
                 </Popover.Dialog>
               </Popover.Content>
             </Popover>
+            <ElapsedTimer drinks={drinks} />
           </p>
         )}
         {!barName && (
-          <Popover>
-            <Popover.Trigger>
-              <button
-                type="button"
-                className="text-sm mt-1 font-mono text-default-400 underline decoration-dotted"
-              >
-                {slug}
-              </button>
-            </Popover.Trigger>
-            <Popover.Content>
-              <Popover.Dialog>
-                <div className="px-3 py-2 max-w-[200px]">
-                  <p className="text-xs text-default-500">{t("session.slugExplain")}</p>
-                </div>
-              </Popover.Dialog>
-            </Popover.Content>
-          </Popover>
-        )}
-        {(drinks.length > 0 || pace) && (
-          <p className="text-sm mt-0.5 font-mono text-default-500">
+          <p className="text-base mt-1 text-center text-foreground/70">
+            <Popover>
+              <Popover.Trigger>
+                <button
+                  type="button"
+                  className="font-mono text-sm text-default-400 underline decoration-dotted"
+                >
+                  {slug}
+                </button>
+              </Popover.Trigger>
+              <Popover.Content>
+                <Popover.Dialog>
+                  <div className="px-3 py-2 max-w-[200px]">
+                    <p className="text-xs text-default-500">{t("session.slugExplain")}</p>
+                  </div>
+                </Popover.Dialog>
+              </Popover.Content>
+            </Popover>
             <ElapsedTimer drinks={drinks} />
-            {pace && (
-              <>
-                {" "}
-                · {pace.emoji}{" "}
-                {t(`pace.${pace.label.toLowerCase().replace(/ ./g, (c) => c[1].toUpperCase())}`)}
-              </>
-            )}
+          </p>
+        )}
+        {pace && (
+          <p className="text-sm mt-0.5 text-center text-default-500">
+            {pace.emoji}{" "}
+            {t(`pace.${pace.label.toLowerCase().replace(/ ./g, (c) => c[1].toUpperCase())}`)}
           </p>
         )}
       </div>
