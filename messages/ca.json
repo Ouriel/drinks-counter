@@ -40,7 +40,7 @@
     "new": "Inici",
     "share": "Compartir",
     "linkCopied": "Enllaç copiat!",
-    "slugExplain": "El teu enllaç de sessió únic — comparteix-lo perquè altres vegin la teva nit!",
+    "slugExplain": "El teu enllaç de sessió — guarda'l per tornar si tanques la pàgina!",
     "joinSession": "Uneix-te a la meva sessió a {bar}",
     "eveningSummary": "📊 Resum del vespre",
     "couldNotCreate": "No s'ha pogut crear la sessió. Torna-ho a provar."

@@ -40,7 +40,7 @@
     "new": "Startseite",
     "share": "Teilen",
     "linkCopied": "Link kopiert!",
-    "slugExplain": "Dein einzigartiger Session-Link — teile ihn, damit andere deinen Abend sehen!",
+    "slugExplain": "Dein Session-Link — speichere ihn, falls du die Seite schließt!",
     "joinSession": "Komm zu meiner Session bei {bar}",
     "eveningSummary": "📊 Abendzusammenfassung",
     "couldNotCreate": "Session konnte nicht erstellt werden. Bitte erneut versuchen."

@@ -40,7 +40,7 @@
     "new": "Inicio",
     "share": "Compartir",
     "linkCopied": "¡Enlace copiado!",
-    "slugExplain": "Tu enlace de sesión único — ¡compártelo para que otros vean tu noche!",
+    "slugExplain": "Tu enlace de sesión — guárdalo para volver si cierras la página!",
     "joinSession": "Únete a mi sesión en {bar}",
     "eveningSummary": "📊 Resumen de la noche",
     "couldNotCreate": "No se pudo crear la sesión. Inténtalo de nuevo."

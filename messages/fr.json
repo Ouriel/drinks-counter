@@ -40,7 +40,7 @@
     "new": "Accueil",
     "share": "Partager",
     "linkCopied": "Lien copié !",
-    "slugExplain": "Ton lien de session unique — partage-le pour que d'autres voient ta soirée !",
+    "slugExplain": "Ton lien de session — garde-le pour revenir si tu fermes la page !",
     "joinSession": "Rejoins ma session à {bar}",
     "eveningSummary": "📊 Résumé de la soirée",
     "couldNotCreate": "Impossible de créer la session. Réessaie."

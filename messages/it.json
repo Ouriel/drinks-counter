@@ -40,7 +40,7 @@
     "new": "Home",
     "share": "Condividi",
     "linkCopied": "Link copiato!",
-    "slugExplain": "Il tuo link di sessione unico — condividilo per far vedere la tua serata!",
+    "slugExplain": "Il tuo link di sessione — salvalo per tornare se chiudi la pagina!",
     "joinSession": "Unisciti alla mia sessione a {bar}",
     "eveningSummary": "📊 Riepilogo serata",
     "couldNotCreate": "Impossibile creare la sessione. Riprova."
