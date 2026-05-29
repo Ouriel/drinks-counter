@@ -35,7 +35,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="bg-background text-foreground antialiased touch-manipulation min-h-screen">
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           {children}
-          <Toast.Provider placement="top" maxVisibleToasts={1} />
+          <Toast.Provider placement="bottom" maxVisibleToasts={3} />
         </ThemeProvider>
         <Analytics />
         <SpeedInsights />

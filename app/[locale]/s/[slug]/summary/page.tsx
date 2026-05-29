@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { Button, Card, Chip, Spinner } from "@heroui/react";
+import { Button, Card, Chip, Spinner, Popover } from "@heroui/react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { CATEGORY_EMOJI } from "@/lib/constants";
@@ -25,7 +25,7 @@ export default function SummaryPage() {
   const [loading, setLoading] = useState(true);
   const [expired, setExpired] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [selectedBadge, setSelectedBadge] = useState<string | null>(null);
+  const [showTimeline, setShowTimeline] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -179,31 +179,24 @@ export default function SummaryPage() {
             return (
               <>
                 {badges.length > 0 && (
-                  <div className="mb-4">
-                    <div className="flex flex-wrap justify-center gap-3">
-                      {badges.map((badge) => (
-                        <button
-                          key={badge.title}
-                          type="button"
-                          className={`text-3xl transition-transform ${selectedBadge === badge.title ? "scale-125" : ""}`}
-                          onClick={() =>
-                            setSelectedBadge(selectedBadge === badge.title ? null : badge.title)
-                          }
-                        >
-                          {badge.emoji}
-                        </button>
-                      ))}
-                    </div>
-                    {selectedBadge &&
-                      (() => {
-                        const badge = badges.find((b) => b.title === selectedBadge);
-                        if (!badge) return null;
-                        return (
-                          <p className="text-center text-sm mt-2">
-                            <strong>{badge.title}</strong> — {badge.subtitle}
-                          </p>
-                        );
-                      })()}
+                  <div className="flex flex-wrap justify-center gap-3 mb-4">
+                    {badges.map((badge) => (
+                      <Popover key={badge.title}>
+                        <Popover.Trigger>
+                          <button type="button" className="text-3xl">
+                            {badge.emoji}
+                          </button>
+                        </Popover.Trigger>
+                        <Popover.Content>
+                          <Popover.Dialog>
+                            <div className="px-3 py-2 text-center">
+                              <p className="font-bold text-sm">{badge.title}</p>
+                              <p className="text-xs text-default-500">{badge.subtitle}</p>
+                            </div>
+                          </Popover.Dialog>
+                        </Popover.Content>
+                      </Popover>
+                    ))}
                   </div>
                 )}
 
@@ -229,26 +222,50 @@ export default function SummaryPage() {
           {/* Timeline */}
           {timeline.length > 1 && (
             <div className="mb-6">
-              <h3 className="text-sm font-bold text-center mb-3">{t("summary.timeline")}</h3>
-              <div className="relative pl-6 border-l-2 border-default-200 space-y-3">
-                {timeline.map((drink) => {
-                  const time = new Date(drink.createdAt!).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  });
-                  return (
-                    <div key={drink.id} className="relative">
-                      <div className="absolute -left-[1.6rem] top-1 w-3 h-3 rounded-full bg-primary" />
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm">
-                          {CATEGORY_EMOJI[drink.category || "other"] || "🍹"} {drink.name}
-                        </span>
-                        <span className="text-xs text-default-400 font-mono">{time}</span>
-                      </div>
+              {!showTimeline ? (
+                <div className="text-center">
+                  <Button variant="ghost" size="sm" onPress={() => setShowTimeline(true)}>
+                    {t("summary.timeline")}
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <h3 className="text-sm font-bold text-center mb-3">{t("summary.timeline")}</h3>
+                  <div className="relative">
+                    {/* Center line */}
+                    <div className="absolute left-5 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary/60 via-primary/30 to-default-200" />
+                    <div className="space-y-4">
+                      {timeline.map((drink, index) => {
+                        const time = new Date(drink.createdAt!).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        });
+                        return (
+                          <div key={drink.id} className="relative flex items-center gap-3 pl-10">
+                            {/* Dot */}
+                            <div
+                              className="absolute left-[14px] w-4 h-4 rounded-full border-2 border-primary bg-background"
+                              style={{ opacity: 1 - index * 0.08 }}
+                            />
+                            {/* Card */}
+                            <div className="flex-1 bg-default-100 rounded-lg px-3 py-2 flex items-center justify-between">
+                              <span className="text-sm">
+                                <span className="mr-1">
+                                  {CATEGORY_EMOJI[drink.category || "other"] || "🍹"}
+                                </span>
+                                {drink.name}
+                              </span>
+                              <span className="text-xs text-default-400 font-mono ml-2">
+                                {time}
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
-                  );
-                })}
-              </div>
+                  </div>
+                </>
+              )}
             </div>
           )}
 

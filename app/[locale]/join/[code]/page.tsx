@@ -21,26 +21,33 @@ export default function JoinTablePage() {
         if (recent.length > 0) slug = recent[0].slug;
       } catch {}
 
-      if (!slug) {
-        const session = await api.createSession({});
-        if (!session) {
-          setError(t("failed"));
+      // Try joining with existing session; if it fails (already in a table), create a new one
+      if (slug) {
+        const result = await api.joinTable(slug, code);
+        if (result) {
+          router.replace(`/s/${slug}`);
           return;
         }
-        slug = session.slug;
-        try {
-          const recent = JSON.parse(localStorage.getItem("tipsytap_recent") || "[]");
-          const entry = { slug, barName: slug, date: new Date().toISOString() };
-          localStorage.setItem("tipsytap_recent", JSON.stringify([entry, ...recent].slice(0, 10)));
-        } catch {}
       }
+
+      // Create a fresh session and join
+      const session = await api.createSession({});
+      if (!session) {
+        setError(t("failed"));
+        return;
+      }
+      slug = session.slug;
+      try {
+        const recent = JSON.parse(localStorage.getItem("tipsytap_recent") || "[]");
+        const entry = { slug, barName: slug, date: new Date().toISOString() };
+        localStorage.setItem("tipsytap_recent", JSON.stringify([entry, ...recent].slice(0, 10)));
+      } catch {}
 
       const result = await api.joinTable(slug, code);
       if (!result) {
-        router.replace(`/s/${slug}`);
+        setError(t("failed"));
         return;
       }
-
       router.replace(`/s/${slug}`);
     }
 
