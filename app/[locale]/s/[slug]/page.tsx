@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
-import { Button, Spinner, toast } from "@heroui/react";
+import { Button, Popover, Spinner, toast } from "@heroui/react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { useRouter } from "@/i18n/navigation";
@@ -161,19 +161,59 @@ export default function SessionPage() {
           {t("session.drinks", { count: total })}
         </h1>
         {barName && (
-          <p className="text-base mt-1 text-center text-foreground/70">{titleCase(barName)}</p>
+          <p className="text-base mt-1 text-center text-foreground/70">
+            {titleCase(barName)}
+            {" · "}
+            <Popover>
+              <Popover.Trigger>
+                <button
+                  type="button"
+                  className="font-mono text-sm text-default-400 underline decoration-dotted"
+                >
+                  {slug}
+                </button>
+              </Popover.Trigger>
+              <Popover.Content>
+                <Popover.Dialog>
+                  <div className="px-3 py-2 max-w-[200px]">
+                    <p className="text-xs text-default-500">{t("session.slugExplain")}</p>
+                  </div>
+                </Popover.Dialog>
+              </Popover.Content>
+            </Popover>
+          </p>
         )}
-        <p className="text-sm mt-0.5 font-mono text-default-500">
-          {slug}
-          <ElapsedTimer drinks={drinks} />
-          {pace && (
-            <>
-              {" "}
-              · {pace.emoji}{" "}
-              {t(`pace.${pace.label.toLowerCase().replace(/ ./g, (c) => c[1].toUpperCase())}`)}
-            </>
-          )}
-        </p>
+        {!barName && (
+          <Popover>
+            <Popover.Trigger>
+              <button
+                type="button"
+                className="text-sm mt-1 font-mono text-default-400 underline decoration-dotted"
+              >
+                {slug}
+              </button>
+            </Popover.Trigger>
+            <Popover.Content>
+              <Popover.Dialog>
+                <div className="px-3 py-2 max-w-[200px]">
+                  <p className="text-xs text-default-500">{t("session.slugExplain")}</p>
+                </div>
+              </Popover.Dialog>
+            </Popover.Content>
+          </Popover>
+        )}
+        {(drinks.length > 0 || pace) && (
+          <p className="text-sm mt-0.5 font-mono text-default-500">
+            <ElapsedTimer drinks={drinks} />
+            {pace && (
+              <>
+                {" "}
+                · {pace.emoji}{" "}
+                {t(`pace.${pace.label.toLowerCase().replace(/ ./g, (c) => c[1].toUpperCase())}`)}
+              </>
+            )}
+          </p>
+        )}
       </div>
 
       {/* Summary link */}

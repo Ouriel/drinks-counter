@@ -33,7 +33,7 @@ export default async function LocaleLayout({ children, params }: Props) {
             <main>{children}</main>
             <PwaInstallPrompt />
           </NextIntlClientProvider>
-          <Toast.Provider placement="bottom" maxVisibleToasts={5} />
+          <Toast.Provider placement="bottom" maxVisibleToasts={5} scaleFactor={0} />
         </ThemeProvider>
         <Analytics />
         <SpeedInsights />

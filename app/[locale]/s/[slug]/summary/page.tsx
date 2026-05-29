@@ -209,15 +209,21 @@ export default function SummaryPage() {
 
                 {pace && (
                   <p className="text-center text-sm text-default-500 mb-4">
-                    {t("summary.pace", { emoji: pace.emoji, label: pace.label })}
+                    {t("summary.pace", {
+                      emoji: pace.emoji,
+                      label: t(
+                        `pace.${pace.label.toLowerCase().replace(/ ./g, (c) => c[1].toUpperCase())}`
+                      ),
+                    })}
                   </p>
                 )}
 
                 {achievements.length > 0 && (
                   <div className="space-y-1 mb-4">
                     {achievements.map((achievement) => (
-                      <p key={achievement.text} className="text-sm text-center">
-                        {achievement.emoji} {achievement.text}
+                      <p key={achievement.key} className="text-sm text-center">
+                        {achievement.emoji}{" "}
+                        {t(`achievements.${achievement.key}`, achievement.params)}
                       </p>
                     ))}
                   </div>

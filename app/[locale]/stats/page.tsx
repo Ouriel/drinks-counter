@@ -156,11 +156,9 @@ export default async function StatsPage() {
             key={bar.barName}
             className="flex justify-between items-center bg-default-100 rounded-lg px-4 py-3 gap-2"
           >
-            <div className="flex-1 min-w-0">
-              <span className="text-base">
-                <span className="text-default-500 mr-2">{i + 1}.</span>
-                <span className="truncate">{bar.barName}</span>
-              </span>
+            <div className="flex-1 min-w-0 truncate">
+              <span className="text-default-500 mr-2">{i + 1}.</span>
+              <span>{bar.barName}</span>
               {bar.topCategory && (
                 <span className="text-default-500 text-sm ml-2">
                   {CATEGORY_EMOJI[bar.topCategory] || "🍹"} {bar.topCategory}

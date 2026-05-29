@@ -40,6 +40,7 @@
     "new": "Home",
     "share": "Share",
     "linkCopied": "Link copied!",
+    "slugExplain": "Your unique session link — share it so others can see your evening!",
     "joinSession": "Join my session at {bar}",
     "eveningSummary": "📊 Evening summary",
     "couldNotCreate": "Could not create session. Please try again."

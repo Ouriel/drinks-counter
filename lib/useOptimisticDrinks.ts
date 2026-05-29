@@ -11,14 +11,14 @@ function vibrate() {
 function notifyGamification(newTotal: number, prevTotal: number): boolean {
   const badge = getBadgeForCount(newTotal);
   if (badge) {
-    toast(`${badge.emoji} ${badge.title}`, { description: badge.subtitle, timeout: 3000 });
+    toast(`${badge.emoji} ${badge.title}`, { description: badge.subtitle, timeout: 5000 });
   }
   if (checkPersonalBest(newTotal) && !badge) {
-    toast("🏅 Personal Best!", { description: `${newTotal} drinks — new record`, timeout: 3000 });
+    toast("🏅 Personal Best!", { description: `${newTotal} drinks — new record`, timeout: 5000 });
   }
   const nudge = getNudge(newTotal, prevTotal);
   if (nudge) {
-    toast(`${nudge.emoji} ${nudge.text}`, { timeout: 4000 });
+    toast(`${nudge.emoji} ${nudge.text}`, { timeout: 5000 });
   }
   return !!badge || checkPersonalBest(newTotal);
 }

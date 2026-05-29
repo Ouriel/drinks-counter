@@ -84,7 +84,12 @@ export function getPace(drinks: DrinkLike[]): Pace | null {
 
 // === DRINK-SPECIFIC ACHIEVEMENTS ===
 
-export type Achievement = { emoji: string; text: string };
+export type Achievement = {
+  emoji: string;
+  text: string;
+  key: string;
+  params?: Record<string, string>;
+};
 
 export function getDrinkAchievements(drinks: DrinkLike[]): Achievement[] {
   const achievements: Achievement[] = [];
@@ -93,33 +98,55 @@ export function getDrinkAchievements(drinks: DrinkLike[]): Achievement[] {
   const total = drinks.reduce((sum, d) => sum + d.count, 0);
 
   if (categories.size >= 4) {
-    achievements.push({ emoji: "🌈", text: "Rainbow drinker — 4+ categories!" });
+    achievements.push({ emoji: "🌈", text: "Rainbow drinker — 4+ categories!", key: "rainbow" });
   }
   if (categories.size >= 7) {
-    achievements.push({ emoji: "🏆", text: "Category master — tried almost everything!" });
+    achievements.push({
+      emoji: "🏆",
+      text: "Category master — tried almost everything!",
+      key: "categoryMaster",
+    });
   }
   if (uniqueDrinks >= 5) {
-    achievements.push({ emoji: "🧭", text: "Explorer — 5+ different drinks" });
+    achievements.push({ emoji: "🧭", text: "Explorer — 5+ different drinks", key: "explorer" });
   }
   if (uniqueDrinks >= 10) {
-    achievements.push({ emoji: "🗺️", text: "Adventurer — 10+ different drinks!" });
+    achievements.push({
+      emoji: "🗺️",
+      text: "Adventurer — 10+ different drinks!",
+      key: "adventurer",
+    });
   }
 
   // Signature drink: one drink with 4+ count
   const signature = drinks.find((drink) => drink.count >= 4);
   if (signature) {
-    achievements.push({ emoji: "⭐", text: `Signature: ${signature.name}` });
+    achievements.push({
+      emoji: "⭐",
+      text: `Signature: ${signature.name}`,
+      key: "signature",
+      params: { name: signature.name },
+    });
   }
 
   // Loyal: same drink 7+ times
   const loyal = drinks.find((drink) => drink.count >= 7);
   if (loyal) {
-    achievements.push({ emoji: "💎", text: `Devoted to ${loyal.name}` });
+    achievements.push({
+      emoji: "💎",
+      text: `Devoted to ${loyal.name}`,
+      key: "devoted",
+      params: { name: loyal.name },
+    });
   }
 
   // Wildcard: never ordered same drink twice (all counts = 1)
   if (uniqueDrinks >= 4 && drinks.every((drink) => drink.count === 1)) {
-    achievements.push({ emoji: "🎲", text: "Wildcard — never the same drink twice!" });
+    achievements.push({
+      emoji: "🎲",
+      text: "Wildcard — never the same drink twice!",
+      key: "wildcard",
+    });
   }
 
   // Escalation: started with beer, ended with spirit/cocktail
@@ -131,7 +158,11 @@ export function getDrinkAchievements(drinks: DrinkLike[]): Achievement[] {
       (firstCat === "beer" || firstCat === "soft") &&
       (lastCat === "spirit" || lastCat === "cocktail" || lastCat === "shot")
     ) {
-      achievements.push({ emoji: "📈", text: "Escalation — started light, ended strong" });
+      achievements.push({
+        emoji: "📈",
+        text: "Escalation — started light, ended strong",
+        key: "escalation",
+      });
     }
   }
 
@@ -152,14 +183,18 @@ export function getDrinkAchievements(drinks: DrinkLike[]): Achievement[] {
   if (lastDrink) {
     const lastHour = new Date(lastDrink).getHours();
     if (lastHour >= 0 && lastHour < 5) {
-      achievements.push({ emoji: "🌙", text: "Night Owl — still going past midnight" });
+      achievements.push({
+        emoji: "🌙",
+        text: "Night Owl — still going past midnight",
+        key: "nightOwl",
+      });
     }
   }
 
   if (firstDrink && lastDrink) {
     const durationH = (new Date(lastDrink).getTime() - new Date(firstDrink).getTime()) / 3_600_000;
     if (durationH >= 4) {
-      achievements.push({ emoji: "🐌", text: "Savoring It — 4+ hour session" });
+      achievements.push({ emoji: "🐌", text: "Savoring It — 4+ hour session", key: "savoring" });
     }
   }
 
@@ -167,7 +202,11 @@ export function getDrinkAchievements(drinks: DrinkLike[]): Achievement[] {
   if (firstDrink && lastDrink && total >= 3) {
     const durationMin = (new Date(lastDrink).getTime() - new Date(firstDrink).getTime()) / 60_000;
     if (durationMin <= 30) {
-      achievements.push({ emoji: "⚡", text: "Speed Round — 3+ drinks in 30 min" });
+      achievements.push({
+        emoji: "⚡",
+        text: "Speed Round — 3+ drinks in 30 min",
+        key: "speedRound",
+      });
     }
   }
 

@@ -13,7 +13,7 @@
   "bar": {
     "whereAreYou": "Où es-tu ?",
     "barName": "Nom du bar…",
-    "items": "{count} boissons",
+    "items": "{count, plural, one {# boisson} other {# boissons}}",
     "nearbyPlaces": "📍 Lieux proches",
     "noResultsPhoto": "📸 Aucun résultat — prends une photo du menu pour commencer !",
     "start": "Commencer ({count} boissons)",
@@ -40,6 +40,7 @@
     "new": "Accueil",
     "share": "Partager",
     "linkCopied": "Lien copié !",
+    "slugExplain": "Ton lien de session unique — partage-le pour que d'autres voient ta soirée !",
     "joinSession": "Rejoins ma session à {bar}",
     "eveningSummary": "📊 Résumé de la soirée",
     "couldNotCreate": "Impossible de créer la session. Réessaie."
