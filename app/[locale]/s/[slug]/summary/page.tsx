@@ -249,7 +249,7 @@ export default function SummaryPage() {
                   <h3 className="text-sm font-bold text-center mb-3">{t("summary.timeline")}</h3>
                   <div className="relative">
                     {/* Vertical line */}
-                    <div className="absolute left-4 top-2 bottom-2 w-px bg-primary/30" />
+                    <div className="absolute left-4 top-2 bottom-2 w-px bg-primary" />
                     <div className="space-y-3">
                       {timeline.map((entry, index) => {
                         const time = new Date(entry.time).toLocaleTimeString([], {
