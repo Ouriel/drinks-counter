@@ -40,21 +40,21 @@ export function getSessionHue(total: number, isDark = true): string {
 
 /** Progressive visual effects based on drink count */
 export function getTipsyStyle(total: number): React.CSSProperties {
-  if (total < 5) return {};
-  if (total < 10) {
-    return { transform: `rotate(${(total - 5) * 0.1}deg)` };
+  if (total < 3) return {};
+  if (total < 7) {
+    return { transform: `rotate(${(total - 3) * 0.3}deg)` };
   }
-  if (total < 15) {
-    const offset = (total - 9) * 0.3;
+  if (total < 12) {
+    const offset = (total - 6) * 0.4;
     return {
-      transform: `rotate(${total % 2 === 0 ? 0.4 : -0.4}deg)`,
-      textShadow: `${offset}px ${offset * 0.5}px 0 rgba(128,128,128,0.2)`,
+      transform: `rotate(${total % 2 === 0 ? 1.2 : -1.2}deg)`,
+      textShadow: `${offset}px ${offset * 0.5}px 0 rgba(128,128,128,0.25)`,
     };
   }
-  const offset = 1 + (total - 14) * 0.2;
+  const offset = 1.5 + (total - 11) * 0.3;
   return {
-    transform: `rotate(${total % 2 === 0 ? 0.6 : -0.6}deg)`,
-    textShadow: `${offset}px ${offset * 0.5}px 0 rgba(128,128,128,0.3)`,
+    transform: `rotate(${total % 2 === 0 ? 1.8 : -1.8}deg)`,
+    textShadow: `${offset}px ${offset * 0.5}px 0 rgba(128,128,128,0.35)`,
   };
 }
 
