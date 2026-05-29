@@ -145,8 +145,8 @@ export default function SummaryPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-background text-foreground">
-      <Card className="w-full max-w-sm">
-        <div className="p-6 pb-20">
+      <Card className="w-full max-w-sm mb-20">
+        <div className="p-6">
           {/* Header */}
           <div className="text-center mb-6">
             <p className="text-5xl mb-2">🍻</p>
