@@ -30,6 +30,13 @@ export default function JoinTablePage() {
         }
       }
 
+      // Validate the table exists before creating a session (avoids orphan sessions on bad codes)
+      const table = await api.getTableRanking(code);
+      if (!table) {
+        setError(t("failed"));
+        return;
+      }
+
       // Create a fresh session and join
       const session = await api.createSession({});
       if (!session) {

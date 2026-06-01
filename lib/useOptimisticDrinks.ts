@@ -13,14 +13,15 @@ function notifyGamification(newTotal: number, prevTotal: number): boolean {
   if (badge) {
     toast(`${badge.emoji} ${badge.title}`, { description: badge.subtitle, timeout: 5000 });
   }
-  if (checkPersonalBest(newTotal) && !badge) {
+  const isPersonalBest = checkPersonalBest(newTotal);
+  if (isPersonalBest && !badge) {
     toast("🏅 Personal Best!", { description: `${newTotal} drinks — new record`, timeout: 5000 });
   }
   const nudge = getNudge(newTotal, prevTotal);
   if (nudge) {
     toast(`${nudge.emoji} ${nudge.text}`, { timeout: 5000 });
   }
-  return !!badge || checkPersonalBest(newTotal);
+  return !!badge || isPersonalBest;
 }
 
 export function useOptimisticDrinks(slug: string, onBadge?: () => void) {

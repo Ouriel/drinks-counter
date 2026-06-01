@@ -99,10 +99,13 @@ export default function SummaryPage() {
       !drink.createdAt ? latest : !latest || drink.createdAt > latest ? drink.createdAt : latest,
     null
   );
-  // Duration: from first drink to last drink
+  // Duration: from first tap to last tap (falls back to drink record timestamps for legacy data)
+  const tapTimes = drinks.flatMap((drink) => drink.tappedAt || []).sort();
+  const firstTime = tapTimes[0] ?? firstDrink;
+  const lastTime = tapTimes[tapTimes.length - 1] ?? lastDrink;
   const durationMins =
-    firstDrink && lastDrink
-      ? Math.floor((new Date(lastDrink).getTime() - new Date(firstDrink).getTime()) / 60000)
+    firstTime && lastTime
+      ? Math.floor((new Date(lastTime).getTime() - new Date(firstTime).getTime()) / 60000)
       : 0;
   const durationStr =
     durationMins >= 60
