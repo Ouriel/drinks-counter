@@ -2,22 +2,22 @@ import { describe, it, expect } from "vitest";
 import { getBadgeForCount, getPace, getNudge, getDrinkAchievements } from "@/lib/gamification";
 
 describe("getBadgeForCount", () => {
-  it("returns First Sip at 1", () => {
-    expect(getBadgeForCount(1)?.title).toBe("First Sip");
+  it("returns the first badge at 1", () => {
+    expect(getBadgeForCount(1)?.title).toBe("And So It Begins");
   });
 
-  it("returns Hat Trick at 3", () => {
-    expect(getBadgeForCount(3)?.title).toBe("Hat Trick");
+  it("returns Hat-Trick at 3", () => {
+    expect(getBadgeForCount(3)?.title).toBe("Hat-Trick");
   });
 
-  it("returns Legend at 10", () => {
-    expect(getBadgeForCount(10)?.title).toBe("Legend");
+  it("returns Double Digits at 10", () => {
+    expect(getBadgeForCount(10)?.title).toBe("Double Digits");
   });
 
   it("returns null for non-milestone counts", () => {
-    expect(getBadgeForCount(2)).toBeNull();
     expect(getBadgeForCount(4)).toBeNull();
     expect(getBadgeForCount(6)).toBeNull();
+    expect(getBadgeForCount(9)).toBeNull();
   });
 });
 

@@ -55,7 +55,7 @@ export function TableView({
 
   function copyJoinLink() {
     navigator.clipboard.writeText(joinUrl);
-    toast(t("linkCopied"));
+    toast(t("linkCopied"), { timeout: 15000 });
   }
 
   function shareWhatsApp() {

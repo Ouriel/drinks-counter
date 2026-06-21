@@ -112,7 +112,7 @@ export default function SessionPage() {
       const existing = new Set(menuItems.map((item) => item.name.toLowerCase()));
       const newItems = data.items.filter((item) => !existing.has(item.name.toLowerCase()));
       if (newItems.length > 0) setMenuItems((prev) => [...prev, ...newItems]);
-      toast(`📸 ${data.items.length} drinks imported`);
+      toast(`📸 ${data.items.length} drinks imported`, { timeout: 15000 });
     }
   }
 
@@ -162,7 +162,7 @@ export default function SessionPage() {
                   });
                 } else {
                   navigator.clipboard.writeText(window.location.href);
-                  toast(t("session.linkCopied"));
+                  toast(t("session.linkCopied"), { timeout: 15000 });
                 }
               }}
               aria-label={t("session.share")}

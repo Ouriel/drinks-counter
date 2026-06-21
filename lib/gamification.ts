@@ -8,14 +8,17 @@ type DrinkLike = Pick<Drink, "name" | "count" | "category" | "createdAt">;
 export type Badge = { emoji: string; title: string; subtitle: string };
 
 export const MILESTONES: [number, Badge][] = [
-  [1, { emoji: "🍼", title: "First Sip", subtitle: "The night begins!" }],
-  [3, { emoji: "🎯", title: "Hat Trick", subtitle: "You're warming up" }],
-  [5, { emoji: "🔥", title: "On Fire", subtitle: "No stopping now" }],
-  [7, { emoji: "🌊", title: "Deep End", subtitle: "You're in the zone" }],
-  [10, { emoji: "👑", title: "Legend", subtitle: "Double digits!" }],
-  [15, { emoji: "🚀", title: "To The Moon", subtitle: "Houston, we have a party" }],
+  [1, { emoji: "🍼", title: "And So It Begins", subtitle: "No turning back now" }],
+  [2, { emoji: "🐣", title: "Warming Up", subtitle: "Just getting loose" }],
+  [3, { emoji: "🎯", title: "Hat-Trick", subtitle: "Three and thriving" }],
+  [5, { emoji: "🔥", title: "On a Roll", subtitle: "Who's counting? Oh right, we are" }],
+  [7, { emoji: "🎢", title: "No Brakes", subtitle: "Weeeee" }],
+  [10, { emoji: "👑", title: "Double Digits", subtitle: "Officially a legend" }],
+  [13, { emoji: "😈", title: "Bad Idea Incoming", subtitle: "This felt smart 12 drinks ago" }],
+  [15, { emoji: "🚀", title: "Liftoff", subtitle: "Houston, we have a party" }],
   [20, { emoji: "☠️", title: "No Regrets", subtitle: "Tomorrow is a problem for tomorrow" }],
-  [25, { emoji: "🧟", title: "Survivor", subtitle: "Still standing… barely" }],
+  [25, { emoji: "🧟", title: "The Undead", subtitle: "Still vertical, technically" }],
+  [30, { emoji: "🪦", title: "Here Lies Tomorrow", subtitle: "RIP your morning" }],
 ];
 
 export function getBadgeForCount(total: number): Badge | null {
@@ -64,15 +67,17 @@ export function getTipsyStyle(total: number): React.CSSProperties {
 
 export type Pace = { emoji: string; label: string };
 
-// Drinks-per-hour thresholds. "Classic" = 1 drink every 30 min (2/h) is the reference.
+// Drinks-per-hour thresholds. "Social Pace" = 1 drink every 30 min (2/h) is the reference.
 export const PACE_LEVELS: { maxDph: number; emoji: string; label: string }[] = [
-  { maxDph: 0.5, emoji: "🐢", label: "Nursing" },
-  { maxDph: 1, emoji: "🚶", label: "Easy" },
-  { maxDph: 2, emoji: "🍺", label: "Classic" },
-  { maxDph: 3, emoji: "🏃", label: "Brisk" },
-  { maxDph: 4, emoji: "🚀", label: "Fast" },
-  { maxDph: 6, emoji: "🔥", label: "Turbo" },
-  { maxDph: Infinity, emoji: "⚡", label: "Warp speed" },
+  { maxDph: 0.5, emoji: "🐢", label: "Nursing It" },
+  { maxDph: 1, emoji: "🐌", label: "Taking It Slow" },
+  { maxDph: 1.5, emoji: "😌", label: "Cruising" },
+  { maxDph: 2, emoji: "🍺", label: "Social Pace" },
+  { maxDph: 3, emoji: "🏃", label: "Picking It Up" },
+  { maxDph: 4, emoji: "🚀", label: "Sending It" },
+  { maxDph: 5, emoji: "🔥", label: "On A Mission" },
+  { maxDph: 6, emoji: "🌪️", label: "Off The Rails" },
+  { maxDph: Infinity, emoji: "☄️", label: "Send Help" },
 ];
 
 export function getPace(drinks: DrinkLike[]): Pace | null {
@@ -240,6 +245,27 @@ export function getDrinkAchievements(drinks: DrinkLike[]): Achievement[] {
         key: "speedRound",
       });
     }
+  }
+
+  // Happy hour: started in the late afternoon / early evening (4–7pm)
+  if (firstDrink) {
+    const firstHour = new Date(firstDrink).getHours();
+    if (firstHour >= 16 && firstHour < 19) {
+      achievements.push({
+        emoji: "🕔",
+        text: "Happy hour hero — started before 7pm",
+        key: "happyHour",
+      });
+    }
+  }
+
+  // Liver warning: serious volume
+  if (total >= 20) {
+    achievements.push({
+      emoji: "🫁",
+      text: "Your liver filed a complaint",
+      key: "liverWarning",
+    });
   }
 
   return achievements;

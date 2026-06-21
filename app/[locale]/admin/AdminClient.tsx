@@ -26,23 +26,25 @@ type Tab = "bars" | "sessions" | "tables" | "guide";
 
 // Reference for the admin Guide tab (admin UI is English-only by convention).
 const ACHIEVEMENTS_GUIDE: { emoji: string; name: string; how: string }[] = [
-  { emoji: "🌈", name: "Rainbow drinker", how: "Drinks from 4+ categories" },
-  { emoji: "🏆", name: "Category master", how: "Drinks from 7+ categories" },
-  { emoji: "🧭", name: "Explorer", how: "5+ different drinks" },
-  { emoji: "🗺️", name: "Adventurer", how: "10+ different drinks" },
-  { emoji: "🧃", name: "Designated driver", how: "3+ drinks, all alcohol-free" },
-  { emoji: "💧", name: "Hydration hero", how: "Had alcohol + 3 or more non-alcoholic drinks" },
-  { emoji: "⭐", name: "Signature", how: "One drink ordered 4+ times" },
-  { emoji: "💎", name: "Devoted", how: "One drink ordered 7+ times" },
-  { emoji: "🎲", name: "Wildcard", how: "4+ drinks, never the same one twice" },
+  { emoji: "🌈", name: "Tasted the rainbow", how: "Drinks from 4+ categories" },
+  { emoji: "🏆", name: "Menu destroyer", how: "Drinks from 7+ categories" },
+  { emoji: "🧭", name: "Commitment issues", how: "5+ different drinks" },
+  { emoji: "🗺️", name: "Can't sit still", how: "10+ different drinks" },
+  { emoji: "🧃", name: "Designated hero", how: "3+ drinks, all alcohol-free" },
+  { emoji: "💧", name: "Sponsored by water", how: "Had alcohol + 3 or more non-alcoholic drinks" },
+  { emoji: "⭐", name: "Your usual", how: "One drink ordered 4+ times" },
+  { emoji: "💎", name: "In a relationship", how: "One drink ordered 7+ times" },
+  { emoji: "🎲", name: "Chaos mode", how: "4+ drinks, never the same one twice" },
   {
     emoji: "📈",
-    name: "Escalation",
-    how: "Started light (beer/soft), ended strong (spirit/cocktail/shot)",
+    name: "Started soft, ended questionable",
+    how: "Began with beer/soft, ended on spirit/cocktail/shot",
   },
-  { emoji: "🌙", name: "Night Owl", how: "Last drink between midnight and 5am" },
-  { emoji: "🐌", name: "Savoring It", how: "Session lasted 4+ hours" },
-  { emoji: "⚡", name: "Speed Round", how: "3+ drinks within 30 minutes" },
+  { emoji: "🌙", name: "Past midnight and proud", how: "Last drink between midnight and 5am" },
+  { emoji: "🐌", name: "Marathon, not a sprint", how: "Session lasted 4+ hours" },
+  { emoji: "⚡", name: "Speedrun any%", how: "3+ drinks within 30 minutes" },
+  { emoji: "🕔", name: "Happy hour hero", how: "First drink between 4pm and 7pm" },
+  { emoji: "🫁", name: "Liver complaint", how: "Reached 20+ drinks" },
 ];
 
 export default function AdminPage() {
@@ -507,7 +509,7 @@ export default function AdminPage() {
                     <span className="flex-1 text-sm font-medium">{level.label}</span>
                     <span className="text-sm text-default-500 shrink-0">
                       {range}
-                      {level.label === "Classic" ? " · ~1 every 30 min" : ""}
+                      {level.label === "Social Pace" ? " · ~1 every 30 min" : ""}
                     </span>
                   </div>
                 );

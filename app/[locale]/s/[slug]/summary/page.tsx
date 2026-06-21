@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import Image from "next/image";
 import { Button, Card, Chip, Spinner, Popover, toast } from "@heroui/react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { Share2, Info, Beer, Medal, Clock, Wine, CupSoda } from "lucide-react";
+import { Share2, Info, Medal, Clock, Wine, CupSoda } from "lucide-react";
 import { CATEGORY_EMOJI, isAlcoholic } from "@/lib/constants";
 import { CategoryIcon } from "@/lib/category-icon";
 import { titleCase } from "@/lib/sanitize";
@@ -155,7 +156,7 @@ export default function SummaryPage() {
       navigator.share({ title: t("app.title"), text }).catch(() => {});
     } else {
       navigator.clipboard.writeText(text);
-      toast(t("summary.copied"));
+      toast(t("summary.copied"), { timeout: 15000 });
     }
   }
 
@@ -175,7 +176,7 @@ export default function SummaryPage() {
 
           {/* Header */}
           <div className="text-center mb-6">
-            <Beer className="w-12 h-12 mx-auto mb-2" />
+            <Image src="/icon.svg" alt="" width={48} height={48} className="mx-auto mb-2" />
             <h1 className="text-2xl font-bold">{t("summary.title")}</h1>
             {barName && <p className="text-foreground/70 mt-1">{titleCase(barName)}</p>}
             {firstDrink && (
