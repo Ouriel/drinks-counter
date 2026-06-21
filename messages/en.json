@@ -145,7 +145,9 @@
     "toTheMoon": "To The Moon",
     "toTheMoonSub": "Houston, we have a party",
     "noRegrets": "No Regrets",
-    "noRegretsSub": "Tomorrow is a problem for tomorrow"
+    "noRegretsSub": "Tomorrow is a problem for tomorrow",
+    "survivor": "Survivor",
+    "survivorSub": "Still standing… barely"
   },
   "pace": {
     "nursing": "Nursing it",
@@ -169,7 +171,9 @@
     "escalation": "Escalation — started light, ended strong",
     "nightOwl": "Night Owl — still going past midnight",
     "savoring": "Savoring It — 4+ hour session",
-    "speedRound": "Speed Round — 3+ drinks in 30 min"
+    "speedRound": "Speed Round — 3+ drinks in 30 min",
+    "hydrationHero": "Hydration hero — kept the water flowing",
+    "designatedDriver": "Designated driver — all alcohol-free, respect!"
   },
   "nudges": {
     "water": "Water break?",

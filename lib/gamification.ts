@@ -1,4 +1,5 @@
 import type { Drink } from "@/lib/types";
+import { isAlcoholic } from "@/lib/constants";
 
 type DrinkLike = Pick<Drink, "name" | "count" | "category" | "createdAt">;
 
@@ -6,7 +7,7 @@ type DrinkLike = Pick<Drink, "name" | "count" | "category" | "createdAt">;
 
 export type Badge = { emoji: string; title: string; subtitle: string };
 
-const MILESTONES: [number, Badge][] = [
+export const MILESTONES: [number, Badge][] = [
   [1, { emoji: "🍼", title: "First Sip", subtitle: "The night begins!" }],
   [3, { emoji: "🎯", title: "Hat Trick", subtitle: "You're warming up" }],
   [5, { emoji: "🔥", title: "On Fire", subtitle: "No stopping now" }],
@@ -14,6 +15,7 @@ const MILESTONES: [number, Badge][] = [
   [10, { emoji: "👑", title: "Legend", subtitle: "Double digits!" }],
   [15, { emoji: "🚀", title: "To The Moon", subtitle: "Houston, we have a party" }],
   [20, { emoji: "☠️", title: "No Regrets", subtitle: "Tomorrow is a problem for tomorrow" }],
+  [25, { emoji: "🧟", title: "Survivor", subtitle: "Still standing… barely" }],
 ];
 
 export function getBadgeForCount(total: number): Badge | null {
@@ -62,6 +64,17 @@ export function getTipsyStyle(total: number): React.CSSProperties {
 
 export type Pace = { emoji: string; label: string };
 
+// Drinks-per-hour thresholds. "Classic" = 1 drink every 30 min (2/h) is the reference.
+export const PACE_LEVELS: { maxDph: number; emoji: string; label: string }[] = [
+  { maxDph: 0.5, emoji: "🐢", label: "Nursing" },
+  { maxDph: 1, emoji: "🚶", label: "Easy" },
+  { maxDph: 2, emoji: "🍺", label: "Classic" },
+  { maxDph: 3, emoji: "🏃", label: "Brisk" },
+  { maxDph: 4, emoji: "🚀", label: "Fast" },
+  { maxDph: 6, emoji: "🔥", label: "Turbo" },
+  { maxDph: Infinity, emoji: "⚡", label: "Warp speed" },
+];
+
 export function getPace(drinks: DrinkLike[]): Pace | null {
   const firstDrink = drinks.reduce<string | null>(
     (earliest, drink) =>
@@ -75,14 +88,9 @@ export function getPace(drinks: DrinkLike[]): Pace | null {
   if (hours < 0.08) return null; // less than 5 min
   const total = drinks.reduce((sum, drink) => sum + drink.count, 0);
   const dph = total / hours;
-  // "Classic" pace = 1 drink every 30 min = 2 drinks/hour (the reference point)
-  if (dph <= 0.5) return { emoji: "🐢", label: "Nursing" };
-  if (dph <= 1) return { emoji: "🚶", label: "Easy" };
-  if (dph <= 2) return { emoji: "🍺", label: "Classic" };
-  if (dph <= 3) return { emoji: "🏃", label: "Brisk" };
-  if (dph <= 4) return { emoji: "🚀", label: "Fast" };
-  if (dph <= 6) return { emoji: "🔥", label: "Turbo" };
-  return { emoji: "⚡", label: "Warp speed" };
+  const level =
+    PACE_LEVELS.find((entry) => dph <= entry.maxDph) ?? PACE_LEVELS[PACE_LEVELS.length - 1];
+  return { emoji: level.emoji, label: level.label };
 }
 
 // === DRINK-SPECIFIC ACHIEVEMENTS ===
@@ -118,6 +126,27 @@ export function getDrinkAchievements(drinks: DrinkLike[]): Achievement[] {
       emoji: "🗺️",
       text: "Adventurer — 10+ different drinks!",
       key: "adventurer",
+    });
+  }
+
+  // Designated driver: 3+ drinks, none alcoholic. Hydration hero: had alcohol but
+  // also 3+ non-alcoholic drinks (stayed watered). Mutually exclusive.
+  const nonAlcoholicTotal = drinks.reduce(
+    (sum, drink) => sum + (isAlcoholic(drink.category) ? 0 : drink.count),
+    0
+  );
+  const alcoholicTotal = total - nonAlcoholicTotal;
+  if (total >= 3 && alcoholicTotal === 0) {
+    achievements.push({
+      emoji: "🧃",
+      text: "Designated driver — all alcohol-free, respect!",
+      key: "designatedDriver",
+    });
+  } else if (alcoholicTotal > 0 && nonAlcoholicTotal >= 3) {
+    achievements.push({
+      emoji: "💧",
+      text: "Hydration hero — kept the water flowing",
+      key: "hydrationHero",
     });
   }
 

@@ -145,7 +145,9 @@
     "toTheMoon": "Vers la lune",
     "toTheMoonSub": "Houston, on fait la fête",
     "noRegrets": "Sans regrets",
-    "noRegretsSub": "Demain est un problème pour demain"
+    "noRegretsSub": "Demain est un problème pour demain",
+    "survivor": "Survivant",
+    "survivorSub": "Encore debout… de justesse"
   },
   "pace": {
     "nursing": "Au ralenti",
@@ -169,7 +171,9 @@
     "escalation": "Escalade — commencé léger, fini fort",
     "nightOwl": "Noctambule — encore debout après minuit",
     "savoring": "Savourer — session de 4h+",
-    "speedRound": "Speed Round — 3+ verres en 30 min"
+    "speedRound": "Speed Round — 3+ verres en 30 min",
+    "hydrationHero": "Héros de l’hydratation — bien hydraté !",
+    "designatedDriver": "Capitaine de soirée — 100 % sans alcool, respect !"
   },
   "nudges": {
     "water": "Un verre d'eau ?",

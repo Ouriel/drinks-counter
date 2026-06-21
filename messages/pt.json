@@ -145,7 +145,9 @@
     "toTheMoon": "Até à Lua",
     "toTheMoonSub": "Houston, temos uma festa",
     "noRegrets": "Sem Arrependimentos",
-    "noRegretsSub": "Amanhã é um problema para amanhã"
+    "noRegretsSub": "Amanhã é um problema para amanhã",
+    "survivor": "Sobrevivente",
+    "survivorSub": "Ainda de pé… por pouco"
   },
   "pace": {
     "nursing": "A saborear",
@@ -169,7 +171,9 @@
     "escalation": "Escalada — começou leve, acabou forte",
     "nightOwl": "Coruja — ainda a aguentar depois da meia-noite",
     "savoring": "A saborear — sessão de 4+ horas",
-    "speedRound": "Ronda rápida — 3+ bebidas em 30 min"
+    "speedRound": "Ronda rápida — 3+ bebidas em 30 min",
+    "hydrationHero": "Herói da hidratação — bem hidratado!",
+    "designatedDriver": "Condutor designado — tudo sem álcool, respeito!"
   },
   "nudges": {
     "water": "Pausa para água?",

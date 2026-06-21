@@ -103,4 +103,24 @@ describe("getDrinkAchievements", () => {
     const achievements = getDrinkAchievements(drinks);
     expect(achievements.some((a) => a.text.includes("Wildcard"))).toBe(true);
   });
+
+  it("returns Designated driver when all drinks are alcohol-free", () => {
+    const drinks = [
+      { id: "1", name: "coke", count: 2, category: "soft" },
+      { id: "2", name: "water", count: 1, category: "soft" },
+    ];
+    const achievements = getDrinkAchievements(drinks);
+    expect(achievements.some((item) => item.key === "designatedDriver")).toBe(true);
+    expect(achievements.some((item) => item.key === "hydrationHero")).toBe(false);
+  });
+
+  it("returns Hydration hero with alcohol plus 3+ non-alcoholic drinks", () => {
+    const drinks = [
+      { id: "1", name: "beer", count: 2, category: "beer" },
+      { id: "2", name: "water", count: 3, category: "soft" },
+    ];
+    const achievements = getDrinkAchievements(drinks);
+    expect(achievements.some((item) => item.key === "hydrationHero")).toBe(true);
+    expect(achievements.some((item) => item.key === "designatedDriver")).toBe(false);
+  });
 });

@@ -6,7 +6,8 @@ import { useTranslations } from "next-intl";
 import { CATEGORIES } from "@/lib/constants";
 import { formatNickname } from "@/lib/nicknames";
 import { CategoryIcon } from "@/lib/category-icon";
-import { Camera, Wine, ClipboardList, Users } from "lucide-react";
+import { Camera, Wine, ClipboardList, Users, BookOpen } from "lucide-react";
+import { MILESTONES, PACE_LEVELS } from "@/lib/gamification";
 import type { MenuItem } from "@/lib/types";
 
 type BarMenu = { id: string; barName: string; items: MenuItem[]; createdAt: string };
@@ -21,7 +22,28 @@ type Session = {
 type Table = { id: string; code: string; memberCount: number; createdAt: string };
 type DrinkRow = { name: string; count: number; category: string | null };
 type MemberRow = { nickname: string; slug: string; total: number };
-type Tab = "bars" | "sessions" | "tables";
+type Tab = "bars" | "sessions" | "tables" | "guide";
+
+// Reference for the admin Guide tab (admin UI is English-only by convention).
+const ACHIEVEMENTS_GUIDE: { emoji: string; name: string; how: string }[] = [
+  { emoji: "🌈", name: "Rainbow drinker", how: "Drinks from 4+ categories" },
+  { emoji: "🏆", name: "Category master", how: "Drinks from 7+ categories" },
+  { emoji: "🧭", name: "Explorer", how: "5+ different drinks" },
+  { emoji: "🗺️", name: "Adventurer", how: "10+ different drinks" },
+  { emoji: "🧃", name: "Designated driver", how: "3+ drinks, all alcohol-free" },
+  { emoji: "💧", name: "Hydration hero", how: "Had alcohol + 3 or more non-alcoholic drinks" },
+  { emoji: "⭐", name: "Signature", how: "One drink ordered 4+ times" },
+  { emoji: "💎", name: "Devoted", how: "One drink ordered 7+ times" },
+  { emoji: "🎲", name: "Wildcard", how: "4+ drinks, never the same one twice" },
+  {
+    emoji: "📈",
+    name: "Escalation",
+    how: "Started light (beer/soft), ended strong (spirit/cocktail/shot)",
+  },
+  { emoji: "🌙", name: "Night Owl", how: "Last drink between midnight and 5am" },
+  { emoji: "🐌", name: "Savoring It", how: "Session lasted 4+ hours" },
+  { emoji: "⚡", name: "Speed Round", how: "3+ drinks within 30 minutes" },
+];
 
 export default function AdminPage() {
   const tAnimals = useTranslations("animals");
@@ -96,6 +118,7 @@ export default function AdminPage() {
   async function loadTab(t: Tab) {
     setTab(t);
     setOpenId(null);
+    if (t === "guide") return; // reference content, no data to fetch
     const res = await fetch(`/api/admin?tab=${t}`, { headers });
     if (!res.ok) return;
     const data = await res.json();
@@ -180,23 +203,24 @@ export default function AdminPage() {
       <h1 className="text-2xl font-bold mb-4">Admin</h1>
 
       {/* Tabs */}
-      <div className="flex gap-2 mb-6">
-        {(["bars", "sessions", "tables"] as Tab[]).map((tabKey) => (
+      <div className="flex flex-wrap gap-2 mb-6">
+        {(
+          [
+            { key: "bars", label: "Bars", Icon: Wine },
+            { key: "sessions", label: "Sessions", Icon: ClipboardList },
+            { key: "tables", label: "Tables", Icon: Users },
+            { key: "guide", label: "Guide", Icon: BookOpen },
+          ] as { key: Tab; label: string; Icon: typeof Wine }[]
+        ).map(({ key, label, Icon }) => (
           <Button
-            key={tabKey}
-            variant={tab === tabKey ? "primary" : "ghost"}
+            key={key}
+            variant={tab === key ? "primary" : "ghost"}
             size="sm"
             className="gap-1"
-            onPress={() => loadTab(tabKey)}
+            onPress={() => loadTab(key)}
           >
-            {tabKey === "bars" ? (
-              <Wine className="w-4 h-4" />
-            ) : tabKey === "sessions" ? (
-              <ClipboardList className="w-4 h-4" />
-            ) : (
-              <Users className="w-4 h-4" />
-            )}
-            {tabKey === "bars" ? "Bars" : tabKey === "sessions" ? "Sessions" : "Tables"}
+            <Icon className="w-4 h-4" />
+            {label}
           </Button>
         ))}
       </div>
@@ -438,6 +462,76 @@ export default function AdminPage() {
             </Card>
           ))}
           {tablesList.length === 0 && <p className="text-default-500 text-sm">No tables</p>}
+        </div>
+      )}
+
+      {/* Guide tab */}
+      {tab === "guide" && (
+        <div className="space-y-8">
+          <section>
+            <h2 className="text-lg font-bold mb-3">Badges (by total drinks)</h2>
+            <div className="space-y-2">
+              {MILESTONES.map(([threshold, badge]) => (
+                <div
+                  key={threshold}
+                  className="flex items-center gap-3 bg-default-100 rounded-lg px-3 py-2"
+                >
+                  <span className="text-2xl">{badge.emoji}</span>
+                  <div className="flex-1">
+                    <p className="font-medium text-sm">{badge.title}</p>
+                    <p className="text-xs text-default-500">{badge.subtitle}</p>
+                  </div>
+                  <span className="text-sm text-default-500 shrink-0">Reach {threshold}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section>
+            <h2 className="text-lg font-bold mb-3">Pace levels (drinks per hour)</h2>
+            <div className="space-y-2">
+              {PACE_LEVELS.map((level, index) => {
+                const prev = index === 0 ? 0 : PACE_LEVELS[index - 1].maxDph;
+                const range =
+                  level.maxDph === Infinity
+                    ? `> ${prev}/h`
+                    : index === 0
+                      ? `≤ ${level.maxDph}/h`
+                      : `${prev}–${level.maxDph}/h`;
+                return (
+                  <div
+                    key={level.label}
+                    className="flex items-center gap-3 bg-default-100 rounded-lg px-3 py-2"
+                  >
+                    <span className="text-2xl">{level.emoji}</span>
+                    <span className="flex-1 text-sm font-medium">{level.label}</span>
+                    <span className="text-sm text-default-500 shrink-0">
+                      {range}
+                      {level.label === "Classic" ? " · ~1 every 30 min" : ""}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+
+          <section>
+            <h2 className="text-lg font-bold mb-3">Achievements</h2>
+            <div className="space-y-2">
+              {ACHIEVEMENTS_GUIDE.map((achievement) => (
+                <div
+                  key={achievement.name}
+                  className="flex items-center gap-3 bg-default-100 rounded-lg px-3 py-2"
+                >
+                  <span className="text-2xl">{achievement.emoji}</span>
+                  <div className="flex-1">
+                    <p className="font-medium text-sm">{achievement.name}</p>
+                    <p className="text-xs text-default-500">{achievement.how}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
         </div>
       )}
     </div>
