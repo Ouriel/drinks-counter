@@ -96,13 +96,13 @@ describe("getDrinkAchievements", () => {
       { id: "4", name: "water", count: 1, category: "soft" },
     ];
     const achievements = getDrinkAchievements(drinks);
-    expect(achievements.some((a) => a.text.includes("Rainbow"))).toBe(true);
+    expect(achievements.some((achievement) => achievement.text.includes("Rainbow"))).toBe(true);
   });
 
   it("returns Signature for drink with 4+ count", () => {
     const drinks = [{ id: "1", name: "mojito", count: 4, category: "cocktail" }];
     const achievements = getDrinkAchievements(drinks);
-    expect(achievements.some((a) => a.text.includes("Signature"))).toBe(true);
+    expect(achievements.some((achievement) => achievement.text.includes("Signature"))).toBe(true);
   });
 
   it("returns Wildcard when all counts are 1 with 4+ drinks", () => {
@@ -113,7 +113,7 @@ describe("getDrinkAchievements", () => {
       { id: "4", name: "d", count: 1, category: "soft" },
     ];
     const achievements = getDrinkAchievements(drinks);
-    expect(achievements.some((a) => a.text.includes("Wildcard"))).toBe(true);
+    expect(achievements.some((achievement) => achievement.text.includes("Wildcard"))).toBe(true);
   });
 
   it("returns Designated driver when all drinks are alcohol-free", () => {

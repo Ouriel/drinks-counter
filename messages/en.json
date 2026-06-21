@@ -31,10 +31,8 @@
   },
   "session": {
     "drinks": "{count, plural, one {# drink} other {# drinks}}",
-    "justStarted": "just started",
     "noDrinks": "No drinks yet",
     "noDrinksHint": "Tap + to add your first drink",
-    "longPressHint": "Long press to remove",
     "addDrink": "+ Add a drink",
     "new": "Home",
     "share": "Share",
@@ -46,21 +44,17 @@
     "couldNotCreate": "Could not create session. Please try again."
   },
   "summary": {
-    "withAlcohol": "{count} with alcohol",
-    "alcoholFree": "{count} alcohol-free",
     "title": "My Summary",
     "drinksTotal": "{count, plural, one {drink} other {drinks}} total",
     "personalBest": "Personal best!",
     "pace": "Pace: {emoji} {label}",
     "timeline": "Timeline",
     "share": "Share",
-    "copyText": "Copy text",
     "copied": "Copied ✓",
     "back": "Back",
     "expired": "Session expired",
     "expiredMessage": "This session has expired (48h limit). Start a new evening to keep counting!",
-    "newEvening": "New evening",
-    "foodCount": "{count} food"
+    "newEvening": "New evening"
   },
   "table": {
     "title": "Table",
@@ -75,7 +69,6 @@
     "couldNotCreate": "Could not create table",
     "notFound": "Table not found",
     "refresh": "Refresh",
-    "you": "you",
     "noDrinks": "No drinks yet",
     "leave": "Leave table",
     "copyLink": "Copy link",
@@ -133,22 +126,28 @@
     "noBars": "No bars yet"
   },
   "badges": {
-    "firstSip": "First Sip",
-    "firstSipSub": "The night begins!",
-    "hatTrick": "Hat Trick",
-    "hatTrickSub": "You're warming up",
-    "onFire": "On Fire",
-    "onFireSub": "No stopping now",
-    "deepEnd": "Deep End",
-    "deepEndSub": "You're in the zone",
-    "legend": "Legend",
-    "legendSub": "Double digits!",
-    "toTheMoon": "To The Moon",
-    "toTheMoonSub": "Houston, we have a party",
+    "begins": "And So It Begins",
+    "beginsSub": "No turning back now",
+    "warmingUp": "Warming Up",
+    "warmingUpSub": "Just getting loose",
+    "hatTrick": "Hat-Trick",
+    "hatTrickSub": "Three and thriving",
+    "onARoll": "On a Roll",
+    "onARollSub": "Who's counting? Oh right, we are",
+    "noBrakes": "No Brakes",
+    "noBrakesSub": "Weeeee",
+    "doubleDigits": "Double Digits",
+    "doubleDigitsSub": "Officially a legend",
+    "badIdea": "Bad Idea Incoming",
+    "badIdeaSub": "This felt smart 12 drinks ago",
+    "liftoff": "Liftoff",
+    "liftoffSub": "Houston, we have a party",
     "noRegrets": "No Regrets",
     "noRegretsSub": "Tomorrow is a problem for tomorrow",
-    "survivor": "Survivor",
-    "survivorSub": "Still standing… barely"
+    "undead": "The Undead",
+    "undeadSub": "Still vertical, technically",
+    "hereLies": "Here Lies Tomorrow",
+    "hereLiesSub": "RIP your morning"
   },
   "pace": {
     "nursingIt": "Nursing It",
@@ -186,20 +185,6 @@
     "water": "Water break?",
     "taxi": "Maybe save that taxi number",
     "sleep": "Future you says thanks for stopping soon"
-  },
-  "admin": {
-    "title": "Admin",
-    "login": "Login",
-    "secret": "Admin secret…",
-    "barMenus": "Bar Menus",
-    "edit": "Edit",
-    "delete": "Delete",
-    "save": "Save",
-    "cancel": "Cancel",
-    "addItem": "+ Add item",
-    "confirmDelete": "Delete this bar menu?",
-    "drinkName": "Drink name",
-    "barNameLabel": "Bar name"
   },
   "tableSummary": {
     "title": "Table Summary",
@@ -269,5 +254,14 @@
     "soft": "Soft drink",
     "food": "Food",
     "other": "Other"
+  },
+  "common": {
+    "toggleTheme": "Toggle theme",
+    "language": "Language"
+  },
+  "toast": {
+    "personalBest": "Personal Best!",
+    "personalBestDesc": "{count} drinks — new record",
+    "drinksImported": "{count} drinks imported"
   }
 }

@@ -31,10 +31,8 @@
   },
   "session": {
     "drinks": "{count, plural, one {# copa} other {# copes}}",
-    "justStarted": "acaba de començar",
     "noDrinks": "Encara no hi ha copes",
     "noDrinksHint": "Toca + per afegir la teva primera copa",
-    "longPressHint": "Mantén premut per treure",
     "addDrink": "+ Afegir copa",
     "new": "Inici",
     "share": "Compartir",
@@ -46,21 +44,17 @@
     "couldNotCreate": "No s'ha pogut crear la sessió. Torna-ho a provar."
   },
   "summary": {
-    "withAlcohol": "{count} amb alcohol",
-    "alcoholFree": "{count} sense alcohol",
     "title": "El meu resum",
     "drinksTotal": "{count, plural, one {copa} other {copes}} en total",
     "personalBest": "Rècord personal!",
     "pace": "Ritme: {emoji} {label}",
     "share": "Compartir",
-    "copyText": "Copiar text",
     "copied": "Copiat ✓",
     "back": "Tornar",
     "expired": "Sessió expirada",
     "expiredMessage": "Aquesta sessió ha expirat (límit 48h). Comença un nou vespre!",
     "newEvening": "Nou vespre",
-    "timeline": "Timeline",
-    "foodCount": "{count} de menjar"
+    "timeline": "Timeline"
   },
   "table": {
     "title": "Taula",
@@ -75,7 +69,6 @@
     "couldNotCreate": "No s'ha pogut crear la taula",
     "notFound": "Taula no trobada",
     "refresh": "Actualitzar",
-    "you": "tu",
     "noDrinks": "Encara sense begudes",
     "leave": "Deixar la taula",
     "copyLink": "Copia l'enllaç",
@@ -133,22 +126,28 @@
     "avgPerSession": "~{avg} begudes per sessió de mitjana"
   },
   "badges": {
-    "firstSip": "Primer glop",
-    "firstSipSub": "Comença la nit!",
-    "hatTrick": "Hat Trick",
-    "hatTrickSub": "T'estàs escalfant",
-    "onFire": "En flames",
-    "onFireSub": "No hi ha qui et pari",
-    "deepEnd": "Aigües profundes",
-    "deepEndSub": "Estàs a la zona",
-    "legend": "Llegenda",
-    "legendSub": "Doble dígit!",
-    "toTheMoon": "A la lluna",
-    "toTheMoonSub": "Houston, tenim festa",
+    "begins": "I així comença",
+    "beginsSub": "Ja no hi ha marxa enrere",
+    "warmingUp": "Escalfant",
+    "warmingUpSub": "Anar-se soltant",
+    "hatTrick": "Hat-trick",
+    "hatTrickSub": "Tres i amunt",
+    "onARoll": "En ratxa",
+    "onARollSub": "Qui compta? Ah sí, nosaltres",
+    "noBrakes": "Sense frens",
+    "noBrakesSub": "Uiii",
+    "doubleDigits": "Dues xifres",
+    "doubleDigitsSub": "Oficialment una llegenda",
+    "badIdea": "Mala idea a la vista",
+    "badIdeaSub": "Semblava bona fa 12 begudes",
+    "liftoff": "Enlairament",
+    "liftoffSub": "Houston, tenim festa",
     "noRegrets": "Sense penediments",
-    "noRegretsSub": "Demà és problema de demà",
-    "survivor": "Supervivent",
-    "survivorSub": "Encara dret… per poc"
+    "noRegretsSub": "Demà és un problema de demà",
+    "undead": "El no-mort",
+    "undeadSub": "Encara dret, tècnicament",
+    "hereLies": "Aquí jeu el demà",
+    "hereLiesSub": "DEP el teu matí"
   },
   "pace": {
     "nursingIt": "A glopets",
@@ -186,20 +185,6 @@
     "water": "Un got d'aigua?",
     "taxi": "Potser guarda el número del taxi",
     "sleep": "El teu jo del futur t'agraeix parar aviat"
-  },
-  "admin": {
-    "title": "Admin",
-    "login": "Entrar",
-    "secret": "Secret admin…",
-    "barMenus": "Menús de bars",
-    "edit": "Editar",
-    "delete": "Eliminar",
-    "save": "Desar",
-    "cancel": "Cancel·lar",
-    "addItem": "+ Afegir",
-    "confirmDelete": "Eliminar aquest menú?",
-    "drinkName": "Nom de la beguda",
-    "barNameLabel": "Nom del bar"
   },
   "tableSummary": {
     "title": "Resum de la taula",
@@ -269,5 +254,14 @@
     "soft": "Refresc",
     "food": "Menjar",
     "other": "Altre"
+  },
+  "common": {
+    "toggleTheme": "Canvia el tema",
+    "language": "Idioma"
+  },
+  "toast": {
+    "personalBest": "Rècord personal!",
+    "personalBestDesc": "{count} begudes — nou rècord",
+    "drinksImported": "{count} begudes importades"
   }
 }

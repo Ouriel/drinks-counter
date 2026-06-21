@@ -88,7 +88,7 @@ export async function GET(req: NextRequest) {
     .from(drinks);
 
   return NextResponse.json({
-    menus: menus.map((m) => ({ ...m, items: normalizeMenuItems(m.items) })),
+    menus: menus.map((menu) => ({ ...menu, items: normalizeMenuItems(menu.items) })),
     stats: {
       totalBarMenus: menus.length,
       totalSessions: sessionCount.count,

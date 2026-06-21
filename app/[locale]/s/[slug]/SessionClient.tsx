@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { Button, Popover, Spinner, toast } from "@heroui/react";
@@ -26,24 +26,37 @@ const DrinkPicker = dynamic(() =>
 const Confetti = dynamic(() => import("@/components/Confetti").then((mod) => mod.Confetti));
 
 function formatElapsed(drinks: Drink[]): string | null {
-  const firstDrink = drinks.reduce<string | null>((earliest, d) => {
-    if (!d.createdAt) return earliest;
-    return !earliest || d.createdAt < earliest ? d.createdAt : earliest;
+  const firstDrink = drinks.reduce<string | null>((earliest, drink) => {
+    if (!drink.createdAt) return earliest;
+    return !earliest || drink.createdAt < earliest ? drink.createdAt : earliest;
   }, null);
   if (!firstDrink) return null;
   const mins = Math.floor((Date.now() - new Date(firstDrink).getTime()) / 60000);
   if (mins < 1) return null;
-  const h = Math.floor(mins / 60);
-  const m = mins % 60;
-  return h > 0 ? `${h}h${m > 0 ? `${m}m` : ""}` : `${m}m`;
+  const hours = Math.floor(mins / 60);
+  const minutes = mins % 60;
+  return hours > 0 ? `${hours}h${minutes > 0 ? `${minutes}m` : ""}` : `${minutes}m`;
+}
+
+// True only after client hydration (false on the server and the first client render),
+// without a setState-in-effect. Used to gate time-relative UI so the server and client
+// render identically at hydration time (avoids React #418 mismatch).
+function useIsHydrated(): boolean {
+  return useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
 }
 
 function ElapsedTimer({ drinks }: { drinks: Drink[] }) {
+  const hydrated = useIsHydrated();
   const [, setTick] = useState(0);
   useEffect(() => {
-    const id = setInterval(() => setTick((t) => t + 1), 60_000);
+    const id = setInterval(() => setTick((tick) => tick + 1), 60_000);
     return () => clearInterval(id);
   }, []);
+  if (!hydrated) return null;
   const elapsed = formatElapsed(drinks);
   if (!elapsed) return null;
   return <> · ⏱ {elapsed}</>;
@@ -74,10 +87,12 @@ export function SessionClient({
   const [tableCode, setTableCode] = useState<string | null>(initialTableCode);
   const nickname = initialNickname;
   const [showPicker, setShowPicker] = useState(false);
+  const mounted = useIsHydrated();
   const snapRef = useRef<HTMLInputElement>(null);
 
   const { drinks, addDrink, increment, decrement } = useOptimisticDrinks(
     slug,
+    t,
     () => setShowConfetti(true),
     initialDrinks
   );
@@ -109,11 +124,11 @@ export function SessionClient({
       const existing = new Set(menuItems.map((item) => item.name.toLowerCase()));
       const newItems = data.items.filter((item) => !existing.has(item.name.toLowerCase()));
       if (newItems.length > 0) setMenuItems((prev) => [...prev, ...newItems]);
-      toast(`📸 ${data.items.length} drinks imported`, { timeout: 15000 });
+      toast(`📸 ${t("toast.drinksImported", { count: data.items.length })}`, { timeout: 15000 });
     }
   }
 
-  const total = drinks.reduce((sum, d) => sum + d.count, 0);
+  const total = drinks.reduce((sum, drink) => sum + drink.count, 0);
   const pace = getPace(drinks);
   const { resolvedTheme } = useTheme();
   const bgColor = getSessionHue(total, resolvedTheme === "dark");
@@ -235,10 +250,12 @@ export function SessionClient({
             <ElapsedTimer drinks={drinks} />
           </p>
         )}
-        {pace && (
+        {mounted && pace && (
           <p className="text-sm mt-0.5 text-center text-default-500">
             {pace.emoji}{" "}
-            {t(`pace.${pace.label.toLowerCase().replace(/ ./g, (c) => c[1].toUpperCase())}`)}
+            {t(
+              `pace.${pace.label.toLowerCase().replace(/ ./g, (match) => match[1].toUpperCase())}`
+            )}
             <Popover>
               <Popover.Trigger>
                 <button type="button" className="ml-1 text-default-400" aria-label={t("pace.info")}>

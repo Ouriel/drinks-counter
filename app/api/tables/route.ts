@@ -185,7 +185,10 @@ export async function GET(req: NextRequest) {
 
   return NextResponse.json({
     code: table.code,
-    members: members.map((m) => ({ nickname: m.nickname || "???", total: Number(m.total) })),
+    members: members.map((member) => ({
+      nickname: member.nickname || "???",
+      total: Number(member.total),
+    })),
   });
 }
 

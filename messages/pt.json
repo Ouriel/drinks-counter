@@ -31,10 +31,8 @@
   },
   "session": {
     "drinks": "{count, plural, one {# bebida} other {# bebidas}}",
-    "justStarted": "acabou de começar",
     "noDrinks": "Ainda sem bebidas",
     "noDrinksHint": "Toca em + para adicionar a tua primeira bebida",
-    "longPressHint": "Mantém premido para remover",
     "addDrink": "+ Adicionar uma bebida",
     "new": "Início",
     "share": "Partilhar",
@@ -46,21 +44,17 @@
     "couldNotCreate": "Não foi possível criar a sessão. Tenta novamente."
   },
   "summary": {
-    "withAlcohol": "{count} com álcool",
-    "alcoholFree": "{count} sem álcool",
     "title": "O meu resumo",
     "drinksTotal": "{count, plural, one {bebida} other {bebidas}} no total",
     "personalBest": "Recorde pessoal!",
     "pace": "Ritmo: {emoji} {label}",
     "timeline": "Cronologia",
     "share": "Partilhar",
-    "copyText": "Copiar texto",
     "copied": "Copiado ✓",
     "back": "Voltar",
     "expired": "Sessão expirada",
     "expiredMessage": "Esta sessão expirou (limite de 48h). Começa uma nova noite para continuar a contar!",
-    "newEvening": "Nova noite",
-    "foodCount": "{count} comida"
+    "newEvening": "Nova noite"
   },
   "table": {
     "title": "Mesa",
@@ -75,7 +69,6 @@
     "couldNotCreate": "Não foi possível criar a mesa",
     "notFound": "Mesa não encontrada",
     "refresh": "Atualizar",
-    "you": "tu",
     "noDrinks": "Ainda sem bebidas",
     "leave": "Sair da mesa",
     "copyLink": "Copiar link",
@@ -133,22 +126,28 @@
     "noBars": "Ainda sem bares"
   },
   "badges": {
-    "firstSip": "Primeiro Gole",
-    "firstSipSub": "A noite começa!",
+    "begins": "E assim começa",
+    "beginsSub": "Sem volta agora",
+    "warmingUp": "A aquecer",
+    "warmingUpSub": "A soltar-se",
     "hatTrick": "Hat-trick",
-    "hatTrickSub": "Estás a aquecer",
-    "onFire": "Em Chamas",
-    "onFireSub": "Nada te para agora",
-    "deepEnd": "Águas Fundas",
-    "deepEndSub": "Estás na zona",
-    "legend": "Lenda",
-    "legendSub": "Dois dígitos!",
-    "toTheMoon": "Até à Lua",
-    "toTheMoonSub": "Houston, temos uma festa",
-    "noRegrets": "Sem Arrependimentos",
+    "hatTrickSub": "Três e a bombar",
+    "onARoll": "Embalado",
+    "onARollSub": "Quem está a contar? Ah sim, nós",
+    "noBrakes": "Sem travões",
+    "noBrakesSub": "Iupii",
+    "doubleDigits": "Dois dígitos",
+    "doubleDigitsSub": "Oficialmente uma lenda",
+    "badIdea": "Má ideia à vista",
+    "badIdeaSub": "Parecia esperto há 12 bebidas",
+    "liftoff": "Descolagem",
+    "liftoffSub": "Houston, temos uma festa",
+    "noRegrets": "Sem arrependimentos",
     "noRegretsSub": "Amanhã é um problema para amanhã",
-    "survivor": "Sobrevivente",
-    "survivorSub": "Ainda de pé… por pouco"
+    "undead": "O morto-vivo",
+    "undeadSub": "Ainda de pé, tecnicamente",
+    "hereLies": "Aqui jaz o amanhã",
+    "hereLiesSub": "RIP a tua manhã"
   },
   "pace": {
     "nursingIt": "Aos golinhos",
@@ -186,20 +185,6 @@
     "water": "Pausa para água?",
     "taxi": "Talvez guardes esse número de táxi",
     "sleep": "O teu eu do futuro agradece por parares em breve"
-  },
-  "admin": {
-    "title": "Admin",
-    "login": "Entrar",
-    "secret": "Palavra-passe de admin…",
-    "barMenus": "Menus de Bar",
-    "edit": "Editar",
-    "delete": "Eliminar",
-    "save": "Guardar",
-    "cancel": "Cancelar",
-    "addItem": "+ Adicionar item",
-    "confirmDelete": "Eliminar este menu de bar?",
-    "drinkName": "Nome da bebida",
-    "barNameLabel": "Nome do bar"
   },
   "tableSummary": {
     "title": "Resumo da mesa",
@@ -269,5 +254,14 @@
     "soft": "Refrigerante",
     "food": "Comida",
     "other": "Outro"
+  },
+  "common": {
+    "toggleTheme": "Mudar tema",
+    "language": "Idioma"
+  },
+  "toast": {
+    "personalBest": "Recorde pessoal!",
+    "personalBestDesc": "{count} bebidas — novo recorde",
+    "drinksImported": "{count} bebidas importadas"
   }
 }

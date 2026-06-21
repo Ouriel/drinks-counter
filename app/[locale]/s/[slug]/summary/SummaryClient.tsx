@@ -53,10 +53,10 @@ export function SummaryClient({
     );
   }
 
-  const total = drinks.reduce((sum, d) => sum + d.count, 0);
-  const byCategory = drinks.reduce<Record<string, number>>((acc, d) => {
-    const cat = d.category || "other";
-    acc[cat] = (acc[cat] || 0) + d.count;
+  const total = drinks.reduce((sum, drink) => sum + drink.count, 0);
+  const byCategory = drinks.reduce<Record<string, number>>((acc, drink) => {
+    const cat = drink.category || "other";
+    acc[cat] = (acc[cat] || 0) + drink.count;
     return acc;
   }, {});
 
@@ -181,7 +181,7 @@ export function SummaryClient({
                 {t("summary.pace", {
                   emoji: pace.emoji,
                   label: t(
-                    `pace.${pace.label.toLowerCase().replace(/ ./g, (c) => c[1].toUpperCase())}`
+                    `pace.${pace.label.toLowerCase().replace(/ ./g, (match) => match[1].toUpperCase())}`
                   ),
                 })}
                 <Popover>
@@ -233,7 +233,7 @@ export function SummaryClient({
                 {badges.length > 0 && (
                   <div className="flex flex-wrap justify-center gap-3 mb-4">
                     {badges.map((badge) => (
-                      <Popover key={badge.title}>
+                      <Popover key={badge.key}>
                         <Popover.Trigger>
                           <button type="button" className="text-3xl">
                             {badge.emoji}
@@ -242,8 +242,10 @@ export function SummaryClient({
                         <Popover.Content>
                           <Popover.Dialog>
                             <div className="px-3 py-2 text-center">
-                              <p className="font-bold text-sm">{badge.title}</p>
-                              <p className="text-xs text-default-500">{badge.subtitle}</p>
+                              <p className="font-bold text-sm">{t(`badges.${badge.key}`)}</p>
+                              <p className="text-xs text-default-500">
+                                {t(`badges.${badge.key}Sub`)}
+                              </p>
                             </div>
                           </Popover.Dialog>
                         </Popover.Content>

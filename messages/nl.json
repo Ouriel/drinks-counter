@@ -31,10 +31,8 @@
   },
   "session": {
     "drinks": "{count, plural, one {# drankje} other {# drankjes}}",
-    "justStarted": "net begonnen",
     "noDrinks": "Nog geen drankjes",
     "noDrinksHint": "Tik op + om je eerste drankje toe te voegen",
-    "longPressHint": "Lang indrukken om te verwijderen",
     "addDrink": "+ Drankje toevoegen",
     "new": "Home",
     "share": "Delen",
@@ -46,21 +44,17 @@
     "couldNotCreate": "Kon sessie niet aanmaken. Probeer opnieuw."
   },
   "summary": {
-    "withAlcohol": "{count} met alcohol",
-    "alcoholFree": "{count} alcoholvrij",
     "title": "Mijn overzicht",
     "drinksTotal": "{count, plural, one {drankje} other {drankjes}} totaal",
     "personalBest": "Persoonlijk record!",
     "pace": "Tempo: {emoji} {label}",
     "timeline": "Tijdlijn",
     "share": "Delen",
-    "copyText": "Tekst kopiëren",
     "copied": "Gekopieerd ✓",
     "back": "Terug",
     "expired": "Sessie verlopen",
     "expiredMessage": "Deze sessie is verlopen (limiet van 48 uur). Start een nieuwe avond om verder te tellen!",
-    "newEvening": "Nieuwe avond",
-    "foodCount": "{count} eten"
+    "newEvening": "Nieuwe avond"
   },
   "table": {
     "title": "Tafel",
@@ -75,7 +69,6 @@
     "couldNotCreate": "Kon tafel niet aanmaken",
     "notFound": "Tafel niet gevonden",
     "refresh": "Vernieuwen",
-    "you": "jij",
     "noDrinks": "Nog geen drankjes",
     "leave": "Tafel verlaten",
     "copyLink": "Link kopiëren",
@@ -133,22 +126,28 @@
     "noBars": "Nog geen bars"
   },
   "badges": {
-    "firstSip": "Eerste slok",
-    "firstSipSub": "De avond begint!",
+    "begins": "En zo begint het",
+    "beginsSub": "Geen weg terug nu",
+    "warmingUp": "Opwarmen",
+    "warmingUpSub": "Beetje loskomen",
     "hatTrick": "Hattrick",
-    "hatTrickSub": "Je warmt op",
-    "onFire": "Op dreef",
-    "onFireSub": "Niets houdt je nu tegen",
-    "deepEnd": "Diepe kant",
-    "deepEndSub": "Je zit in de zone",
-    "legend": "Legende",
-    "legendSub": "Dubbele cijfers!",
-    "toTheMoon": "Naar de maan",
-    "toTheMoonSub": "Houston, we hebben een feest",
+    "hatTrickSub": "Drie en lekker bezig",
+    "onARoll": "Op dreef",
+    "onARollSub": "Wie telt er? O ja, wij",
+    "noBrakes": "Geen remmen",
+    "noBrakesSub": "Wiee",
+    "doubleDigits": "Dubbele cijfers",
+    "doubleDigitsSub": "Officieel een legende",
+    "badIdea": "Slecht idee op komst",
+    "badIdeaSub": "Leek slim, 12 drankjes geleden",
+    "liftoff": "Lancering",
+    "liftoffSub": "Houston, we hebben een feestje",
     "noRegrets": "Geen spijt",
     "noRegretsSub": "Morgen is een probleem voor morgen",
-    "survivor": "Overlever",
-    "survivorSub": "Nog overeind… maar net"
+    "undead": "De ondode",
+    "undeadSub": "Nog rechtop, technisch gezien",
+    "hereLies": "Hier rust morgen",
+    "hereLiesSub": "RIP je ochtend"
   },
   "pace": {
     "nursingIt": "Met kleine slokjes",
@@ -186,20 +185,6 @@
     "water": "Watertijd?",
     "taxi": "Bewaar misschien dat taxinummer",
     "sleep": "De toekomstige jij bedankt je dat je binnenkort stopt"
-  },
-  "admin": {
-    "title": "Admin",
-    "login": "Inloggen",
-    "secret": "Adminwachtwoord…",
-    "barMenus": "Barmenu's",
-    "edit": "Bewerken",
-    "delete": "Verwijderen",
-    "save": "Opslaan",
-    "cancel": "Annuleren",
-    "addItem": "+ Item toevoegen",
-    "confirmDelete": "Dit barmenu verwijderen?",
-    "drinkName": "Dranknaam",
-    "barNameLabel": "Naam van de bar"
   },
   "tableSummary": {
     "title": "Tafeloverzicht",
@@ -269,5 +254,14 @@
     "soft": "Frisdrank",
     "food": "Eten",
     "other": "Overig"
+  },
+  "common": {
+    "toggleTheme": "Thema wisselen",
+    "language": "Taal"
+  },
+  "toast": {
+    "personalBest": "Persoonlijk record!",
+    "personalBestDesc": "{count} drankjes — nieuw record",
+    "drinksImported": "{count} drankjes geïmporteerd"
   }
 }

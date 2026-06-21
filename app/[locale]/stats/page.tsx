@@ -123,14 +123,14 @@ export default async function StatsPage() {
         <>
           <h2 className="text-lg font-bold mb-3">{t("byCategory")}</h2>
           <div className="grid grid-cols-2 gap-2 mb-8">
-            {byCategory.map((c) => (
+            {byCategory.map((row) => (
               <div
-                key={c.category || "other"}
+                key={row.category || "other"}
                 className="bg-default-100 rounded-lg px-3 py-2 flex items-center gap-2"
               >
-                <CategoryIcon category={c.category} className="w-5 h-5 shrink-0" />
-                <span className="text-sm flex-1">{tCat(c.category || "other")}</span>
-                <span className="font-bold tabular-nums">{c.total}</span>
+                <CategoryIcon category={row.category} className="w-5 h-5 shrink-0" />
+                <span className="text-sm flex-1">{tCat(row.category || "other")}</span>
+                <span className="font-bold tabular-nums">{row.total}</span>
               </div>
             ))}
           </div>

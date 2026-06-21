@@ -31,10 +31,8 @@
   },
   "session": {
     "drinks": "{count, plural, one {# drink} other {# drinkar}}",
-    "justStarted": "precis börjat",
     "noDrinks": "Inga drinkar än",
     "noDrinksHint": "Tryck på + för att lägga till din första drink",
-    "longPressHint": "Håll inne för att ta bort",
     "addDrink": "+ Lägg till en drink",
     "new": "Hem",
     "share": "Dela",
@@ -46,21 +44,17 @@
     "couldNotCreate": "Kunde inte skapa session. Försök igen."
   },
   "summary": {
-    "withAlcohol": "{count} med alkohol",
-    "alcoholFree": "{count} alkoholfria",
     "title": "Min sammanfattning",
     "drinksTotal": "{count, plural, one {drink} other {drinkar}} totalt",
     "personalBest": "Personligt rekord!",
     "pace": "Tempo: {emoji} {label}",
     "timeline": "Tidslinje",
     "share": "Dela",
-    "copyText": "Kopiera text",
     "copied": "Kopierad ✓",
     "back": "Tillbaka",
     "expired": "Sessionen har gått ut",
     "expiredMessage": "Den här sessionen har gått ut (48-timmarsgräns). Starta en ny kväll för att fortsätta räkna!",
-    "newEvening": "Ny kväll",
-    "foodCount": "{count} mat"
+    "newEvening": "Ny kväll"
   },
   "table": {
     "title": "Bord",
@@ -75,7 +69,6 @@
     "couldNotCreate": "Kunde inte skapa bord",
     "notFound": "Bordet hittades inte",
     "refresh": "Uppdatera",
-    "you": "du",
     "noDrinks": "Inga drinkar än",
     "leave": "Lämna bordet",
     "copyLink": "Kopiera länk",
@@ -133,22 +126,28 @@
     "noBars": "Inga barer än"
   },
   "badges": {
-    "firstSip": "Första klunken",
-    "firstSipSub": "Kvällen börjar!",
+    "begins": "Och så börjar det",
+    "beginsSub": "Ingen återvändo nu",
+    "warmingUp": "Uppvärmning",
+    "warmingUpSub": "Mjukar upp",
     "hatTrick": "Hattrick",
-    "hatTrickSub": "Du värmer upp",
-    "onFire": "I full gång",
-    "onFireSub": "Inget stoppar dig nu",
-    "deepEnd": "Djupt vatten",
-    "deepEndSub": "Du är i zonen",
-    "legend": "Legend",
-    "legendSub": "Tvåsiffrigt!",
-    "toTheMoon": "Till månen",
-    "toTheMoonSub": "Houston, vi har fest",
+    "hatTrickSub": "Tre och på gång",
+    "onARoll": "På rull",
+    "onARollSub": "Vem räknar? Just det, vi",
+    "noBrakes": "Inga bromsar",
+    "noBrakesSub": "Wiii",
+    "doubleDigits": "Tvåsiffrigt",
+    "doubleDigitsSub": "Officiellt en legend",
+    "badIdea": "Dålig idé på ingång",
+    "badIdeaSub": "Kändes smart för 12 drinkar sen",
+    "liftoff": "Lyft",
+    "liftoffSub": "Houston, vi har fest",
     "noRegrets": "Inga ånger",
     "noRegretsSub": "Imorgon är ett problem för imorgon",
-    "survivor": "Överlevare",
-    "survivorSub": "Står fortfarande… knappt"
+    "undead": "Den odöda",
+    "undeadSub": "Fortfarande upprätt, tekniskt sett",
+    "hereLies": "Här vilar morgondagen",
+    "hereLiesSub": "Vila i frid, din morgon"
   },
   "pace": {
     "nursingIt": "Småduttar",
@@ -186,20 +185,6 @@
     "water": "Vattenpaus?",
     "taxi": "Spara kanske det där taxinumret",
     "sleep": "Framtida du tackar för att du snart slutar"
-  },
-  "admin": {
-    "title": "Admin",
-    "login": "Logga in",
-    "secret": "Admin-lösenord…",
-    "barMenus": "Barmenyer",
-    "edit": "Ändra",
-    "delete": "Ta bort",
-    "save": "Spara",
-    "cancel": "Avbryt",
-    "addItem": "+ Lägg till objekt",
-    "confirmDelete": "Ta bort den här barmenyn?",
-    "drinkName": "Drinknamn",
-    "barNameLabel": "Barens namn"
   },
   "tableSummary": {
     "title": "Bordssammanfattning",
@@ -269,5 +254,14 @@
     "soft": "Läsk",
     "food": "Mat",
     "other": "Övrigt"
+  },
+  "common": {
+    "toggleTheme": "Byt tema",
+    "language": "Språk"
+  },
+  "toast": {
+    "personalBest": "Personbästa!",
+    "personalBestDesc": "{count} drinkar — nytt rekord",
+    "drinksImported": "{count} drinkar importerade"
   }
 }

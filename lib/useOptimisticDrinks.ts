@@ -4,37 +4,50 @@ import { getBadgeForCount, getNudge, checkPersonalBest } from "@/lib/gamificatio
 import { api } from "@/lib/api";
 import type { Drink } from "@/lib/types";
 
+// Minimal shape of the next-intl translator the hook needs (key + optional ICU values).
+type Translate = (key: string, values?: Record<string, string | number>) => string;
+
 function vibrate() {
   if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(10);
 }
 
+const NUDGE_KEY: Record<string, string> = { water: "water", taxi: "taxi", info: "sleep" };
+
 function notifyGamification(
+  translate: Translate,
   newTotal: number,
   prevTotal: number,
   addedCategory?: string | null
 ): boolean {
   const badge = getBadgeForCount(newTotal);
   if (badge) {
-    toast(`${badge.emoji} ${badge.title}`, { description: badge.subtitle, timeout: 15000 });
+    toast(`${badge.emoji} ${translate(`badges.${badge.key}`)}`, {
+      description: translate(`badges.${badge.key}Sub`),
+      timeout: 15000,
+    });
   }
   const isPersonalBest = checkPersonalBest(newTotal);
   if (isPersonalBest && !badge) {
-    toast("🏅 Personal Best!", { description: `${newTotal} drinks — new record`, timeout: 15000 });
+    toast(`🏅 ${translate("toast.personalBest")}`, {
+      description: translate("toast.personalBestDesc", { count: newTotal }),
+      timeout: 15000,
+    });
   }
   const nudge = getNudge(newTotal, prevTotal, addedCategory);
   if (nudge) {
-    toast(`${nudge.emoji} ${nudge.text}`, { timeout: 15000 });
+    toast(`${nudge.emoji} ${translate(`nudges.${NUDGE_KEY[nudge.type]}`)}`, { timeout: 15000 });
   }
   return !!badge || isPersonalBest;
 }
 
 export function useOptimisticDrinks(
   slug: string,
+  translate: Translate,
   onBadge?: () => void,
   initialDrinks: Drink[] = []
 ) {
   const [drinks, setDrinks] = useState<Drink[]>(initialDrinks);
-  const totalRef = useRef(initialDrinks.reduce((sum, d) => sum + d.count, 0));
+  const totalRef = useRef(initialDrinks.reduce((sum, drink) => sum + drink.count, 0));
   const pendingOps = useRef(0);
 
   const fetchDrinks = useCallback(async () => {
@@ -43,7 +56,7 @@ export function useOptimisticDrinks(
   }, [slug]);
 
   function triggerGamification(newTotal: number, category?: string | null) {
-    const earned = notifyGamification(newTotal, totalRef.current, category);
+    const earned = notifyGamification(translate, newTotal, totalRef.current, category);
     totalRef.current = newTotal;
     if (earned && onBadge) onBadge();
   }

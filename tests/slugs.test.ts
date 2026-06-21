@@ -6,7 +6,7 @@ describe("generateSlug", () => {
     const slug = generateSlug();
     const parts = slug.split("-");
     expect(parts.length).toBeGreaterThanOrEqual(2);
-    parts.forEach((p) => expect(p.length).toBeGreaterThan(1));
+    parts.forEach((part) => expect(part.length).toBeGreaterThan(1));
   });
 
   it("generates different slugs", () => {

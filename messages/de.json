@@ -31,10 +31,8 @@
   },
   "session": {
     "drinks": "{count, plural, one {# Drink} other {# Drinks}}",
-    "justStarted": "gerade gestartet",
     "noDrinks": "Noch keine Drinks",
     "noDrinksHint": "Tippe + um deinen ersten Drink hinzuzufügen",
-    "longPressHint": "Lang drücken zum Entfernen",
     "addDrink": "+ Drink hinzufügen",
     "new": "Startseite",
     "share": "Teilen",
@@ -46,21 +44,17 @@
     "couldNotCreate": "Session konnte nicht erstellt werden. Bitte erneut versuchen."
   },
   "summary": {
-    "withAlcohol": "{count} mit Alkohol",
-    "alcoholFree": "{count} alkoholfrei",
     "title": "Meine Übersicht",
     "drinksTotal": "{count, plural, one {Drink} other {Drinks}} insgesamt",
     "personalBest": "Persönlicher Rekord!",
     "pace": "Tempo: {emoji} {label}",
     "share": "Teilen",
-    "copyText": "Text kopieren",
     "copied": "Kopiert ✓",
     "back": "Zurück",
     "expired": "Session abgelaufen",
     "expiredMessage": "Diese Session ist abgelaufen (48h-Limit). Starte einen neuen Abend!",
     "newEvening": "Neuer Abend",
-    "timeline": "Timeline",
-    "foodCount": "{count} Essen"
+    "timeline": "Timeline"
   },
   "table": {
     "title": "Tisch",
@@ -75,7 +69,6 @@
     "couldNotCreate": "Tisch konnte nicht erstellt werden",
     "notFound": "Tisch nicht gefunden",
     "refresh": "Aktualisieren",
-    "you": "du",
     "noDrinks": "Noch keine Getränke",
     "leave": "Tisch verlassen",
     "copyLink": "Link kopieren",
@@ -133,22 +126,28 @@
     "avgPerSession": "~{avg} Getränke pro Sitzung im Durchschnitt"
   },
   "badges": {
-    "firstSip": "Erster Schluck",
-    "firstSipSub": "Der Abend beginnt!",
+    "begins": "Und los geht's",
+    "beginsSub": "Kein Zurück mehr",
+    "warmingUp": "Aufwärmen",
+    "warmingUpSub": "Locker werden",
     "hatTrick": "Hattrick",
-    "hatTrickSub": "Du wirst warm",
-    "onFire": "On Fire",
-    "onFireSub": "Nicht zu stoppen",
-    "deepEnd": "Tiefes Ende",
-    "deepEndSub": "Du bist in der Zone",
-    "legend": "Legende",
-    "legendSub": "Zweistellig!",
-    "toTheMoon": "Zum Mond",
-    "toTheMoonSub": "Houston, wir feiern",
+    "hatTrickSub": "Drei und gut drauf",
+    "onARoll": "In Fahrt",
+    "onARollSub": "Wer zählt? Ach ja, wir",
+    "noBrakes": "Keine Bremsen",
+    "noBrakesSub": "Wuiii",
+    "doubleDigits": "Zweistellig",
+    "doubleDigitsSub": "Offiziell eine Legende",
+    "badIdea": "Schlechte Idee voraus",
+    "badIdeaSub": "Vor 12 Drinks klang das schlau",
+    "liftoff": "Abheben",
+    "liftoffSub": "Houston, wir haben eine Party",
     "noRegrets": "Keine Reue",
     "noRegretsSub": "Morgen ist ein Problem für morgen",
-    "survivor": "Überlebender",
-    "survivorSub": "Steht noch… kaum"
+    "undead": "Der Untote",
+    "undeadSub": "Noch senkrecht, technisch gesehen",
+    "hereLies": "Hier ruht der Morgen",
+    "hereLiesSub": "RIP dein Morgen"
   },
   "pace": {
     "nursingIt": "Auf Sparflamme",
@@ -186,20 +185,6 @@
     "water": "Ein Glas Wasser?",
     "taxi": "Vielleicht die Taxinummer speichern",
     "sleep": "Dein zukünftiges Ich dankt dir fürs baldige Aufhören"
-  },
-  "admin": {
-    "title": "Admin",
-    "login": "Anmelden",
-    "secret": "Admin-Geheimnis…",
-    "barMenus": "Bar-Menüs",
-    "edit": "Bearbeiten",
-    "delete": "Löschen",
-    "save": "Speichern",
-    "cancel": "Abbrechen",
-    "addItem": "+ Hinzufügen",
-    "confirmDelete": "Dieses Bar-Menü löschen?",
-    "drinkName": "Getränkename",
-    "barNameLabel": "Barname"
   },
   "tableSummary": {
     "title": "Tisch-Übersicht",
@@ -269,5 +254,14 @@
     "soft": "Softdrink",
     "food": "Essen",
     "other": "Sonstiges"
+  },
+  "common": {
+    "toggleTheme": "Thema wechseln",
+    "language": "Sprache"
+  },
+  "toast": {
+    "personalBest": "Persönlicher Rekord!",
+    "personalBestDesc": "{count} Drinks — neuer Rekord",
+    "drinksImported": "{count} Drinks importiert"
   }
 }

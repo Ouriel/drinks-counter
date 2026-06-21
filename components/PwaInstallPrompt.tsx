@@ -5,10 +5,10 @@ import { Button } from "@heroui/react";
 import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 
-interface BeforeInstallPromptEvent extends Event {
+type BeforeInstallPromptEvent = Event & {
   prompt(): Promise<void>;
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
-}
+};
 
 function isStandalone() {
   if (typeof window === "undefined") return false;

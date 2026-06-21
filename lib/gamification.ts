@@ -5,20 +5,52 @@ type DrinkLike = Pick<Drink, "name" | "count" | "category" | "createdAt">;
 
 // === MILESTONE BADGES ===
 
-export type Badge = { emoji: string; title: string; subtitle: string };
+export type Badge = { emoji: string; title: string; subtitle: string; key: string };
 
+// `title`/`subtitle` are the English source (used by tests and the English-only admin Guide).
+// `key` resolves the localized strings at render time via the `badges` message namespace.
 export const MILESTONES: [number, Badge][] = [
-  [1, { emoji: "🍼", title: "And So It Begins", subtitle: "No turning back now" }],
-  [2, { emoji: "🐣", title: "Warming Up", subtitle: "Just getting loose" }],
-  [3, { emoji: "🎯", title: "Hat-Trick", subtitle: "Three and thriving" }],
-  [5, { emoji: "🔥", title: "On a Roll", subtitle: "Who's counting? Oh right, we are" }],
-  [7, { emoji: "🎢", title: "No Brakes", subtitle: "Weeeee" }],
-  [10, { emoji: "👑", title: "Double Digits", subtitle: "Officially a legend" }],
-  [13, { emoji: "😈", title: "Bad Idea Incoming", subtitle: "This felt smart 12 drinks ago" }],
-  [15, { emoji: "🚀", title: "Liftoff", subtitle: "Houston, we have a party" }],
-  [20, { emoji: "☠️", title: "No Regrets", subtitle: "Tomorrow is a problem for tomorrow" }],
-  [25, { emoji: "🧟", title: "The Undead", subtitle: "Still vertical, technically" }],
-  [30, { emoji: "🪦", title: "Here Lies Tomorrow", subtitle: "RIP your morning" }],
+  [1, { emoji: "🍼", title: "And So It Begins", subtitle: "No turning back now", key: "begins" }],
+  [2, { emoji: "🐣", title: "Warming Up", subtitle: "Just getting loose", key: "warmingUp" }],
+  [3, { emoji: "🎯", title: "Hat-Trick", subtitle: "Three and thriving", key: "hatTrick" }],
+  [
+    5,
+    {
+      emoji: "🔥",
+      title: "On a Roll",
+      subtitle: "Who's counting? Oh right, we are",
+      key: "onARoll",
+    },
+  ],
+  [7, { emoji: "🎢", title: "No Brakes", subtitle: "Weeeee", key: "noBrakes" }],
+  [
+    10,
+    { emoji: "👑", title: "Double Digits", subtitle: "Officially a legend", key: "doubleDigits" },
+  ],
+  [
+    13,
+    {
+      emoji: "😈",
+      title: "Bad Idea Incoming",
+      subtitle: "This felt smart 12 drinks ago",
+      key: "badIdea",
+    },
+  ],
+  [15, { emoji: "🚀", title: "Liftoff", subtitle: "Houston, we have a party", key: "liftoff" }],
+  [
+    20,
+    {
+      emoji: "☠️",
+      title: "No Regrets",
+      subtitle: "Tomorrow is a problem for tomorrow",
+      key: "noRegrets",
+    },
+  ],
+  [
+    25,
+    { emoji: "🧟", title: "The Undead", subtitle: "Still vertical, technically", key: "undead" },
+  ],
+  [30, { emoji: "🪦", title: "Here Lies Tomorrow", subtitle: "RIP your morning", key: "hereLies" }],
 ];
 
 export function getBadgeForCount(total: number): Badge | null {
@@ -122,7 +154,7 @@ export function getDrinkAchievements(drinks: DrinkLike[]): Achievement[] {
   const achievements: Achievement[] = [];
   const categories = new Set(drinks.map((drink) => drink.category || "other"));
   const uniqueDrinks = drinks.length;
-  const total = drinks.reduce((sum, d) => sum + d.count, 0);
+  const total = drinks.reduce((sum, drink) => sum + drink.count, 0);
 
   if (categories.size >= 4) {
     achievements.push({ emoji: "🌈", text: "Rainbow drinker — 4+ categories!", key: "rainbow" });

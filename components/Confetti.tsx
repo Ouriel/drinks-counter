@@ -23,22 +23,22 @@ export function Confetti({ onDone }: { onDone: () => void }) {
   });
 
   useEffect(() => {
-    const t = setTimeout(() => onDoneRef.current(), 2500);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => onDoneRef.current(), 2500);
+    return () => clearTimeout(timer);
   }, []);
 
   return (
     <div className="fixed inset-0 pointer-events-none z-[60] overflow-hidden" aria-hidden="true">
-      {particles.map((p) => (
+      {particles.map((particle) => (
         <span
-          key={p.id}
+          key={particle.id}
           className="absolute text-2xl animate-confetti-fall"
           style={{
-            left: `${p.left}%`,
-            animationDelay: `${p.delay}s`,
+            left: `${particle.left}%`,
+            animationDelay: `${particle.delay}s`,
           }}
         >
-          {p.emoji}
+          {particle.emoji}
         </span>
       ))}
     </div>

@@ -566,15 +566,15 @@ export default function AdminPage() {
               capped at 20 drinks).
             </p>
             <div className="flex gap-2 mb-4">
-              {[0, 5, 10, 15, 20].map((n) => (
-                <div key={n} className="flex-1 text-center">
+              {[0, 5, 10, 15, 20].map((count) => (
+                <div key={count} className="flex-1 text-center">
                   <div
                     className="h-12 rounded-lg flex items-center justify-center border border-default-200"
-                    style={{ backgroundColor: getSessionHue(n, true) }}
+                    style={{ backgroundColor: getSessionHue(count, true) }}
                   >
-                    <Beer className="w-5 h-5" style={{ color: getIconColor(n, true) }} />
+                    <Beer className="w-5 h-5" style={{ color: getIconColor(count, true) }} />
                   </div>
-                  <p className="text-xs text-default-500 mt-1">{n === 20 ? "20+" : n}</p>
+                  <p className="text-xs text-default-500 mt-1">{count === 20 ? "20+" : count}</p>
                 </div>
               ))}
             </div>
