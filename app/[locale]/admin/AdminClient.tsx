@@ -174,6 +174,19 @@ export default function AdminPage() {
     loadTab("bars");
   }
 
+  async function emptyMenu(id: string) {
+    if (!confirm("Empty this bar's menu? All drink items will be removed (the bar is kept).")) {
+      return;
+    }
+    await fetch("/api/admin", {
+      method: "PATCH",
+      headers: { ...headers, "Content-Type": "application/json" },
+      body: JSON.stringify({ id, items: [] }),
+    });
+    if (editing === id) setEditing(null);
+    loadTab("bars");
+  }
+
   if (!authed) {
     return (
       <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-6">
@@ -249,6 +262,14 @@ export default function AdminPage() {
                       }}
                     >
                       Edit
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      isDisabled={menu.items.length === 0}
+                      onPress={() => emptyMenu(menu.id)}
+                    >
+                      Empty
                     </Button>
                     <Button
                       variant="ghost"
