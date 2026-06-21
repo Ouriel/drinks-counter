@@ -41,10 +41,27 @@ export const drinks = pgTable("drinks", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-const connectionString = process.env.POSTGRES_URL;
-if (!connectionString && process.env.NODE_ENV === "production") {
-  throw new Error("POSTGRES_URL environment variable is required");
+let cachedDb: ReturnType<typeof drizzle> | null = null;
+
+function getDb(): ReturnType<typeof drizzle> {
+  if (!cachedDb) {
+    const connectionString = process.env.POSTGRES_URL;
+    if (!connectionString) {
+      throw new Error("POSTGRES_URL environment variable is required");
+    }
+    cachedDb = drizzle(neon(connectionString));
+  }
+  return cachedDb;
 }
 
-const sql = neon(connectionString || "postgresql://localhost:5432/drinks");
-export const db = drizzle(sql);
+// Lazy proxy: the Neon client is created on first DB access (request time), never
+// at module load / build time. This avoids instantiating a connection during
+// `next build` (which triggers the @neondatabase/serverless websocket warning and
+// would otherwise require POSTGRES_URL at build time).
+export const db = new Proxy({} as ReturnType<typeof drizzle>, {
+  get(_target, prop) {
+    const real = getDb();
+    const value = Reflect.get(real as object, prop, real);
+    return typeof value === "function" ? value.bind(real) : value;
+  },
+});
