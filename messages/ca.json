@@ -160,7 +160,7 @@
     "offTheRails": "Sense frens",
     "sendHelp": "Demaneu ajuda",
     "info": "Què vol dir el ritme?",
-    "explain": "El ritme són les begudes per hora. Ritme social ≈ 1 beguda cada 30 minuts."
+    "explain": "El ritme són les begudes per hora. El teu ritme actual: {dph} begudes/hora."
   },
   "achievements": {
     "rainbow": "Has tastat l'arc de Sant Martí — 4+ categories",

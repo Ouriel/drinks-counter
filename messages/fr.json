@@ -160,7 +160,7 @@
     "offTheRails": "Plus de freins",
     "sendHelp": "Au secours",
     "info": "Ça veut dire quoi, le rythme ?",
-    "explain": "Le rythme, c'est ton nombre de verres par heure. Rythme social ≈ 1 verre toutes les 30 minutes."
+    "explain": "Le rythme, c'est ton nombre de verres par heure. Ton rythme actuel : {dph} verres/h."
   },
   "achievements": {
     "rainbow": "Tu as goûté l'arc-en-ciel — 4+ catégories",

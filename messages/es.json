@@ -160,7 +160,7 @@
     "offTheRails": "Sin frenos",
     "sendHelp": "Pedid ayuda",
     "info": "¿Qué significa el ritmo?",
-    "explain": "El ritmo son tus bebidas por hora. Ritmo social ≈ 1 bebida cada 30 minutos."
+    "explain": "El ritmo son tus bebidas por hora. Tu ritmo actual: {dph} bebidas/hora."
   },
   "achievements": {
     "rainbow": "Probaste el arcoíris — 4+ categorías",

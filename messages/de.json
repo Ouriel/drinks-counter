@@ -160,7 +160,7 @@
     "offTheRails": "Kein Halten mehr",
     "sendHelp": "Schickt Hilfe",
     "info": "Was bedeutet das Tempo?",
-    "explain": "Das Tempo sind deine Getränke pro Stunde. Geselliges Tempo ≈ 1 Getränk alle 30 Minuten."
+    "explain": "Das Tempo sind deine Getränke pro Stunde. Dein aktuelles Tempo: {dph} Getränke/Stunde."
   },
   "achievements": {
     "rainbow": "Den Regenbogen probiert — 4+ Kategorien",

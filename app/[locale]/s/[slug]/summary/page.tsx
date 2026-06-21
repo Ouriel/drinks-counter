@@ -232,7 +232,9 @@ export default function SummaryPage() {
                   <Popover.Content>
                     <Popover.Dialog>
                       <div className="px-3 py-2 max-w-[220px]">
-                        <p className="text-xs text-default-500">{t("pace.explain")}</p>
+                        <p className="text-xs text-default-500">
+                          {t("pace.explain", { dph: pace.dph })}
+                        </p>
                       </div>
                     </Popover.Dialog>
                   </Popover.Content>

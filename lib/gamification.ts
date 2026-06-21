@@ -65,7 +65,7 @@ export function getTipsyStyle(total: number): React.CSSProperties {
 
 // === PACE INDICATOR ===
 
-export type Pace = { emoji: string; label: string };
+export type Pace = { emoji: string; label: string; dph: number };
 
 // Drinks-per-hour thresholds. "Social Pace" = 1 drink every 30 min (2/h) is the reference.
 export const PACE_LEVELS: { maxDph: number; emoji: string; label: string }[] = [
@@ -95,7 +95,7 @@ export function getPace(drinks: DrinkLike[]): Pace | null {
   const dph = total / hours;
   const level =
     PACE_LEVELS.find((entry) => dph <= entry.maxDph) ?? PACE_LEVELS[PACE_LEVELS.length - 1];
-  return { emoji: level.emoji, label: level.label };
+  return { emoji: level.emoji, label: level.label, dph: Math.round(dph * 10) / 10 };
 }
 
 // === DRINK-SPECIFIC ACHIEVEMENTS ===

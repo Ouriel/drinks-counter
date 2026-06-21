@@ -160,7 +160,7 @@
     "offTheRails": "Senza freni",
     "sendHelp": "Aiuto",
     "info": "Cosa significa il ritmo?",
-    "explain": "Il ritmo è il numero di drink all'ora. Ritmo sociale ≈ 1 drink ogni 30 minuti."
+    "explain": "Il ritmo è il numero di drink all'ora. Il tuo ritmo attuale: {dph} drink/ora."
   },
   "achievements": {
     "rainbow": "Hai assaggiato l'arcobaleno — 4+ categorie",
