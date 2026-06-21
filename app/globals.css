@@ -45,6 +45,35 @@
   animation: wobble 0.5s ease-in-out;
 }
 
+/* Toasts as a full vertical list (all visible), overriding HeroUI's collapsed-
+   stack layout. HeroUI positions each toast absolutely and offsets it by
+   translate/scale with non-frontmost toasts clipped to the front toast's
+   height; React Aria itself just renders a list. We undo the stack so every
+   toast is fully visible, spaced by the provider's --gap. */
+@layer components {
+  .toast-region {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: var(--gap, 12px);
+    align-items: stretch;
+  }
+  .toast {
+    position: relative !important;
+    translate: none !important;
+    scale: none !important;
+  }
+  .toast:not([data-frontmost="true"]) {
+    height: auto !important;
+    overflow: visible !important;
+    pointer-events: auto;
+  }
+  .toast:hover .toast__close-button,
+  .toast:focus-within .toast__close-button {
+    pointer-events: auto;
+    opacity: 1;
+  }
+}
+
 .tipsy-vignette {
   position: relative;
 }
