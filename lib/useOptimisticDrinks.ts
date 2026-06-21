@@ -28,9 +28,13 @@ function notifyGamification(
   return !!badge || isPersonalBest;
 }
 
-export function useOptimisticDrinks(slug: string, onBadge?: () => void) {
-  const [drinks, setDrinks] = useState<Drink[]>([]);
-  const totalRef = useRef(0);
+export function useOptimisticDrinks(
+  slug: string,
+  onBadge?: () => void,
+  initialDrinks: Drink[] = []
+) {
+  const [drinks, setDrinks] = useState<Drink[]>(initialDrinks);
+  const totalRef = useRef(initialDrinks.reduce((sum, d) => sum + d.count, 0));
   const pendingOps = useRef(0);
 
   const fetchDrinks = useCallback(async () => {

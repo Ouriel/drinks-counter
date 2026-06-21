@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db, sessions, barMenus, tables, normalizeMenuItems } from "@/lib/db";
+import { db, sessions, barMenus, normalizeMenuItems } from "@/lib/db";
 import type { MenuItem } from "@/lib/types";
 import { generateSlug } from "@/lib/slugs";
 import { sanitizeBarName } from "@/lib/sanitize";
 import { eq } from "drizzle-orm";
 import { createSessionSchema, parseBody } from "@/lib/schemas";
+import { getSessionView } from "@/lib/server-queries";
 
 export async function POST(req: NextRequest) {
   let body: unknown;
@@ -84,39 +85,9 @@ export async function GET(req: NextRequest) {
   const slug = req.nextUrl.searchParams.get("slug");
   if (!slug) return NextResponse.json({ error: "Missing slug" }, { status: 400 });
 
-  const rows = await db
-    .select()
-    .from(sessions)
-    .leftJoin(barMenus, eq(sessions.barMenuId, barMenus.id))
-    .leftJoin(tables, eq(sessions.tableId, tables.id))
-    .where(eq(sessions.slug, slug))
-    .limit(1);
-
-  const row = rows[0];
-  if (!row || row.sessions.expiresAt < new Date()) {
+  const view = await getSessionView(slug);
+  if (!view) {
     return NextResponse.json({ error: "Session expired or not found" }, { status: 404 });
   }
-
-  const session = row.sessions;
-  const menu = row.bar_menus;
-
-  let menuItems: MenuItem[] = [];
-  let barNameResult: string | null = null;
-  if (menu) {
-    menuItems = normalizeMenuItems(menu.items);
-    barNameResult = menu.barName;
-  }
-
-  const tableCode: string | null = row.tables?.code ?? null;
-
-  return NextResponse.json({
-    session: {
-      id: session.id,
-      slug: session.slug,
-      barName: barNameResult,
-      tableCode,
-      nickname: session.nickname,
-    },
-    menuItems,
-  });
+  return NextResponse.json(view);
 }

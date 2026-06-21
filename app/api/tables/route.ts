@@ -4,6 +4,7 @@ import { eq, sql, and } from "drizzle-orm";
 import { z } from "zod";
 import { pickUniqueNickname } from "@/lib/nicknames";
 import { parseBody } from "@/lib/schemas";
+import { getTableStats } from "@/lib/server-queries";
 
 const createTableSchema = z.object({ slug: z.string().min(1).max(50) });
 const joinTableSchema = z.object({
@@ -138,19 +139,20 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Missing code or slug" }, { status: 400 });
   }
 
-  // Resolve the table from a code (public) or from a session slug (private, one round-trip).
-  let table: typeof tables.$inferSelect | undefined;
-  if (code) {
-    [table] = await db.select().from(tables).where(eq(tables.code, code.toUpperCase())).limit(1);
-  } else {
-    const rows = await db
-      .select()
-      .from(sessions)
-      .innerJoin(tables, eq(sessions.tableId, tables.id))
-      .where(eq(sessions.slug, slug as string))
-      .limit(1);
-    table = rows[0]?.tables;
+  // Aggregated stats: resolved from a public code or a private session slug (shared query).
+  if (req.nextUrl.searchParams.get("stats")) {
+    const stats = await getTableStats({ code, slug });
+    if (!stats) return NextResponse.json({ error: "Table not found" }, { status: 404 });
+    return NextResponse.json(stats);
   }
+
+  // The ranking + member-drinks paths are always called with a public table code.
+  if (!code) return NextResponse.json({ error: "Missing code" }, { status: 400 });
+  const [table] = await db
+    .select()
+    .from(tables)
+    .where(eq(tables.code, code.toUpperCase()))
+    .limit(1);
   if (!table) return NextResponse.json({ error: "Table not found" }, { status: 404 });
 
   // If nickname param is provided, return that member's drinks
@@ -168,63 +170,6 @@ export async function GET(req: NextRequest) {
       .where(eq(drinks.sessionId, session.id))
       .orderBy(sql`${drinks.count} DESC`);
     return NextResponse.json({ drinks: memberDrinks });
-  }
-
-  // If stats param is provided, return aggregated table statistics
-  if (req.nextUrl.searchParams.get("stats")) {
-    const statsMembers = await db
-      .select({
-        nickname: sessions.nickname,
-        total: sql<number>`COALESCE(SUM(${drinks.count}), 0)::int`,
-      })
-      .from(sessions)
-      .leftJoin(drinks, eq(drinks.sessionId, sessions.id))
-      .where(eq(sessions.tableId, table.id))
-      .groupBy(sessions.id, sessions.nickname)
-      .orderBy(sql`COALESCE(SUM(${drinks.count}), 0) DESC`, sessions.nickname);
-
-    const byCategory = await db
-      .select({
-        category: drinks.category,
-        count: sql<number>`SUM(${drinks.count})::int`,
-      })
-      .from(drinks)
-      .innerJoin(sessions, eq(drinks.sessionId, sessions.id))
-      .where(eq(sessions.tableId, table.id))
-      .groupBy(drinks.category);
-
-    const topDrinks = await db
-      .select({
-        name: drinks.name,
-        category: drinks.category,
-        count: sql<number>`SUM(${drinks.count})::int`,
-      })
-      .from(drinks)
-      .innerJoin(sessions, eq(drinks.sessionId, sessions.id))
-      .where(eq(sessions.tableId, table.id))
-      .groupBy(drinks.name, drinks.category)
-      .orderBy(sql`SUM(${drinks.count}) DESC`)
-      .limit(8);
-
-    const total = byCategory.reduce((sum, row) => sum + Number(row.count), 0);
-
-    return NextResponse.json({
-      code: table.code,
-      total,
-      members: statsMembers.map((member) => ({
-        nickname: member.nickname || "???",
-        total: Number(member.total),
-      })),
-      byCategory: byCategory.map((row) => ({
-        category: row.category || "other",
-        count: Number(row.count),
-      })),
-      topDrinks: topDrinks.map((row) => ({
-        name: row.name,
-        category: row.category,
-        count: Number(row.count),
-      })),
-    });
   }
 
   const members = await db
