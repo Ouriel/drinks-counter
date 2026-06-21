@@ -5,7 +5,8 @@ import { useParams } from "next/navigation";
 import { Button, Card, Chip, Spinner } from "@heroui/react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { CATEGORY_EMOJI, isAlcoholic } from "@/lib/constants";
+import { isAlcoholic } from "@/lib/constants";
+import { CategoryIcon } from "@/lib/category-icon";
 import { Users, Beer } from "lucide-react";
 import { formatNickname } from "@/lib/nicknames";
 import { api } from "@/lib/api";
@@ -114,7 +115,10 @@ export default function TableSummaryPage() {
                 .sort((a, b) => b.count - a.count)
                 .map((row) => (
                   <Chip key={row.category} size="md">
-                    {CATEGORY_EMOJI[row.category] || "🍹"} {tCat(row.category)} ×{row.count}
+                    <span className="flex items-center gap-1">
+                      <CategoryIcon category={row.category} className="w-3.5 h-3.5" />
+                      {tCat(row.category)} ×{row.count}
+                    </span>
                   </Chip>
                 ))}
             </div>
@@ -150,8 +154,9 @@ export default function TableSummaryPage() {
                     key={`${drink.name}-${drink.category}`}
                     className="flex justify-between text-sm px-2 py-1"
                   >
-                    <span>
-                      {CATEGORY_EMOJI[drink.category || "other"] || "🍹"} {drink.name}
+                    <span className="flex items-center gap-2">
+                      <CategoryIcon category={drink.category} className="w-4 h-4 shrink-0" />
+                      {drink.name}
                     </span>
                     <span className="font-bold">×{drink.count}</span>
                   </div>
@@ -159,8 +164,6 @@ export default function TableSummaryPage() {
               </div>
             </>
           )}
-
-          <p className="text-center text-xs text-default-500 mt-6">tipsy-tap.vercel.app</p>
         </div>
       </Card>
     </div>

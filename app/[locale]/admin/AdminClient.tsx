@@ -3,8 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import { Button, Input, Card } from "@heroui/react";
 import { useTranslations } from "next-intl";
-import { CATEGORIES, CATEGORY_EMOJI } from "@/lib/constants";
+import { CATEGORIES } from "@/lib/constants";
 import { formatNickname } from "@/lib/nicknames";
+import { CategoryIcon } from "@/lib/category-icon";
 import { Camera, Wine, ClipboardList, Users } from "lucide-react";
 import type { MenuItem } from "@/lib/types";
 
@@ -371,8 +372,9 @@ export default function AdminPage() {
                           key={drink.name}
                           className="flex justify-between text-sm border-t border-default-100 pt-1"
                         >
-                          <span>
-                            {CATEGORY_EMOJI[drink.category || "other"] || "🍹"} {drink.name}
+                          <span className="flex items-center gap-2">
+                            <CategoryIcon category={drink.category} className="w-4 h-4 shrink-0" />
+                            {drink.name}
                           </span>
                           <span className="font-bold tabular-nums">×{drink.count}</span>
                         </div>

@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { Button, Card, Chip, Spinner, Popover } from "@heroui/react";
+import { Button, Card, Chip, Spinner, Popover, toast } from "@heroui/react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { Share2, Copy, Info, Beer, Medal, Clock } from "lucide-react";
+import { Share2, Info, Beer, Medal, Clock } from "lucide-react";
 import { CATEGORY_EMOJI, isAlcoholic } from "@/lib/constants";
+import { CategoryIcon } from "@/lib/category-icon";
 import { titleCase } from "@/lib/sanitize";
 import {
   getAllEarnedBadges,
@@ -26,15 +27,7 @@ export default function SummaryPage() {
   const [barName, setBarName] = useState("");
   const [loading, setLoading] = useState(true);
   const [expired, setExpired] = useState(false);
-  const [copied, setCopied] = useState(false);
   const [showTimeline, setShowTimeline] = useState(false);
-  const copiedTimeout = useRef<NodeJS.Timeout>(null);
-
-  useEffect(() => {
-    return () => {
-      if (copiedTimeout.current) clearTimeout(copiedTimeout.current);
-    };
-  }, []);
 
   useEffect(() => {
     async function load() {
@@ -153,19 +146,16 @@ export default function SummaryPage() {
       .join("\n");
   }
 
-  function copyAsText() {
-    navigator.clipboard.writeText(buildSummaryText());
-    setCopied(true);
-    copiedTimeout.current = setTimeout(() => setCopied(false), 2000);
-  }
-
   function shareSummary() {
-    // Privacy: share the text recap + public site URL only — never the private session slug.
+    // Privacy: share the text recap (which includes the public site URL) only —
+    // never the private session slug. On desktop without the Web Share API, fall
+    // back to copying the text to the clipboard.
     const text = buildSummaryText();
     if (navigator.share) {
       navigator.share({ title: t("app.title"), text }).catch(() => {});
     } else {
-      copyAsText();
+      navigator.clipboard.writeText(text);
+      toast(t("summary.copied"));
     }
   }
 
@@ -254,7 +244,10 @@ export default function SummaryPage() {
                 .sort((a, b) => b[1] - a[1])
                 .map(([cat, count]) => (
                   <Chip key={cat} size="md">
-                    {CATEGORY_EMOJI[cat] || "🍹"} {tCat(cat)} ×{count}
+                    <span className="flex items-center gap-1">
+                      <CategoryIcon category={cat} className="w-3.5 h-3.5" />
+                      {tCat(cat)} ×{count}
+                    </span>
                   </Chip>
                 ))}
             </div>
@@ -346,9 +339,7 @@ export default function SummaryPage() {
                           <div className="w-3 h-3 rounded-full border-2 border-primary bg-background shrink-0" />
                           <div className="flex-1 bg-default-100 rounded-xl px-3 py-2 flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                              <span className="text-base">
-                                {CATEGORY_EMOJI[entry.category || "other"] || "🍹"}
-                              </span>
+                              <CategoryIcon category={entry.category} className="w-4 h-4" />
                               <span className="text-sm font-medium">{entry.name}</span>
                             </div>
                             <span className="text-xs text-default-400 font-mono tabular-nums">
@@ -371,25 +362,20 @@ export default function SummaryPage() {
               .slice(0, 5)
               .map((drink) => (
                 <div key={drink.name} className="flex justify-between text-sm px-2 py-1">
-                  <span>
-                    {CATEGORY_EMOJI[drink.category || "other"] || "🍹"} {drink.name}
+                  <span className="flex items-center gap-2">
+                    <CategoryIcon category={drink.category} className="w-4 h-4 shrink-0" />
+                    {drink.name}
                   </span>
                   <span className="font-bold">×{drink.count}</span>
                 </div>
               ))}
           </div>
 
-          <p className="text-center text-xs text-default-500 mt-6">tipsy-tap.vercel.app</p>
-
           {/* Actions */}
-          <div className="flex justify-center gap-3 mt-4">
+          <div className="flex justify-center gap-3 mt-6">
             <Button variant="primary" className="gap-1" onPress={shareSummary}>
               <Share2 className="w-4 h-4" />
               {t("summary.share")}
-            </Button>
-            <Button variant="ghost" className="gap-1" onPress={copyAsText}>
-              <Copy className="w-4 h-4" />
-              {copied ? t("summary.copied") : t("summary.copyText")}
             </Button>
           </div>
         </div>

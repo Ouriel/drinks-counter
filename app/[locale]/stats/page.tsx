@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { db, barMenus, sessions, drinks, normalizeMenuItems } from "@/lib/db";
 import { sql, count, desc, gt } from "drizzle-orm";
-import { CATEGORY_EMOJI } from "@/lib/constants";
+import { CategoryIcon } from "@/lib/category-icon";
 import { ChartColumn, Beer, Martini } from "lucide-react";
 import Link from "next/link";
 
@@ -128,7 +128,7 @@ export default async function StatsPage() {
                 key={c.category || "other"}
                 className="bg-default-100 rounded-lg px-3 py-2 flex items-center gap-2"
               >
-                <span className="text-lg">{CATEGORY_EMOJI[c.category || "other"] || "🍹"}</span>
+                <CategoryIcon category={c.category} className="w-5 h-5 shrink-0" />
                 <span className="text-sm flex-1">{tCat(c.category || "other")}</span>
                 <span className="font-bold tabular-nums">{c.total}</span>
               </div>
@@ -171,8 +171,9 @@ export default async function StatsPage() {
               <span className="text-default-500 shrink-0">{i + 1}.</span>
               <span className="truncate">{bar.barName}</span>
               {bar.topCategory && (
-                <span className="text-default-500 text-sm shrink-0 ml-1">
-                  {CATEGORY_EMOJI[bar.topCategory] || "🍹"} {tCat(bar.topCategory)}
+                <span className="text-default-500 text-sm shrink-0 ml-1 flex items-center gap-1">
+                  <CategoryIcon category={bar.topCategory} className="w-3.5 h-3.5" />
+                  {tCat(bar.topCategory)}
                 </span>
               )}
             </div>

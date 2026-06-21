@@ -4,12 +4,8 @@ import { useRef } from "react";
 import { Card, Chip } from "@heroui/react";
 import { useLongPress } from "react-aria";
 import { useTranslations } from "next-intl";
-import { CATEGORY_EMOJI } from "@/lib/constants";
+import { CategoryIcon } from "@/lib/category-icon";
 import type { Drink } from "@/lib/types";
-
-function categoryEmoji(cat: string | null): string {
-  return CATEGORY_EMOJI[cat || "other"] || "🍹";
-}
 
 export function DrinkCard({
   drink,
@@ -49,7 +45,9 @@ export function DrinkCard({
         aria-label={t("aria", { name: drink.name, count: drink.count })}
       >
         <div className="flex items-center gap-2 min-w-0 flex-1">
-          <Chip size="sm">{categoryEmoji(drink.category)}</Chip>
+          <Chip size="sm">
+            <CategoryIcon category={drink.category} className="w-4 h-4" />
+          </Chip>
           <span className="text-base font-medium break-words line-clamp-2">{drink.name}</span>
         </div>
         <div className="flex items-center gap-2">

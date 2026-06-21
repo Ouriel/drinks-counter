@@ -3,7 +3,8 @@
 import { useState, useEffect, useRef } from "react";
 import { Button, Input, Card, Chip } from "@heroui/react";
 import { useTranslations } from "next-intl";
-import { CATEGORY_EMOJI, CATEGORIES } from "@/lib/constants";
+import { CATEGORIES } from "@/lib/constants";
+import { CategoryIcon } from "@/lib/category-icon";
 import { Camera } from "lucide-react";
 import type { Drink, MenuItem } from "@/lib/types";
 
@@ -118,7 +119,7 @@ export function DrinkPicker({
             >
               {CATEGORIES.map((category) => (
                 <option key={category} value={category}>
-                  {CATEGORY_EMOJI[category]} {tCat(category)}
+                  {tCat(category)}
                 </option>
               ))}
             </select>
@@ -143,8 +144,9 @@ export function DrinkPicker({
                     onClick={() => onSelect(drink.name, drink.category || undefined)}
                     className="w-full text-left p-3 cursor-pointer flex justify-between"
                   >
-                    <span>
-                      {CATEGORY_EMOJI[drink.category || "other"] || "🍹"} {drink.name}
+                    <span className="flex items-center gap-2">
+                      <CategoryIcon category={drink.category} className="w-4 h-4 shrink-0" />
+                      {drink.name}
                     </span>
                     <span className="text-default-500">×{drink.count}</span>
                   </button>
@@ -157,7 +159,9 @@ export function DrinkPicker({
         {Object.entries(grouped).map(([category, items]) => (
           <div key={category} className="mb-4">
             <div className="flex items-center gap-2 mb-2">
-              <Chip size="sm">{CATEGORY_EMOJI[category] || "🍹"}</Chip>
+              <Chip size="sm">
+                <CategoryIcon category={category} className="w-4 h-4" />
+              </Chip>
               <span className="text-sm text-default-500 uppercase">{tCat(category)}</span>
             </div>
             <div className="space-y-1">

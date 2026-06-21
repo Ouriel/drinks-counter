@@ -9,7 +9,7 @@ import { ChartColumn, MapPin, Camera, Beer } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
 import { ThemeSwitch } from "@/lib/theme-switch";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
-import { CATEGORY_EMOJI } from "@/lib/constants";
+import { CategoryIcon } from "@/lib/category-icon";
 import { api } from "@/lib/api";
 
 export default function Home() {
@@ -399,7 +399,9 @@ function HomeContent() {
           {menuItems.map((item, idx) => (
             <Card key={idx}>
               <div className="px-3 py-2 flex items-center gap-2">
-                <Chip size="sm">{CATEGORY_EMOJI[item.category] || "🍹"}</Chip>
+                <Chip size="sm">
+                  <CategoryIcon category={item.category} className="w-4 h-4" />
+                </Chip>
                 <input
                   type="text"
                   value={item.name}
