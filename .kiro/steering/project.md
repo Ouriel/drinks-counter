@@ -25,8 +25,12 @@ Mobile-first web app to count drinks during a night out. Users snap a bar menu p
 app/
 ├── page.tsx                       # Home: new evening flow (bar search → photo → review)
 ├── layout.tsx                     # Root layout, Toast.Provider, PwaInstallPrompt
-├── s/[slug]/page.tsx              # Session page: drink counter UI
-├── s/[slug]/summary/page.tsx      # Evening summary (screenshot-friendly)
+├── s/[slug]/page.tsx              # Session: server wrapper (fetches initial data, server-queries)
+├── s/[slug]/SessionClient.tsx     # Session counter UI (client, inits state from props)
+├── s/[slug]/summary/page.tsx      # Summary: server wrapper
+├── s/[slug]/summary/SummaryClient.tsx        # Evening summary UI (client)
+├── s/[slug]/table-summary/page.tsx           # Table summary: server wrapper
+├── s/[slug]/table-summary/TableSummaryClient.tsx  # Table summary UI (client)
 ├── s/[slug]/error.tsx             # Error boundary
 ├── admin/page.tsx                 # Admin: manage bar menus (ADMIN_SECRET)
 ├── stats/page.tsx                 # Public stats
@@ -41,7 +45,8 @@ app/
 lib/
 ├── types.ts                       # Canonical types: Drink, MenuItem
 ├── api.ts                         # Typed fetch client with Zod response validation
-├── useOptimisticDrinks.ts         # Hook: drinks state + optimistic updates + gamification
+├── server-queries.ts              # Server-only data access (getSessionView/Drinks, getTableStats) shared by API routes + server pages
+├── useOptimisticDrinks.ts         # Hook: drinks state + optimistic updates + gamification (accepts initialDrinks)
 ├── db.ts                          # Drizzle schema (bar_menus, sessions, drinks, tables)
 ├── schemas.ts                     # Zod input validation for API routes
 ├── menu-items.ts                  # normalizeMenuItems() with runtime JSONB validation
@@ -78,6 +83,13 @@ components/
 - Use refs (`onCloseRef` pattern) to stabilize callback deps in useEffects
 - Declaration order: useState → custom hooks → variables → useMemo → useCallback → useEffect
 - One component per file
+
+### Data Fetching & Rendering
+
+- The session pages (`s/[slug]`, `/summary`, `/table-summary`) are **server components** (`page.tsx`) that fetch initial data via `lib/server-queries.ts` during the server render and pass it as props to a client component (`*Client.tsx`). This avoids the spinner-then-fetch-after-hydration waterfall — pages arrive populated.
+- `lib/server-queries.ts` is **server-only** (it imports `lib/db.ts`). It holds the query logic shared by BOTH the API routes and the server pages, so the API response shapes stay identical to what the server pages pass (client-side updates/polling keep working unchanged).
+- Client components initialize `useState` from props — never re-fetch on mount what the server already provided. `useOptimisticDrinks(slug, onBadge, initialDrinks)` seeds its state from the server data.
+- Code-split interaction-only components (`DrinkPicker`, `Confetti`, `QrCode`) with `next/dynamic` so their code (and deps like `qrcode-generator`) stays out of the initial hydration bundle.
 
 ### Naming
 

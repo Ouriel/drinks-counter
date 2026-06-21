@@ -7,7 +7,7 @@ Drinks counter PWA. Next.js 16 + HeroUI v3 + Neon Postgres + Gemini AI. Strict T
 ## Before Making Changes
 
 1. `npx tsc --noEmit` — must pass clean
-2. `npm test` — 70 tests, all must pass
+2. `npm test` — 76 tests, all must pass
 3. `npx prettier --write` on every file you touch
 4. Check `lib/types.ts` before defining any type locally
 
@@ -28,6 +28,13 @@ Drinks counter PWA. Next.js 16 + HeroUI v3 + Neon Postgres + Gemini AI. Strict T
 - Declaration order: useState → hooks → variables → useMemo → useCallback → useEffect
 - No abbreviated params: `(event)` not `(e)`, `(item)` not `(d)`, `(word)` not `(w)`
 
+### Rendering & Data Fetching
+
+- Session pages (`s/[slug]`, `/summary`, `/table-summary`) are server components (`page.tsx`) that fetch initial data via `lib/server-queries.ts` and pass it to a `*Client.tsx` component. No spinner-then-fetch-after-hydration.
+- `lib/server-queries.ts` is server-only (imports `lib/db.ts`); it's the single source of query logic shared by the API routes AND the server pages, so API response shapes stay identical (client polling/updates unaffected).
+- Client components init `useState` from props — never re-fetch on mount what the server provided.
+- Code-split interaction-only components (`DrinkPicker`, `Confetti`, `QrCode`) with `next/dynamic`.
+
 ### UI
 
 - All notifications via `toast()` from `@heroui/react` — never custom toast components
@@ -44,15 +51,16 @@ Drinks counter PWA. Next.js 16 + HeroUI v3 + Neon Postgres + Gemini AI. Strict T
 
 ## Key Files
 
-| File                         | Role                                                          |
-| ---------------------------- | ------------------------------------------------------------- |
-| `lib/types.ts`               | Canonical Drink, MenuItem types                               |
-| `lib/api.ts`                 | Typed fetch client + Zod response schemas                     |
-| `lib/useOptimisticDrinks.ts` | Hook: drinks state + optimistic updates + undo + gamification |
-| `lib/schemas.ts`             | Zod input validation for all API routes                       |
-| `lib/gamification.ts`        | Pure functions: badges, pace, nudges, achievements            |
-| `app/layout.tsx`             | Toast.Provider + PwaInstallPrompt                             |
-| `app/s/[slug]/error.tsx`     | Error boundary                                                |
+| File                         | Role                                                                                  |
+| ---------------------------- | ------------------------------------------------------------------------------------- |
+| `lib/types.ts`               | Canonical Drink, MenuItem types                                                       |
+| `lib/api.ts`                 | Typed fetch client + Zod response schemas                                             |
+| `lib/server-queries.ts`      | Server-only data access shared by API routes + server pages                           |
+| `lib/useOptimisticDrinks.ts` | Hook: drinks state + optimistic updates + undo + gamification (accepts initialDrinks) |
+| `lib/schemas.ts`             | Zod input validation for all API routes                                               |
+| `lib/gamification.ts`        | Pure functions: badges, pace, nudges, achievements                                    |
+| `app/layout.tsx`             | Toast.Provider + PwaInstallPrompt                                                     |
+| `app/s/[slug]/error.tsx`     | Error boundary                                                                        |
 
 ## Common Mistakes to Avoid
 

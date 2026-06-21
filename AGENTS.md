@@ -10,7 +10,7 @@ Mobile-first drinks counter app. Users snap a bar menu photo, AI extracts drinks
 - HeroUI v3 (Card, Button, Chip, Spinner, Input, toast) + Tailwind CSS 4
 - Neon Postgres + Drizzle ORM
 - Vercel AI SDK + Google Gemini 2.5 Flash Lite
-- Vitest (70 tests), ESLint 9, Prettier, Husky
+- Vitest (76 tests), ESLint 9, Prettier, Husky
 
 ## Code Standards
 
@@ -38,7 +38,8 @@ Mobile-first drinks counter app. Users snap a bar menu photo, AI extracts drinks
 ```
 lib/types.ts              → Canonical Drink, MenuItem types
 lib/api.ts                → Typed fetch + Zod response schemas
-lib/useOptimisticDrinks.ts → Hook: state + optimistic updates + undo + gamification
+lib/server-queries.ts     → Server-only data access shared by API routes + server pages
+lib/useOptimisticDrinks.ts → Hook: state + optimistic updates + undo + gamification (accepts initialDrinks)
 lib/schemas.ts            → Zod input validation for API routes
 lib/gamification.ts       → Pure functions: badges, pace, nudges, achievements
 components/DrinkCard.tsx  → react-aria useLongPress (not manual timers)
@@ -49,6 +50,7 @@ app/s/[slug]/error.tsx    → Error boundary
 
 ## Key Patterns
 
+- **Server-rendered pages**: session pages are server components (`page.tsx`) that fetch via `lib/server-queries.ts` and pass initial data to a `*Client.tsx`; the client inits state from props (no fetch-on-mount). Interaction-only components (`DrinkPicker`, `Confetti`, `QrCode`) are `next/dynamic`.
 - **Optimistic updates**: `useOptimisticDrinks` hook handles all drink mutations with rollback
 - **Gamification**: triggered inline in event handlers (not useEffect), fires confetti via `onBadge` callback
 - **TableView**: syncs with parent prop changes, polls every 60s with visibility check
@@ -59,7 +61,7 @@ app/s/[slug]/error.tsx    → Error boundary
 ## Commands
 
 ```bash
-npm test             # 70 tests
+npm test             # 76 tests
 npx tsc --noEmit    # Type check
 npm run format:check # Prettier
 npm run lint         # ESLint

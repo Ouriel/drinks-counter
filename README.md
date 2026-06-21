@@ -25,7 +25,7 @@ Mobile-first web app to count drinks during a night out. Snap a bar menu photo, 
 | Database   | Neon Postgres + Drizzle ORM                  |
 | AI         | Vercel AI SDK + Google Gemini 2.5 Flash Lite |
 | Deploy     | Vercel (free tier)                           |
-| Test       | Vitest (70 tests)                            |
+| Test       | Vitest (76 tests)                            |
 | Lint       | ESLint 9 + Prettier                          |
 | Pre-commit | Husky + lint-staged                          |
 
@@ -34,8 +34,8 @@ Mobile-first web app to count drinks during a night out. Snap a bar menu photo, 
 ```
 app/
 ├── page.tsx                       # Home: new evening flow (bar search → photo → review)
-├── s/[slug]/page.tsx              # Session: drink counter UI
-├── s/[slug]/summary/page.tsx      # Evening summary (screenshot-friendly)
+├── s/[slug]/page.tsx              # Session: server wrapper → SessionClient (drink counter UI)
+├── s/[slug]/summary/page.tsx      # Summary: server wrapper → SummaryClient (screenshot-friendly)
 ├── admin/page.tsx                 # Admin: manage bar menus
 ├── stats/page.tsx                 # Public stats (top drinks, categories)
 └── api/
@@ -49,6 +49,7 @@ app/
 
 lib/
 ├── db.ts                          # Drizzle schema + DB connection
+├── server-queries.ts              # Server-only data access (shared by API routes + server pages)
 ├── menu-items.ts                  # MenuItem type + normalizeMenuItems()
 ├── ai.ts                          # Configurable AI provider (gemini/groq)
 ├── slugs.ts                       # Fun slug generator

@@ -58,13 +58,13 @@ export async function getSessionDrinks(slug: string): Promise<Drink[]> {
     .from(drinksTable)
     .innerJoin(sessions, eq(drinksTable.sessionId, sessions.id))
     .where(eq(sessions.slug, slug));
-  return rows.map((r) => ({
-    id: r.drink.id,
-    name: r.drink.name,
-    count: r.drink.count,
-    category: r.drink.category,
-    tappedAt: r.drink.tappedAt,
-    createdAt: r.drink.createdAt.toISOString(),
+  return rows.map((row) => ({
+    id: row.drink.id,
+    name: row.drink.name,
+    count: row.drink.count,
+    category: row.drink.category,
+    tappedAt: row.drink.tappedAt,
+    createdAt: row.drink.createdAt.toISOString(),
   }));
 }
 
@@ -137,15 +137,18 @@ export async function getTableStats(opts: {
   return {
     code: table.code,
     total,
-    members: statsMembers.map((m) => ({ nickname: m.nickname || "???", total: Number(m.total) })),
-    byCategory: byCategory.map((r) => ({
-      category: r.category || "other",
-      count: Number(r.count),
+    members: statsMembers.map((member) => ({
+      nickname: member.nickname || "???",
+      total: Number(member.total),
     })),
-    topDrinks: topDrinks.map((r) => ({
-      name: r.name,
-      category: r.category,
-      count: Number(r.count),
+    byCategory: byCategory.map((row) => ({
+      category: row.category || "other",
+      count: Number(row.count),
+    })),
+    topDrinks: topDrinks.map((row) => ({
+      name: row.name,
+      category: row.category,
+      count: Number(row.count),
     })),
   };
 }
