@@ -59,7 +59,8 @@
     "expired": "Session expirée",
     "expiredMessage": "Cette session a expiré (limite 48h). Commence une nouvelle soirée !",
     "newEvening": "Nouvelle soirée",
-    "timeline": "Timeline"
+    "timeline": "Timeline",
+    "foodCount": "{count} à manger"
   },
   "table": {
     "title": "Table",
@@ -177,7 +178,9 @@
     "designatedDriver": "Capitaine de soirée — 0 alcool, respect",
     "hydrationHero": "Sponsorisé par l'eau",
     "happyHour": "Roi de l'apéro — démarré avant 19h",
-    "liverWarning": "Ton foie a porté plainte"
+    "liverWarning": "Ton foie a porté plainte",
+    "ateFood": "Estomac calé — t'as mangé un truc, bravo",
+    "noFood": "Dîner liquide — manger, c'est tricher"
   },
   "nudges": {
     "water": "Un verre d'eau ?",

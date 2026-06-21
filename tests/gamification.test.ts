@@ -123,4 +123,21 @@ describe("getDrinkAchievements", () => {
     expect(achievements.some((item) => item.key === "hydrationHero")).toBe(true);
     expect(achievements.some((item) => item.key === "designatedDriver")).toBe(false);
   });
+
+  it("returns ateFood when a food item is logged", () => {
+    const drinks = [
+      { id: "1", name: "beer", count: 2, category: "beer" },
+      { id: "2", name: "fries", count: 1, category: "food" },
+    ];
+    const achievements = getDrinkAchievements(drinks);
+    expect(achievements.some((item) => item.key === "ateFood")).toBe(true);
+    expect(achievements.some((item) => item.key === "noFood")).toBe(false);
+  });
+
+  it("returns noFood with 5+ alcoholic drinks and no food", () => {
+    const drinks = [{ id: "1", name: "beer", count: 5, category: "beer" }];
+    const achievements = getDrinkAchievements(drinks);
+    expect(achievements.some((item) => item.key === "noFood")).toBe(true);
+    expect(achievements.some((item) => item.key === "ateFood")).toBe(false);
+  });
 });

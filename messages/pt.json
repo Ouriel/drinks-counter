@@ -59,7 +59,8 @@
     "back": "Voltar",
     "expired": "Sessão expirada",
     "expiredMessage": "Esta sessão expirou (limite de 48h). Começa uma nova noite para continuar a contar!",
-    "newEvening": "Nova noite"
+    "newEvening": "Nova noite",
+    "foodCount": "{count} comida"
   },
   "table": {
     "title": "Mesa",
@@ -177,7 +178,9 @@
     "designatedDriver": "Herói da noite — zero álcool, respeito",
     "hydrationHero": "Patrocinado pela água",
     "happyHour": "Herói do happy hour — antes das 19h",
-    "liverWarning": "O teu fígado apresentou queixa"
+    "liverWarning": "O teu fígado apresentou queixa",
+    "ateFood": "Estômago forrado — comeste alguma coisa",
+    "noFood": "Jantar líquido — quem precisa de comida"
   },
   "nudges": {
     "water": "Pausa para água?",

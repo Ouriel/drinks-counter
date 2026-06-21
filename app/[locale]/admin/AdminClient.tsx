@@ -32,6 +32,8 @@ const ACHIEVEMENTS_GUIDE: { emoji: string; name: string; how: string }[] = [
   { emoji: "🗺️", name: "Can't sit still", how: "10+ different drinks" },
   { emoji: "🧃", name: "Designated hero", how: "3+ drinks, all alcohol-free" },
   { emoji: "💧", name: "Sponsored by water", how: "Had alcohol + 3 or more non-alcoholic drinks" },
+  { emoji: "🍔", name: "Lined the stomach", how: "Logged at least one food item" },
+  { emoji: "🍟", name: "Liquid dinner", how: "5+ alcoholic drinks and no food logged" },
   { emoji: "⭐", name: "Your usual", how: "One drink ordered 4+ times" },
   { emoji: "💎", name: "In a relationship", how: "One drink ordered 7+ times" },
   { emoji: "🎲", name: "Chaos mode", how: "4+ drinks, never the same one twice" },

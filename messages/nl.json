@@ -59,7 +59,8 @@
     "back": "Terug",
     "expired": "Sessie verlopen",
     "expiredMessage": "Deze sessie is verlopen (limiet van 48 uur). Start een nieuwe avond om verder te tellen!",
-    "newEvening": "Nieuwe avond"
+    "newEvening": "Nieuwe avond",
+    "foodCount": "{count} eten"
   },
   "table": {
     "title": "Tafel",
@@ -177,7 +178,9 @@
     "designatedDriver": "Held van de avond — nul alcohol, respect",
     "hydrationHero": "Gesponsord door water",
     "happyHour": "Borrelheld — begonnen voor 19u",
-    "liverWarning": "Je lever heeft een klacht ingediend"
+    "liverWarning": "Je lever heeft een klacht ingediend",
+    "ateFood": "Bodempje gelegd — je hebt echt gegeten",
+    "noFood": "Vloeibaar diner — wie heeft er eten nodig"
   },
   "nudges": {
     "water": "Watertijd?",

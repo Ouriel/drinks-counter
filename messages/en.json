@@ -59,7 +59,8 @@
     "back": "Back",
     "expired": "Session expired",
     "expiredMessage": "This session has expired (48h limit). Start a new evening to keep counting!",
-    "newEvening": "New evening"
+    "newEvening": "New evening",
+    "foodCount": "{count} food"
   },
   "table": {
     "title": "Table",
@@ -177,7 +178,9 @@
     "designatedDriver": "Designated hero — zero alcohol, all respect",
     "hydrationHero": "Sponsored by water",
     "happyHour": "Happy hour hero — started before 7pm",
-    "liverWarning": "Your liver filed a complaint"
+    "liverWarning": "Your liver filed a complaint",
+    "ateFood": "Lined the stomach — you actually ate",
+    "noFood": "Liquid dinner — who needs food anyway"
   },
   "nudges": {
     "water": "Water break?",

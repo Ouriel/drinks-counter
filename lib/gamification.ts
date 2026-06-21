@@ -151,17 +151,38 @@ export function getDrinkAchievements(drinks: DrinkLike[]): Achievement[] {
     0
   );
   const alcoholicTotal = total - nonAlcoholicTotal;
-  if (total >= 3 && alcoholicTotal === 0) {
+  const foodTotal = drinks.reduce(
+    (sum, drink) => sum + (drink.category === "food" ? drink.count : 0),
+    0
+  );
+  const nonAlcoholicDrinks = nonAlcoholicTotal - foodTotal; // non-alcoholic, food excluded
+  const drinkTotal = total - foodTotal; // drinks only (no food)
+  if (drinkTotal >= 3 && alcoholicTotal === 0) {
     achievements.push({
       emoji: "🧃",
       text: "Designated driver — all alcohol-free, respect!",
       key: "designatedDriver",
     });
-  } else if (alcoholicTotal > 0 && nonAlcoholicTotal >= 3) {
+  } else if (alcoholicTotal > 0 && nonAlcoholicDrinks >= 3) {
     achievements.push({
       emoji: "💧",
       text: "Hydration hero — kept the water flowing",
       key: "hydrationHero",
+    });
+  }
+
+  // Food: lining your stomach (good) vs drinking on an empty stomach (a classic mistake)
+  if (foodTotal > 0) {
+    achievements.push({
+      emoji: "🍔",
+      text: "Lined the stomach — you actually ate",
+      key: "ateFood",
+    });
+  } else if (alcoholicTotal >= 5) {
+    achievements.push({
+      emoji: "🍟",
+      text: "Liquid dinner — who needs food anyway",
+      key: "noFood",
     });
   }
 

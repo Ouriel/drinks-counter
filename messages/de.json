@@ -59,7 +59,8 @@
     "expired": "Session abgelaufen",
     "expiredMessage": "Diese Session ist abgelaufen (48h-Limit). Starte einen neuen Abend!",
     "newEvening": "Neuer Abend",
-    "timeline": "Timeline"
+    "timeline": "Timeline",
+    "foodCount": "{count} Essen"
   },
   "table": {
     "title": "Tisch",
@@ -177,7 +178,9 @@
     "designatedDriver": "Held des Abends — null Alkohol, Respekt",
     "hydrationHero": "Gesponsert vom Wasser",
     "happyHour": "Happy-Hour-Held — vor 19 Uhr gestartet",
-    "liverWarning": "Deine Leber hat sich beschwert"
+    "liverWarning": "Deine Leber hat sich beschwert",
+    "ateFood": "Grundlage geschaffen — du hast wirklich gegessen",
+    "noFood": "Flüssiges Abendessen — wer braucht schon Essen"
   },
   "nudges": {
     "water": "Ein Glas Wasser?",

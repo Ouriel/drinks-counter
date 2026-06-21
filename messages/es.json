@@ -59,7 +59,8 @@
     "expired": "Sesión expirada",
     "expiredMessage": "Esta sesión ha expirado (límite 48h). ¡Empieza una nueva noche!",
     "newEvening": "Nueva noche",
-    "timeline": "Timeline"
+    "timeline": "Timeline",
+    "foodCount": "{count} de comida"
   },
   "table": {
     "title": "Mesa",
@@ -177,7 +178,9 @@
     "designatedDriver": "Héroe designado — cero alcohol, respeto",
     "hydrationHero": "Patrocinado por el agua",
     "happyHour": "Rey del afterwork — antes de las 19h",
-    "liverWarning": "Tu hígado ha puesto una queja"
+    "liverWarning": "Tu hígado ha puesto una queja",
+    "ateFood": "Estómago forrado — comiste algo, bien",
+    "noFood": "Cena líquida — ¿quién necesita comida?"
   },
   "nudges": {
     "water": "¿Un vaso de agua?",

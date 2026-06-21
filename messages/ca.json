@@ -59,7 +59,8 @@
     "expired": "Sessió expirada",
     "expiredMessage": "Aquesta sessió ha expirat (límit 48h). Comença un nou vespre!",
     "newEvening": "Nou vespre",
-    "timeline": "Timeline"
+    "timeline": "Timeline",
+    "foodCount": "{count} de menjar"
   },
   "table": {
     "title": "Taula",
@@ -177,7 +178,9 @@
     "designatedDriver": "Heroi designat — zero alcohol, respecte",
     "hydrationHero": "Patrocinat per l'aigua",
     "happyHour": "Rei del vermut — abans de les 19h",
-    "liverWarning": "El teu fetge ha posat una queixa"
+    "liverWarning": "El teu fetge ha posat una queixa",
+    "ateFood": "Estómac folrat — has menjat alguna cosa",
+    "noFood": "Sopar líquid — qui necessita menjar?"
   },
   "nudges": {
     "water": "Un got d'aigua?",

@@ -59,7 +59,8 @@
     "back": "Tillbaka",
     "expired": "Sessionen har gått ut",
     "expiredMessage": "Den här sessionen har gått ut (48-timmarsgräns). Starta en ny kväll för att fortsätta räkna!",
-    "newEvening": "Ny kväll"
+    "newEvening": "Ny kväll",
+    "foodCount": "{count} mat"
   },
   "table": {
     "title": "Bord",
@@ -177,7 +178,9 @@
     "designatedDriver": "Kvällens hjälte — noll alkohol, respekt",
     "hydrationHero": "Sponsrad av vatten",
     "happyHour": "After work-hjälte — började före 19",
-    "liverWarning": "Din lever har lämnat in ett klagomål"
+    "liverWarning": "Din lever har lämnat in ett klagomål",
+    "ateFood": "Lagt en grund — du åt faktiskt något",
+    "noFood": "Flytande middag — vem behöver mat ändå"
   },
   "nudges": {
     "water": "Vattenpaus?",
