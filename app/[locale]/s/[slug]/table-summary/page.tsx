@@ -30,11 +30,8 @@ export default function TableSummaryPage() {
 
   useEffect(() => {
     async function load() {
-      const session = await api.getSession(slug);
-      if (session?.session.tableCode) {
-        const data = await api.getTableStats(session.session.tableCode);
-        if (data) setStats(data);
-      }
+      const data = await api.getTableStatsBySlug(slug);
+      if (data) setStats(data);
       setLoading(false);
     }
     load();

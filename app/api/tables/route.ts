@@ -133,13 +133,24 @@ export async function PUT(req: NextRequest) {
 // GET: read-only ranking (no slugs exposed) + member drinks
 export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get("code");
-  if (!code) return NextResponse.json({ error: "Missing code" }, { status: 400 });
+  const slug = req.nextUrl.searchParams.get("slug");
+  if (!code && !slug) {
+    return NextResponse.json({ error: "Missing code or slug" }, { status: 400 });
+  }
 
-  const [table] = await db
-    .select()
-    .from(tables)
-    .where(eq(tables.code, code.toUpperCase()))
-    .limit(1);
+  // Resolve the table from a code (public) or from a session slug (private, one round-trip).
+  let table: typeof tables.$inferSelect | undefined;
+  if (code) {
+    [table] = await db.select().from(tables).where(eq(tables.code, code.toUpperCase())).limit(1);
+  } else {
+    const rows = await db
+      .select()
+      .from(sessions)
+      .innerJoin(tables, eq(sessions.tableId, tables.id))
+      .where(eq(sessions.slug, slug as string))
+      .limit(1);
+    table = rows[0]?.tables;
+  }
   if (!table) return NextResponse.json({ error: "Table not found" }, { status: 404 });
 
   // If nickname param is provided, return that member's drinks

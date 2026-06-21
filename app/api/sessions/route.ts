@@ -84,29 +84,30 @@ export async function GET(req: NextRequest) {
   const slug = req.nextUrl.searchParams.get("slug");
   if (!slug) return NextResponse.json({ error: "Missing slug" }, { status: 400 });
 
-  const [session] = await db.select().from(sessions).where(eq(sessions.slug, slug)).limit(1);
+  const rows = await db
+    .select()
+    .from(sessions)
+    .leftJoin(barMenus, eq(sessions.barMenuId, barMenus.id))
+    .leftJoin(tables, eq(sessions.tableId, tables.id))
+    .where(eq(sessions.slug, slug))
+    .limit(1);
 
-  if (!session || session.expiresAt < new Date()) {
+  const row = rows[0];
+  if (!row || row.sessions.expiresAt < new Date()) {
     return NextResponse.json({ error: "Session expired or not found" }, { status: 404 });
   }
 
-  const [menuResult, tableResult] = await Promise.all([
-    session.barMenuId
-      ? db.select().from(barMenus).where(eq(barMenus.id, session.barMenuId)).limit(1)
-      : Promise.resolve([]),
-    session.tableId
-      ? db.select().from(tables).where(eq(tables.id, session.tableId)).limit(1)
-      : Promise.resolve([]),
-  ]);
+  const session = row.sessions;
+  const menu = row.bar_menus;
 
   let menuItems: MenuItem[] = [];
   let barNameResult: string | null = null;
-  if (menuResult[0]) {
-    menuItems = normalizeMenuItems(menuResult[0].items);
-    barNameResult = menuResult[0].barName;
+  if (menu) {
+    menuItems = normalizeMenuItems(menu.items);
+    barNameResult = menu.barName;
   }
 
-  const tableCode: string | null = tableResult[0]?.code ?? null;
+  const tableCode: string | null = row.tables?.code ?? null;
 
   return NextResponse.json({
     session: {

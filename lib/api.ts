@@ -152,6 +152,10 @@ export const api = {
     return apiFetch(`/api/tables?code=${encodeURIComponent(code)}&stats=1`, TableStatsResponse);
   },
 
+  getTableStatsBySlug(slug: string) {
+    return apiFetch(`/api/tables?slug=${encodeURIComponent(slug)}&stats=1`, TableStatsResponse);
+  },
+
   createTable(slug: string) {
     return apiFetch("/api/tables", TableCreateResponse, {
       method: "POST",
