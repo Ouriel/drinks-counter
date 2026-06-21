@@ -30,3 +30,7 @@ jobs:
 
       - name: Build
         run: npm run build
+        env:
+          # Build does static generation only and never connects to the DB;
+          # lib/db.ts requires POSTGRES_URL to be present in production builds.
+          POSTGRES_URL: postgresql://user:pass@localhost:5432/db

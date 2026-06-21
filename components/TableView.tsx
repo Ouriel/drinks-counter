@@ -171,7 +171,6 @@ export function TableView({
                       {isTied && "👑 "}
                       {isMe && "👉 "}
                       {formatNickname(member.nickname, tAnimals)}
-                      {isMe && ` (${t("you")})`}
                     </span>
                     <span
                       className={`tabular-nums text-lg ${isMe ? "font-bold text-primary" : "font-bold"}`}
@@ -263,10 +262,7 @@ export function TableView({
                 }}
               >
                 <Modal.Header>
-                  <Modal.Heading>
-                    {formatNickname(selectedMember, tAnimals)}
-                    {selectedMember === nickname && ` (${t("you")})`}
-                  </Modal.Heading>
+                  <Modal.Heading>{formatNickname(selectedMember, tAnimals)}</Modal.Heading>
                 </Modal.Header>
                 <Modal.Body className="pb-6">
                   {selectedMember && tableCode && (
