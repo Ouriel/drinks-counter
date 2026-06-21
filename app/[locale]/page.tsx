@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Button, Input, Card, Chip, Spinner, toast } from "@heroui/react";
 import { useTranslations } from "next-intl";
-import { ChartColumn } from "lucide-react";
+import { ChartColumn, MapPin, Camera, Beer } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
 import { ThemeSwitch } from "@/lib/theme-switch";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
@@ -294,7 +294,10 @@ function HomeContent() {
 
         {osmResults.length > 0 && barSuggestions.length === 0 && (
           <div className="mb-4 space-y-2">
-            <p className="text-xs text-default-500">{t("bar.nearbyPlaces")}</p>
+            <p className="text-xs text-default-500 flex items-center gap-1">
+              <MapPin className="w-3.5 h-3.5" />
+              {t("bar.nearbyPlaces")}
+            </p>
             {osmResults.map((place, i) => (
               <Card key={i}>
                 <button
@@ -346,10 +349,11 @@ function HomeContent() {
               <Button
                 variant="ghost"
                 size="lg"
-                className="w-full text-foreground"
+                className="w-full text-foreground gap-1"
                 isDisabled={barName.trim().length < 2}
                 onPress={() => cameraRef.current?.click()}
               >
+                <Camera className="w-5 h-5" />
                 {t("bar.camera")}
               </Button>
             )
@@ -413,7 +417,14 @@ function HomeContent() {
       <p className="text-default-500 text-sm mb-6">{t("review.hint")}</p>
 
       <div className="fixed bottom-6 left-0 right-0 flex justify-center px-6 pb-[env(safe-area-inset-bottom)]">
-        <Button variant="primary" size="lg" isDisabled={creating} onPress={() => createSession()}>
+        <Button
+          variant="primary"
+          size="lg"
+          className="gap-1"
+          isDisabled={creating}
+          onPress={() => createSession()}
+        >
+          <Beer className="w-5 h-5" />
           {creating ? t("bar.creating") : t("review.startCounting")}
         </Button>
       </div>

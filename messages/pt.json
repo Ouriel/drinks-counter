@@ -14,12 +14,12 @@
     "whereAreYou": "Onde estás?",
     "barName": "Nome do bar…",
     "items": "{count, plural, one {# item} other {# itens}}",
-    "nearbyPlaces": "📍 Locais próximos",
+    "nearbyPlaces": "Locais próximos",
     "noResultsPhoto": "📸 Sem resultados — tira uma foto do menu para importar bebidas!",
     "start": "Começar ({count} bebidas)",
     "creating": "A criar…",
     "readingMenu": "A ler o menu…",
-    "camera": "📸 Fotografar o menu",
+    "camera": "Fotografar o menu",
     "skipManual": "Ignorar — adiciono manualmente"
   },
   "review": {
@@ -27,7 +27,7 @@
     "editDrink": "Editar nome da bebida: {name}",
     "removeDrink": "Remover {name}",
     "hint": "Toca num nome para editar. Remove o que não interessa. Podes adicionar mais depois.",
-    "startCounting": "Começar a contar 🍺"
+    "startCounting": "Começar a contar"
   },
   "session": {
     "drinks": "{count, plural, one {# bebida} other {# bebidas}}",
@@ -50,9 +50,9 @@
     "alcoholFree": "{count} sem álcool",
     "title": "Resumo da Noite",
     "drinksTotal": "{count, plural, one {bebida} other {bebidas}} no total",
-    "personalBest": "🏅 Recorde pessoal!",
+    "personalBest": "Recorde pessoal!",
     "pace": "Ritmo: {emoji} {label}",
-    "timeline": "🕐 Cronologia",
+    "timeline": "Cronologia",
     "share": "Partilhar",
     "copyText": "Copiar texto",
     "copied": "Copiado ✓",
@@ -62,12 +62,12 @@
     "newEvening": "Nova noite"
   },
   "table": {
-    "title": "🍻 Mesa",
+    "title": "Mesa",
     "loading": "A carregar...",
     "shareCode": "Partilha o código {code} com amigos",
     "showQr": "Mostrar código QR",
     "hideQr": "Ocultar QR",
-    "createTable": "🍻 Criar mesa",
+    "createTable": "Criar mesa",
     "joinTable": "Juntar-se à mesa",
     "code": "Código",
     "join": "Juntar-se",
@@ -117,7 +117,7 @@
     "startFresh": "Começar de novo"
   },
   "stats": {
-    "title": "📊 Estatísticas TipsyTap",
+    "title": "Estatísticas TipsyTap",
     "bars": "Bares",
     "sessions": "Sessões",
     "drinks": "Bebidas",
@@ -126,8 +126,8 @@
     "thisWeek": "Esta semana",
     "avgPerSession": "~{avg} bebidas por sessão em média",
     "byCategory": "Por categoria",
-    "topDrinks": "🍺 Bebidas mais populares",
-    "topBars": "🍸 Bares mais populares",
+    "topDrinks": "Bebidas mais populares",
+    "topBars": "Bares mais populares",
     "noDrinks": "Ainda sem bebidas",
     "noBars": "Ainda sem bares"
   },
@@ -191,11 +191,11 @@
     "barNameLabel": "Nome do bar"
   },
   "tableSummary": {
-    "title": "🍻 Estatísticas da Mesa",
+    "title": "Estatísticas da Mesa",
     "drinksTotal": "{count, plural, one {bebida} other {bebidas}} no total",
     "people": "{count, plural, one {# pessoa} other {# pessoas}}",
     "ranking": "Classificação",
-    "topDrinks": "🍺 Bebidas mais populares",
+    "topDrinks": "Bebidas mais populares",
     "notInTable": "Ainda não fazes parte de uma mesa"
   },
   "animals": {

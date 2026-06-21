@@ -14,12 +14,12 @@
     "whereAreYou": "On ets?",
     "barName": "Nom del bar…",
     "items": "{count, plural, one {# beguda} other {# begudes}}",
-    "nearbyPlaces": "📍 Llocs propers",
+    "nearbyPlaces": "Llocs propers",
     "noResultsPhoto": "📸 Sense resultats — fotografía el menú per importar begudes!",
     "start": "Començar ({count} begudes)",
     "creating": "Creant…",
     "readingMenu": "Llegint el menú…",
-    "camera": "📸 Fotografiar el menú",
+    "camera": "Fotografiar el menú",
     "skipManual": "Saltar — afegiré manualment"
   },
   "review": {
@@ -27,7 +27,7 @@
     "editDrink": "Editar nom: {name}",
     "removeDrink": "Eliminar {name}",
     "hint": "Toca un nom per editar-lo. Elimina el que sobri. Pots afegir-ne més després.",
-    "startCounting": "Començar a comptar 🍺"
+    "startCounting": "Començar a comptar"
   },
   "session": {
     "drinks": "{count, plural, one {# copa} other {# copes}}",
@@ -50,7 +50,7 @@
     "alcoholFree": "{count} sense alcohol",
     "title": "Resum del vespre",
     "drinksTotal": "{count, plural, one {copa} other {copes}} en total",
-    "personalBest": "🏅 Rècord personal!",
+    "personalBest": "Rècord personal!",
     "pace": "Ritme: {emoji} {label}",
     "share": "Compartir",
     "copyText": "Copiar text",
@@ -59,15 +59,15 @@
     "expired": "Sessió expirada",
     "expiredMessage": "Aquesta sessió ha expirat (límit 48h). Comença un nou vespre!",
     "newEvening": "Nou vespre",
-    "timeline": "🕐 Timeline"
+    "timeline": "Timeline"
   },
   "table": {
-    "title": "🍻 Taula",
+    "title": "Taula",
     "loading": "Carregant...",
     "shareCode": "Comparteix el codi {code} amb els amics",
     "showQr": "Mostrar QR",
     "hideQr": "Amagar QR",
-    "createTable": "🍻 Crear taula",
+    "createTable": "Crear taula",
     "joinTable": "Unir-se a taula",
     "code": "Codi",
     "join": "Unir-se",
@@ -117,13 +117,13 @@
     "startFresh": "Començar de nou"
   },
   "stats": {
-    "title": "📊 Stats TipsyTap",
+    "title": "Stats TipsyTap",
     "bars": "Bars",
     "sessions": "Sessions",
     "drinks": "Copes",
     "byCategory": "Per categoria",
-    "topDrinks": "🍺 Top begudes",
-    "topBars": "🍸 Top bars",
+    "topDrinks": "Top begudes",
+    "topBars": "Top bars",
     "noDrinks": "Encara no hi ha copes",
     "noBars": "Encara no hi ha bars",
     "active": "Actives ara",
@@ -191,11 +191,11 @@
     "barNameLabel": "Nom del bar"
   },
   "tableSummary": {
-    "title": "🍻 Estadístiques de la taula",
+    "title": "Estadístiques de la taula",
     "drinksTotal": "{count, plural, one {beguda} other {begudes}} en total",
     "people": "{count, plural, one {# persona} other {# persones}}",
     "ranking": "Classificació",
-    "topDrinks": "🍺 Begudes top",
+    "topDrinks": "Begudes top",
     "notInTable": "Encara no ets en cap taula"
   },
   "animals": {

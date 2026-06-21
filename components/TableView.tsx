@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { QrCode } from "@/components/QrCode";
 import { api } from "@/lib/api";
 import { formatNickname } from "@/lib/nicknames";
-import { RefreshCw, QrCode as QrCodeIcon, Copy, MessageCircle, Dices } from "lucide-react";
+import { RefreshCw, QrCode as QrCodeIcon, Copy, MessageCircle, Dices, Users } from "lucide-react";
 
 type Member = { nickname: string; total: number };
 
@@ -128,7 +128,10 @@ export function TableView({
     return (
       <div className="mt-6">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-bold">{t("title")}</h2>
+          <h2 className="text-lg font-bold flex items-center gap-2">
+            <Users className="w-5 h-5" />
+            {t("title")}
+          </h2>
           <div className="flex items-center gap-2">
             <Button
               variant="ghost"
@@ -282,7 +285,14 @@ export function TableView({
     <div className="mt-6 text-center">
       {!showJoin ? (
         <div className="flex gap-2 justify-center">
-          <Button variant="ghost" size="sm" isDisabled={loading} onPress={handleCreate}>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="gap-1"
+            isDisabled={loading}
+            onPress={handleCreate}
+          >
+            <Users className="w-4 h-4" />
             {loading ? "..." : t("createTable")}
           </Button>
           <Button variant="ghost" size="sm" onPress={() => setShowJoin(true)}>

@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { db, barMenus, sessions, drinks, normalizeMenuItems } from "@/lib/db";
 import { sql, count, desc, gt } from "drizzle-orm";
 import { CATEGORY_EMOJI } from "@/lib/constants";
+import { ChartColumn, Beer, Martini } from "lucide-react";
 import Link from "next/link";
 
 export const revalidate = 60;
@@ -78,7 +79,10 @@ export default async function StatsPage() {
         <Link href="/" className="text-2xl">
           ←
         </Link>
-        <h1 className="text-2xl font-bold">{t("title")}</h1>
+        <h1 className="text-2xl font-bold flex items-center gap-2">
+          <ChartColumn className="w-6 h-6" />
+          {t("title")}
+        </h1>
       </div>
 
       <div className="grid grid-cols-3 gap-3 mb-4">
@@ -133,7 +137,10 @@ export default async function StatsPage() {
         </>
       )}
 
-      <h2 className="text-lg font-bold mb-3">{t("topDrinks")}</h2>
+      <h2 className="text-lg font-bold mb-3 flex items-center gap-2">
+        <Beer className="w-5 h-5" />
+        {t("topDrinks")}
+      </h2>
       <div className="space-y-2 mb-8">
         {topDrinks.map((drink, i) => (
           <div
@@ -150,7 +157,10 @@ export default async function StatsPage() {
         {topDrinks.length === 0 && <p className="text-default-500">{t("noDrinks")}</p>}
       </div>
 
-      <h2 className="text-lg font-bold mb-3">{t("topBars")}</h2>
+      <h2 className="text-lg font-bold mb-3 flex items-center gap-2">
+        <Martini className="w-5 h-5" />
+        {t("topBars")}
+      </h2>
       <div className="space-y-2">
         {topBars.map((bar, i) => (
           <div

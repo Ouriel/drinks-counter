@@ -14,12 +14,12 @@
     "whereAreYou": "Where are you?",
     "barName": "Bar name…",
     "items": "{count, plural, one {# item} other {# items}}",
-    "nearbyPlaces": "📍 Nearby places",
+    "nearbyPlaces": "Nearby places",
     "noResultsPhoto": "📸 No results — snap a photo of the menu to import drinks!",
     "start": "Start ({count} drinks)",
     "creating": "Creating…",
     "readingMenu": "Reading menu…",
-    "camera": "📸 Snap the menu",
+    "camera": "Snap the menu",
     "skipManual": "Skip — I'll add manually"
   },
   "review": {
@@ -27,7 +27,7 @@
     "editDrink": "Edit drink name: {name}",
     "removeDrink": "Remove {name}",
     "hint": "Tap a name to edit. Remove junk. You can add more later.",
-    "startCounting": "Start counting 🍺"
+    "startCounting": "Start counting"
   },
   "session": {
     "drinks": "{count, plural, one {# drink} other {# drinks}}",
@@ -50,9 +50,9 @@
     "alcoholFree": "{count} alcohol-free",
     "title": "Evening Summary",
     "drinksTotal": "{count, plural, one {drink} other {drinks}} total",
-    "personalBest": "🏅 Personal best!",
+    "personalBest": "Personal best!",
     "pace": "Pace: {emoji} {label}",
-    "timeline": "🕐 Timeline",
+    "timeline": "Timeline",
     "share": "Share",
     "copyText": "Copy text",
     "copied": "Copied ✓",
@@ -62,12 +62,12 @@
     "newEvening": "New evening"
   },
   "table": {
-    "title": "🍻 Table",
+    "title": "Table",
     "loading": "Loading...",
     "shareCode": "Share code {code} with friends",
     "showQr": "Show QR code",
     "hideQr": "Hide QR",
-    "createTable": "🍻 Create table",
+    "createTable": "Create table",
     "joinTable": "Join table",
     "code": "Code",
     "join": "Join",
@@ -117,7 +117,7 @@
     "startFresh": "Start fresh"
   },
   "stats": {
-    "title": "📊 TipsyTap Stats",
+    "title": "TipsyTap Stats",
     "bars": "Bars",
     "sessions": "Sessions",
     "drinks": "Drinks",
@@ -126,8 +126,8 @@
     "thisWeek": "This week",
     "avgPerSession": "~{avg} drinks per session on average",
     "byCategory": "By Category",
-    "topDrinks": "🍺 Top Drinks",
-    "topBars": "🍸 Top Bars",
+    "topDrinks": "Top Drinks",
+    "topBars": "Top Bars",
     "noDrinks": "No drinks yet",
     "noBars": "No bars yet"
   },
@@ -191,11 +191,11 @@
     "barNameLabel": "Bar name"
   },
   "tableSummary": {
-    "title": "🍻 Table Stats",
+    "title": "Table Stats",
     "drinksTotal": "{count, plural, one {drink} other {drinks}} total",
     "people": "{count, plural, one {# person} other {# people}}",
     "ranking": "Ranking",
-    "topDrinks": "🍺 Top drinks",
+    "topDrinks": "Top drinks",
     "notInTable": "You're not part of a table yet"
   },
   "animals": {

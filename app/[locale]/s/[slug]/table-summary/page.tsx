@@ -6,6 +6,7 @@ import { Button, Card, Chip, Spinner } from "@heroui/react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { CATEGORY_EMOJI, isAlcoholic } from "@/lib/constants";
+import { Users, Beer } from "lucide-react";
 import { formatNickname } from "@/lib/nicknames";
 import { api } from "@/lib/api";
 
@@ -51,7 +52,7 @@ export default function TableSummaryPage() {
       <div className="min-h-screen flex items-center justify-center p-6 bg-background text-foreground">
         <Card className="w-full max-w-sm">
           <div className="p-6 text-center">
-            <p className="text-5xl mb-4">🍻</p>
+            <Users className="w-12 h-12 mx-auto mb-4" />
             <p className="text-default-500">{t("tableSummary.notInTable")}</p>
             <Button variant="primary" className="mt-6" onPress={() => router.push(`/s/${slug}`)}>
               {t("summary.back")}
@@ -84,7 +85,7 @@ export default function TableSummaryPage() {
 
           {/* Header */}
           <div className="text-center mb-6">
-            <p className="text-5xl mb-2">🍻</p>
+            <Users className="w-12 h-12 mx-auto mb-2" />
             <h1 className="text-2xl font-bold">{t("tableSummary.title")}</h1>
             <p className="text-sm text-default-500 mt-1 font-mono">{stats.code}</p>
           </div>
@@ -139,7 +140,10 @@ export default function TableSummaryPage() {
           {/* Top drinks */}
           {stats.topDrinks.length > 0 && (
             <>
-              <h3 className="text-sm font-bold mb-2">{t("tableSummary.topDrinks")}</h3>
+              <h3 className="text-sm font-bold mb-2 flex items-center gap-1">
+                <Beer className="w-4 h-4" />
+                {t("tableSummary.topDrinks")}
+              </h3>
               <div className="space-y-1">
                 {stats.topDrinks.map((drink) => (
                   <div

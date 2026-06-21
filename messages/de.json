@@ -14,12 +14,12 @@
     "whereAreYou": "Wo bist du?",
     "barName": "Barname…",
     "items": "{count, plural, one {# Getränk} other {# Getränke}}",
-    "nearbyPlaces": "📍 In der Nähe",
+    "nearbyPlaces": "In der Nähe",
     "noResultsPhoto": "📸 Keine Ergebnisse — fotografiere die Karte, um Getränke zu importieren!",
     "start": "Start ({count} Getränke)",
     "creating": "Wird erstellt…",
     "readingMenu": "Karte wird gelesen…",
-    "camera": "📸 Menü fotografieren",
+    "camera": "Menü fotografieren",
     "skipManual": "Überspringen — ich füge manuell hinzu"
   },
   "review": {
@@ -27,7 +27,7 @@
     "editDrink": "Name bearbeiten: {name}",
     "removeDrink": "{name} entfernen",
     "hint": "Tippe auf einen Namen zum Bearbeiten. Entferne Falsches. Du kannst später mehr hinzufügen.",
-    "startCounting": "Los geht's 🍺"
+    "startCounting": "Los geht's"
   },
   "session": {
     "drinks": "{count, plural, one {# Drink} other {# Drinks}}",
@@ -50,7 +50,7 @@
     "alcoholFree": "{count} alkoholfrei",
     "title": "Abendzusammenfassung",
     "drinksTotal": "{count, plural, one {Drink} other {Drinks}} insgesamt",
-    "personalBest": "🏅 Persönlicher Rekord!",
+    "personalBest": "Persönlicher Rekord!",
     "pace": "Tempo: {emoji} {label}",
     "share": "Teilen",
     "copyText": "Text kopieren",
@@ -59,15 +59,15 @@
     "expired": "Session abgelaufen",
     "expiredMessage": "Diese Session ist abgelaufen (48h-Limit). Starte einen neuen Abend!",
     "newEvening": "Neuer Abend",
-    "timeline": "🕐 Timeline"
+    "timeline": "Timeline"
   },
   "table": {
-    "title": "🍻 Tisch",
+    "title": "Tisch",
     "loading": "Laden...",
     "shareCode": "Teile Code {code} mit Freunden",
     "showQr": "QR-Code zeigen",
     "hideQr": "QR ausblenden",
-    "createTable": "🍻 Tisch erstellen",
+    "createTable": "Tisch erstellen",
     "joinTable": "Tisch beitreten",
     "code": "Code",
     "join": "Beitreten",
@@ -117,13 +117,13 @@
     "startFresh": "Neu starten"
   },
   "stats": {
-    "title": "📊 TipsyTap Stats",
+    "title": "TipsyTap Stats",
     "bars": "Bars",
     "sessions": "Sessions",
     "drinks": "Drinks",
     "byCategory": "Nach Kategorie",
-    "topDrinks": "🍺 Top Drinks",
-    "topBars": "🍸 Top Bars",
+    "topDrinks": "Top Drinks",
+    "topBars": "Top Bars",
     "noDrinks": "Noch keine Drinks",
     "noBars": "Noch keine Bars",
     "active": "Gerade aktiv",
@@ -191,11 +191,11 @@
     "barNameLabel": "Barname"
   },
   "tableSummary": {
-    "title": "🍻 Tisch-Statistik",
+    "title": "Tisch-Statistik",
     "drinksTotal": "{count, plural, one {Getränk} other {Getränke}} insgesamt",
     "people": "{count, plural, one {# Person} other {# Personen}}",
     "ranking": "Rangliste",
-    "topDrinks": "🍺 Top-Getränke",
+    "topDrinks": "Top-Getränke",
     "notInTable": "Du bist noch an keinem Tisch"
   },
   "animals": {

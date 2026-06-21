@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { Button, Card, Chip, Spinner, Popover } from "@heroui/react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { Share2, Copy, Info } from "lucide-react";
+import { Share2, Copy, Info, Beer, Medal, Clock } from "lucide-react";
 import { CATEGORY_EMOJI, isAlcoholic } from "@/lib/constants";
 import { titleCase } from "@/lib/sanitize";
 import {
@@ -185,7 +185,7 @@ export default function SummaryPage() {
 
           {/* Header */}
           <div className="text-center mb-6">
-            <p className="text-5xl mb-2">🍻</p>
+            <Beer className="w-12 h-12 mx-auto mb-2" />
             <h1 className="text-2xl font-bold">{t("summary.title")}</h1>
             {barName && <p className="text-foreground/70 mt-1">{titleCase(barName)}</p>}
             {firstDrink && (
@@ -200,7 +200,10 @@ export default function SummaryPage() {
             <p className="text-6xl font-bold">{total}</p>
             <p className="text-default-500">{t("summary.drinksTotal", { count: total })}</p>
             {total === getPersonalBest() && total > 0 && (
-              <p className="text-sm mt-1">{t("summary.personalBest")}</p>
+              <p className="text-sm mt-1 flex items-center justify-center gap-1">
+                <Medal className="w-4 h-4" />
+                {t("summary.personalBest")}
+              </p>
             )}
             {nonAlcoholicTotal > 0 && alcoholicTotal > 0 && (
               <p className="text-sm text-default-500 mt-2">
@@ -316,13 +319,22 @@ export default function SummaryPage() {
             <div className="mb-6">
               {!showTimeline ? (
                 <div className="text-center">
-                  <Button variant="ghost" size="sm" onPress={() => setShowTimeline(true)}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="gap-1"
+                    onPress={() => setShowTimeline(true)}
+                  >
+                    <Clock className="w-4 h-4" />
                     {t("summary.timeline")}
                   </Button>
                 </div>
               ) : (
                 <>
-                  <h3 className="text-sm font-bold text-center mb-3">{t("summary.timeline")}</h3>
+                  <h3 className="text-sm font-bold text-center mb-3 flex items-center justify-center gap-1">
+                    <Clock className="w-4 h-4" />
+                    {t("summary.timeline")}
+                  </h3>
                   <div className="space-y-3">
                     {timeline.map((entry, index) => {
                       const time = new Date(entry.time).toLocaleTimeString([], {

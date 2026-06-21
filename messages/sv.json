@@ -14,12 +14,12 @@
     "whereAreYou": "Var är du?",
     "barName": "Barens namn…",
     "items": "{count, plural, one {# artikel} other {# artiklar}}",
-    "nearbyPlaces": "📍 Platser i närheten",
+    "nearbyPlaces": "Platser i närheten",
     "noResultsPhoto": "📸 Inga resultat — ta ett foto av menyn för att importera drinkar!",
     "start": "Starta ({count} drinkar)",
     "creating": "Skapar…",
     "readingMenu": "Läser menyn…",
-    "camera": "📸 Fotografera menyn",
+    "camera": "Fotografera menyn",
     "skipManual": "Hoppa över — jag lägger till manuellt"
   },
   "review": {
@@ -27,7 +27,7 @@
     "editDrink": "Ändra dryckens namn: {name}",
     "removeDrink": "Ta bort {name}",
     "hint": "Tryck på ett namn för att ändra. Ta bort skräp. Du kan lägga till mer senare.",
-    "startCounting": "Börja räkna 🍺"
+    "startCounting": "Börja räkna"
   },
   "session": {
     "drinks": "{count, plural, one {# drink} other {# drinkar}}",
@@ -50,9 +50,9 @@
     "alcoholFree": "{count} alkoholfria",
     "title": "Kvällssammanfattning",
     "drinksTotal": "{count, plural, one {drink} other {drinkar}} totalt",
-    "personalBest": "🏅 Personligt rekord!",
+    "personalBest": "Personligt rekord!",
     "pace": "Tempo: {emoji} {label}",
-    "timeline": "🕐 Tidslinje",
+    "timeline": "Tidslinje",
     "share": "Dela",
     "copyText": "Kopiera text",
     "copied": "Kopierad ✓",
@@ -62,12 +62,12 @@
     "newEvening": "Ny kväll"
   },
   "table": {
-    "title": "🍻 Bord",
+    "title": "Bord",
     "loading": "Laddar...",
     "shareCode": "Dela koden {code} med vänner",
     "showQr": "Visa QR-kod",
     "hideQr": "Dölj QR",
-    "createTable": "🍻 Skapa bord",
+    "createTable": "Skapa bord",
     "joinTable": "Gå med i bord",
     "code": "Kod",
     "join": "Gå med",
@@ -117,7 +117,7 @@
     "startFresh": "Börja om"
   },
   "stats": {
-    "title": "📊 TipsyTap-statistik",
+    "title": "TipsyTap-statistik",
     "bars": "Barer",
     "sessions": "Sessioner",
     "drinks": "Drinkar",
@@ -126,8 +126,8 @@
     "thisWeek": "Den här veckan",
     "avgPerSession": "~{avg} drinkar per session i snitt",
     "byCategory": "Per kategori",
-    "topDrinks": "🍺 Toppdrinkar",
-    "topBars": "🍸 Toppbarer",
+    "topDrinks": "Toppdrinkar",
+    "topBars": "Toppbarer",
     "noDrinks": "Inga drinkar än",
     "noBars": "Inga barer än"
   },
@@ -191,11 +191,11 @@
     "barNameLabel": "Barens namn"
   },
   "tableSummary": {
-    "title": "🍻 Bordsstatistik",
+    "title": "Bordsstatistik",
     "drinksTotal": "{count, plural, one {drink} other {drinkar}} totalt",
     "people": "{count, plural, one {# person} other {# personer}}",
     "ranking": "Rankning",
-    "topDrinks": "🍺 Toppdrinkar",
+    "topDrinks": "Toppdrinkar",
     "notInTable": "Du är inte med vid något bord än"
   },
   "animals": {

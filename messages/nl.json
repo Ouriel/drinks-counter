@@ -14,12 +14,12 @@
     "whereAreYou": "Waar ben je?",
     "barName": "Naam van de bar…",
     "items": "{count, plural, one {# item} other {# items}}",
-    "nearbyPlaces": "📍 Plekken in de buurt",
+    "nearbyPlaces": "Plekken in de buurt",
     "noResultsPhoto": "📸 Geen resultaten — maak een foto van het menu om drankjes te importeren!",
     "start": "Start ({count} drankjes)",
     "creating": "Bezig met aanmaken…",
     "readingMenu": "Menu lezen…",
-    "camera": "📸 Fotografeer het menu",
+    "camera": "Fotografeer het menu",
     "skipManual": "Overslaan — ik voeg handmatig toe"
   },
   "review": {
@@ -27,7 +27,7 @@
     "editDrink": "Dranknaam bewerken: {name}",
     "removeDrink": "{name} verwijderen",
     "hint": "Tik op een naam om te bewerken. Verwijder rommel. Je kunt later meer toevoegen.",
-    "startCounting": "Begin met tellen 🍺"
+    "startCounting": "Begin met tellen"
   },
   "session": {
     "drinks": "{count, plural, one {# drankje} other {# drankjes}}",
@@ -50,9 +50,9 @@
     "alcoholFree": "{count} alcoholvrij",
     "title": "Avondoverzicht",
     "drinksTotal": "{count, plural, one {drankje} other {drankjes}} totaal",
-    "personalBest": "🏅 Persoonlijk record!",
+    "personalBest": "Persoonlijk record!",
     "pace": "Tempo: {emoji} {label}",
-    "timeline": "🕐 Tijdlijn",
+    "timeline": "Tijdlijn",
     "share": "Delen",
     "copyText": "Tekst kopiëren",
     "copied": "Gekopieerd ✓",
@@ -62,12 +62,12 @@
     "newEvening": "Nieuwe avond"
   },
   "table": {
-    "title": "🍻 Tafel",
+    "title": "Tafel",
     "loading": "Laden...",
     "shareCode": "Deel code {code} met vrienden",
     "showQr": "Toon QR-code",
     "hideQr": "QR verbergen",
-    "createTable": "🍻 Tafel aanmaken",
+    "createTable": "Tafel aanmaken",
     "joinTable": "Deelnemen aan tafel",
     "code": "Code",
     "join": "Deelnemen",
@@ -117,7 +117,7 @@
     "startFresh": "Opnieuw beginnen"
   },
   "stats": {
-    "title": "📊 TipsyTap-statistieken",
+    "title": "TipsyTap-statistieken",
     "bars": "Bars",
     "sessions": "Sessies",
     "drinks": "Drankjes",
@@ -126,8 +126,8 @@
     "thisWeek": "Deze week",
     "avgPerSession": "~{avg} drankjes per sessie gemiddeld",
     "byCategory": "Per categorie",
-    "topDrinks": "🍺 Topdrankjes",
-    "topBars": "🍸 Topbars",
+    "topDrinks": "Topdrankjes",
+    "topBars": "Topbars",
     "noDrinks": "Nog geen drankjes",
     "noBars": "Nog geen bars"
   },
@@ -191,11 +191,11 @@
     "barNameLabel": "Naam van de bar"
   },
   "tableSummary": {
-    "title": "🍻 Tafelstatistieken",
+    "title": "Tafelstatistieken",
     "drinksTotal": "{count, plural, one {drankje} other {drankjes}} totaal",
     "people": "{count, plural, one {# persoon} other {# personen}}",
     "ranking": "Ranglijst",
-    "topDrinks": "🍺 Topdrankjes",
+    "topDrinks": "Topdrankjes",
     "notInTable": "Je zit nog niet aan een tafel"
   },
   "animals": {
