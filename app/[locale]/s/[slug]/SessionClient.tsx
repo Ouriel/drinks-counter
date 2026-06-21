@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { Button, Popover, Spinner, toast } from "@heroui/react";
@@ -15,6 +15,7 @@ import { DrinkCard } from "@/components/DrinkCard";
 import { TableView } from "@/components/TableView";
 import { getSessionHue, getPace, getTipsyStyle, getIconColor } from "@/lib/gamification";
 import { useOptimisticDrinks } from "@/lib/useOptimisticDrinks";
+import { useIsHydrated } from "@/lib/use-is-hydrated";
 import { api } from "@/lib/api";
 import type { Drink, MenuItem } from "@/lib/types";
 
@@ -41,14 +42,6 @@ function formatElapsed(drinks: Drink[]): string | null {
 // True only after client hydration (false on the server and the first client render),
 // without a setState-in-effect. Used to gate time-relative UI so the server and client
 // render identically at hydration time (avoids React #418 mismatch).
-function useIsHydrated(): boolean {
-  return useSyncExternalStore(
-    () => () => {},
-    () => true,
-    () => false
-  );
-}
-
 function ElapsedTimer({ drinks }: { drinks: Drink[] }) {
   const hydrated = useIsHydrated();
   const [, setTick] = useState(0);
@@ -209,7 +202,7 @@ export function SessionClient({
           {t("session.drinks", { count: total })}
         </h1>
         {barName && (
-          <p className="text-base mt-1 text-center text-foreground/70">
+          <div className="text-base mt-1 text-center text-foreground/70">
             {titleCase(barName)}
             {" · "}
             <Popover>
@@ -230,10 +223,10 @@ export function SessionClient({
               </Popover.Content>
             </Popover>
             <ElapsedTimer drinks={drinks} />
-          </p>
+          </div>
         )}
         {!barName && (
-          <p className="text-base mt-1 text-center text-foreground/70">
+          <div className="text-base mt-1 text-center text-foreground/70">
             <Popover>
               <Popover.Trigger>
                 <button
@@ -252,10 +245,10 @@ export function SessionClient({
               </Popover.Content>
             </Popover>
             <ElapsedTimer drinks={drinks} />
-          </p>
+          </div>
         )}
         {mounted && pace && (
-          <p className="text-sm mt-0.5 text-center text-default-500">
+          <div className="text-sm mt-0.5 text-center text-default-500">
             {pace.emoji}{" "}
             {t(
               `pace.${pace.label.toLowerCase().replace(/ ./g, (match) => match[1].toUpperCase())}`
@@ -276,7 +269,7 @@ export function SessionClient({
                 </Popover.Dialog>
               </Popover.Content>
             </Popover>
-          </p>
+          </div>
         )}
       </div>
 

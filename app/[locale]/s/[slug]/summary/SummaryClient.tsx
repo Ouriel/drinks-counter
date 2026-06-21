@@ -177,7 +177,7 @@ export function SummaryClient({
             const pace = getPace(drinks);
             if (!pace) return null;
             return (
-              <p className="text-center text-sm text-default-500 mb-4">
+              <div className="text-center text-sm text-default-500 mb-4">
                 {t("summary.pace", {
                   emoji: pace.emoji,
                   label: t(
@@ -204,7 +204,7 @@ export function SummaryClient({
                     </Popover.Dialog>
                   </Popover.Content>
                 </Popover>
-              </p>
+              </div>
             );
           })()}
 
