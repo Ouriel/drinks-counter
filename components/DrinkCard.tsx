@@ -56,7 +56,7 @@ export function DrinkCard({
           {isTop && <span className="text-lg">👑</span>}
           <button
             type="button"
-            className="w-11 h-11 flex items-center justify-center rounded-full text-2xl font-bold text-default-400 hover:text-danger hover:bg-danger/10 transition-colors"
+            className="w-11 h-11 flex items-center justify-center rounded-full text-2xl font-bold text-primary hover:bg-foreground/10 transition-colors"
             onClick={onLongPress}
             aria-label={t("remove")}
           >
@@ -67,7 +67,7 @@ export function DrinkCard({
           </span>
           <button
             type="button"
-            className="w-11 h-11 flex items-center justify-center rounded-full text-2xl font-bold text-primary hover:bg-primary/10 active:scale-95 transition-transform cursor-pointer"
+            className="w-11 h-11 flex items-center justify-center rounded-full text-2xl font-bold text-primary hover:bg-foreground/10 active:scale-95 transition-transform cursor-pointer"
             {...longPressProps}
             onClick={handleClick}
             onContextMenu={(event) => event.preventDefault()}
