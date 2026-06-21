@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import { Button, Popover, Spinner, toast } from "@heroui/react";
 import { useTranslations } from "next-intl";
@@ -11,13 +12,18 @@ import { ThemeSwitch } from "@/lib/theme-switch";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { titleCase } from "@/lib/sanitize";
 import { DrinkCard } from "@/components/DrinkCard";
-import { DrinkPicker } from "@/components/DrinkPicker";
-import { Confetti } from "@/components/Confetti";
 import { TableView } from "@/components/TableView";
 import { getSessionHue, getPace, getTipsyStyle, getIconColor } from "@/lib/gamification";
 import { useOptimisticDrinks } from "@/lib/useOptimisticDrinks";
 import { api } from "@/lib/api";
 import type { Drink, MenuItem } from "@/lib/types";
+
+// Interaction-only components — not needed for first paint, so they're code-split out of the
+// initial hydration bundle and loaded on demand (picker opened / milestone hit).
+const DrinkPicker = dynamic(() =>
+  import("@/components/DrinkPicker").then((mod) => mod.DrinkPicker)
+);
+const Confetti = dynamic(() => import("@/components/Confetti").then((mod) => mod.Confetti));
 
 function formatElapsed(drinks: Drink[]): string | null {
   const firstDrink = drinks.reduce<string | null>((earliest, d) => {

@@ -1,12 +1,16 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import dynamic from "next/dynamic";
 import { Button, Input, Card, Modal, Popover, useOverlayState, toast } from "@heroui/react";
 import { useTranslations } from "next-intl";
-import { QrCode } from "@/components/QrCode";
 import { api } from "@/lib/api";
 import { formatNickname } from "@/lib/nicknames";
 import { RefreshCw, QrCode as QrCodeIcon, Copy, Dices, Users } from "lucide-react";
+
+// The QR code pulls in qrcode-generator and only renders when the user opens the QR view,
+// so it's code-split out of the initial bundle.
+const QrCode = dynamic(() => import("@/components/QrCode").then((mod) => mod.QrCode));
 
 type Member = { nickname: string; total: number };
 
