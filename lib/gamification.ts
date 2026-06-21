@@ -324,9 +324,15 @@ export function checkPersonalBest(total: number): boolean {
 
 export type Nudge = { emoji: string; text: string; type: "water" | "taxi" | "info" };
 
-export function getNudge(total: number, prevTotal: number): Nudge | null {
-  // Water reminder every 3 drinks
-  if (total > 0 && total % 3 === 0 && total !== prevTotal) {
+export function getNudge(
+  total: number,
+  prevTotal: number,
+  addedCategory?: string | null
+): Nudge | null {
+  // Water reminder every 3 drinks — skip it when the drink just added was already
+  // non-alcoholic or food (no point nagging someone who is hydrating / eating).
+  const justWentSoft = addedCategory != null && !isAlcoholic(addedCategory);
+  if (total > 0 && total % 3 === 0 && total !== prevTotal && !justWentSoft) {
     return { emoji: "💧", text: "Water break?", type: "water" };
   }
   // Taxi nudge at 8

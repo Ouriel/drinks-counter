@@ -37,7 +37,11 @@ export function TableView({
     if (typeof window === "undefined") return 0;
     return parseInt(localStorage.getItem(`tipsytap_rerolls_${slug}`) || "0", 10) || 0;
   });
-  const modalState = useOverlayState({ isOpen: !!selectedMember });
+  const modalState = useOverlayState({
+    onOpenChange: (open) => {
+      if (!open) setSelectedMember(null);
+    },
+  });
   const t = useTranslations("table");
   const tAnimals = useTranslations("animals");
 
@@ -257,20 +261,9 @@ export function TableView({
 
         {/* Member drinks modal */}
         <Modal state={modalState}>
-          <Modal.Backdrop
-            isDismissable
-            onClick={() => {
-              setSelectedMember(null);
-              modalState.close();
-            }}
-          >
+          <Modal.Backdrop isDismissable>
             <Modal.Container size="sm">
-              <Modal.Dialog
-                onClick={() => {
-                  setSelectedMember(null);
-                  modalState.close();
-                }}
-              >
+              <Modal.Dialog>
                 <Modal.Header>
                   <Modal.Heading>{formatNickname(selectedMember, tAnimals)}</Modal.Heading>
                 </Modal.Header>

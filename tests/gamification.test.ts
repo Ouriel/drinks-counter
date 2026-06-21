@@ -28,6 +28,18 @@ describe("getNudge", () => {
     expect(getNudge(9, 8)?.type).toBe("water");
   });
 
+  it("suppresses the water nudge when the added drink is non-alcoholic or food", () => {
+    expect(getNudge(3, 2, "soft")).toBeNull();
+    expect(getNudge(3, 2, "mocktail")).toBeNull();
+    expect(getNudge(3, 2, "food")).toBeNull();
+  });
+
+  it("still shows the water nudge for alcoholic or unknown drinks", () => {
+    expect(getNudge(3, 2, "beer")?.type).toBe("water");
+    expect(getNudge(3, 2, null)?.type).toBe("water");
+    expect(getNudge(3, 2)?.type).toBe("water");
+  });
+
   it("returns taxi nudge at 8", () => {
     expect(getNudge(8, 7)?.type).toBe("taxi");
   });

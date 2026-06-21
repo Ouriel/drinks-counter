@@ -8,7 +8,11 @@ function vibrate() {
   if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(10);
 }
 
-function notifyGamification(newTotal: number, prevTotal: number): boolean {
+function notifyGamification(
+  newTotal: number,
+  prevTotal: number,
+  addedCategory?: string | null
+): boolean {
   const badge = getBadgeForCount(newTotal);
   if (badge) {
     toast(`${badge.emoji} ${badge.title}`, { description: badge.subtitle, timeout: 15000 });
@@ -17,7 +21,7 @@ function notifyGamification(newTotal: number, prevTotal: number): boolean {
   if (isPersonalBest && !badge) {
     toast("🏅 Personal Best!", { description: `${newTotal} drinks — new record`, timeout: 15000 });
   }
-  const nudge = getNudge(newTotal, prevTotal);
+  const nudge = getNudge(newTotal, prevTotal, addedCategory);
   if (nudge) {
     toast(`${nudge.emoji} ${nudge.text}`, { timeout: 15000 });
   }
@@ -34,8 +38,8 @@ export function useOptimisticDrinks(slug: string, onBadge?: () => void) {
     if (data && pendingOps.current === 0) setDrinks(data.drinks);
   }, [slug]);
 
-  function triggerGamification(newTotal: number) {
-    const earned = notifyGamification(newTotal, totalRef.current);
+  function triggerGamification(newTotal: number, category?: string | null) {
+    const earned = notifyGamification(newTotal, totalRef.current, category);
     totalRef.current = newTotal;
     if (earned && onBadge) onBadge();
   }
@@ -75,7 +79,7 @@ export function useOptimisticDrinks(slug: string, onBadge?: () => void) {
         { id: `temp-${crypto.randomUUID()}`, name, count: 1, category: category || null },
       ]);
     }
-    triggerGamification(totalRef.current + 1);
+    triggerGamification(totalRef.current + 1, category);
 
     await withPendingOp(async () => {
       const data = await api.addDrink({ slug, name, category });
@@ -102,7 +106,7 @@ export function useOptimisticDrinks(slug: string, onBadge?: () => void) {
     setDrinks((prev) =>
       prev.map((item) => (item.id === drink.id ? { ...item, count: item.count + 1 } : item))
     );
-    triggerGamification(totalRef.current + 1);
+    triggerGamification(totalRef.current + 1, drink.category);
 
     await withPendingOp(async () => {
       const data = await api.addDrink({
