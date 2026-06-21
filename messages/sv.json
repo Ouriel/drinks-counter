@@ -160,7 +160,7 @@
     "offTheRails": "Inga bromsar",
     "sendHelp": "Skicka hjälp",
     "info": "Vad betyder takten?",
-    "explain": "Takten är dina drinkar per timme. Din nuvarande takt: {dph} drinkar/timme."
+    "explain": "Din nuvarande takt: {dph} drinkar/timme."
   },
   "achievements": {
     "rainbow": "Smakat regnbågen — 4+ kategorier",

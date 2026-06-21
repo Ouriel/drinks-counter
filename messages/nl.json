@@ -160,7 +160,7 @@
     "offTheRails": "Geen remmen meer",
     "sendHelp": "Stuur hulp",
     "info": "Wat betekent het tempo?",
-    "explain": "Het tempo is je aantal drankjes per uur. Je huidige tempo: {dph} drankjes/uur."
+    "explain": "Je huidige tempo: {dph} drankjes/uur."
   },
   "achievements": {
     "rainbow": "De regenboog geproefd — 4+ categorieën",

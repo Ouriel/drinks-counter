@@ -160,7 +160,7 @@
     "offTheRails": "Off The Rails",
     "sendHelp": "Send Help",
     "info": "What does pace mean?",
-    "explain": "Pace is your drinks per hour. Your current pace: {dph} drinks/hour."
+    "explain": "Your current pace: {dph} drinks/hour."
   },
   "achievements": {
     "rainbow": "Tasted the rainbow — 4+ categories",

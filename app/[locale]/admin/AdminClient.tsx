@@ -6,8 +6,8 @@ import { useTranslations } from "next-intl";
 import { CATEGORIES } from "@/lib/constants";
 import { formatNickname } from "@/lib/nicknames";
 import { CategoryIcon } from "@/lib/category-icon";
-import { Camera, Wine, ClipboardList, Users, BookOpen } from "lucide-react";
-import { MILESTONES, PACE_LEVELS } from "@/lib/gamification";
+import { Camera, Wine, ClipboardList, Users, BookOpen, Beer } from "lucide-react";
+import { MILESTONES, PACE_LEVELS, getSessionHue, getIconColor } from "@/lib/gamification";
 import type { MenuItem } from "@/lib/types";
 
 type BarMenu = { id: string; barName: string; items: MenuItem[]; createdAt: string };
@@ -529,6 +529,62 @@ export default function AdminPage() {
                   <div className="flex-1">
                     <p className="font-medium text-sm">{achievement.name}</p>
                     <p className="text-xs text-default-500">{achievement.how}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section>
+            <h2 className="text-lg font-bold mb-3">Color &amp; motion (by total drinks)</h2>
+            <p className="text-xs text-default-500 mb-3">
+              The session screen reacts to how many drinks have been logged: the background and icon
+              tint shift from cool/amber to warm, and the page tilts more as the count climbs (all
+              capped at 20 drinks).
+            </p>
+            <div className="flex gap-2 mb-4">
+              {[0, 5, 10, 15, 20].map((n) => (
+                <div key={n} className="flex-1 text-center">
+                  <div
+                    className="h-12 rounded-lg flex items-center justify-center border border-default-200"
+                    style={{ backgroundColor: getSessionHue(n, true) }}
+                  >
+                    <Beer className="w-5 h-5" style={{ color: getIconColor(n, true) }} />
+                  </div>
+                  <p className="text-xs text-default-500 mt-1">{n === 20 ? "20+" : n}</p>
+                </div>
+              ))}
+            </div>
+            <div className="space-y-2">
+              {[
+                {
+                  name: "Background hue",
+                  how: "Cool blue → warm amber as drinks go from 0 to 20.",
+                },
+                {
+                  name: "Icon tint",
+                  how: "Amber, shifting toward deep orange as the count rises.",
+                },
+                {
+                  name: "Tilt & shadow",
+                  how: "Page starts tilting at 3 drinks; drop shadow grows from 7+.",
+                },
+                {
+                  name: "Title wobble",
+                  how: "The drink counter wobbles on each tap from 10+.",
+                },
+                {
+                  name: "Vignette",
+                  how: "A pulsing dark vignette frames the screen at 15+.",
+                },
+              ].map((effect) => (
+                <div
+                  key={effect.name}
+                  className="flex items-center gap-3 bg-default-100 rounded-lg px-3 py-2"
+                >
+                  <div className="flex-1">
+                    <p className="font-medium text-sm">{effect.name}</p>
+                    <p className="text-xs text-default-500">{effect.how}</p>
                   </div>
                 </div>
               ))}

@@ -160,7 +160,7 @@
     "offTheRails": "Sem travões",
     "sendHelp": "Mandem ajuda",
     "info": "O que significa o ritmo?",
-    "explain": "O ritmo é o número de bebidas por hora. O teu ritmo atual: {dph} bebidas/hora."
+    "explain": "O teu ritmo atual: {dph} bebidas/hora."
   },
   "achievements": {
     "rainbow": "Provaste o arco-íris — 4+ categorias",
