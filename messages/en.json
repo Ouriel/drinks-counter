@@ -15,7 +15,7 @@
     "barName": "Bar name…",
     "items": "{count, plural, one {# item} other {# items}}",
     "nearbyPlaces": "Nearby places",
-    "noResultsPhoto": "📸 No results — snap a photo of the menu to import drinks!",
+    "noResultsPhoto": "No results — snap a photo of the menu to import drinks!",
     "start": "Start ({count} drinks)",
     "creating": "Creating…",
     "readingMenu": "Reading menu…",

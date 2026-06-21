@@ -15,7 +15,7 @@
     "barName": "Naam van de bar…",
     "items": "{count, plural, one {# item} other {# items}}",
     "nearbyPlaces": "Plekken in de buurt",
-    "noResultsPhoto": "📸 Geen resultaten — maak een foto van het menu om drankjes te importeren!",
+    "noResultsPhoto": "Geen resultaten — maak een foto van het menu om drankjes te importeren!",
     "start": "Start ({count} drankjes)",
     "creating": "Bezig met aanmaken…",
     "readingMenu": "Menu lezen…",

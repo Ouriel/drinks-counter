@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { isAlcoholic } from "@/lib/constants";
 import { CategoryIcon } from "@/lib/category-icon";
-import { Users, Beer } from "lucide-react";
+import { Users, Beer, Wine, CupSoda } from "lucide-react";
 import { formatNickname } from "@/lib/nicknames";
 import { api } from "@/lib/api";
 
@@ -101,8 +101,11 @@ export default function TableSummaryPage() {
               {t("tableSummary.people", { count: stats.members.length })}
             </p>
             {nonAlcoholicTotal > 0 && alcoholicTotal > 0 && (
-              <p className="text-sm text-default-500 mt-2">
-                🍸 {t("summary.withAlcohol", { count: alcoholicTotal })} · 🥤{" "}
+              <p className="text-sm text-default-500 mt-2 flex items-center justify-center gap-1 flex-wrap">
+                <Wine className="w-4 h-4" />
+                {t("summary.withAlcohol", { count: alcoholicTotal })}
+                <span className="mx-1">·</span>
+                <CupSoda className="w-4 h-4" />
                 {t("summary.alcoholFree", { count: nonAlcoholicTotal })}
               </p>
             )}

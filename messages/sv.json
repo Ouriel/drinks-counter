@@ -15,7 +15,7 @@
     "barName": "Barens namn…",
     "items": "{count, plural, one {# artikel} other {# artiklar}}",
     "nearbyPlaces": "Platser i närheten",
-    "noResultsPhoto": "📸 Inga resultat — ta ett foto av menyn för att importera drinkar!",
+    "noResultsPhoto": "Inga resultat — ta ett foto av menyn för att importera drinkar!",
     "start": "Starta ({count} drinkar)",
     "creating": "Skapar…",
     "readingMenu": "Läser menyn…",

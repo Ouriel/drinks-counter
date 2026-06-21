@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { Button, Card, Chip, Spinner, Popover, toast } from "@heroui/react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { Share2, Info, Beer, Medal, Clock } from "lucide-react";
+import { Share2, Info, Beer, Medal, Clock, Wine, CupSoda } from "lucide-react";
 import { CATEGORY_EMOJI, isAlcoholic } from "@/lib/constants";
 import { CategoryIcon } from "@/lib/category-icon";
 import { titleCase } from "@/lib/sanitize";
@@ -196,8 +196,11 @@ export default function SummaryPage() {
               </p>
             )}
             {nonAlcoholicTotal > 0 && alcoholicTotal > 0 && (
-              <p className="text-sm text-default-500 mt-2">
-                🍸 {t("summary.withAlcohol", { count: alcoholicTotal })} · 🥤{" "}
+              <p className="text-sm text-default-500 mt-2 flex items-center justify-center gap-1 flex-wrap">
+                <Wine className="w-4 h-4" />
+                {t("summary.withAlcohol", { count: alcoholicTotal })}
+                <span className="mx-1">·</span>
+                <CupSoda className="w-4 h-4" />
                 {t("summary.alcoholFree", { count: nonAlcoholicTotal })}
               </p>
             )}

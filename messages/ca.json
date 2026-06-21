@@ -15,7 +15,7 @@
     "barName": "Nom del bar…",
     "items": "{count, plural, one {# beguda} other {# begudes}}",
     "nearbyPlaces": "Llocs propers",
-    "noResultsPhoto": "📸 Sense resultats — fotografía el menú per importar begudes!",
+    "noResultsPhoto": "Sense resultats — fotografía el menú per importar begudes!",
     "start": "Començar ({count} begudes)",
     "creating": "Creant…",
     "readingMenu": "Llegint el menú…",
