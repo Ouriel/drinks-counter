@@ -41,14 +41,14 @@
     "linkCopied": "Länk kopierad!",
     "slugExplain": "Din sessionslänk — spara den för att komma tillbaka om du stänger sidan!",
     "joinSession": "Gå med i min session på {bar}",
-    "eveningSummary": "Kvällssammanfattning",
-    "tableSummary": "Bordsstatistik",
+    "eveningSummary": "Min sammanfattning",
+    "tableSummary": "Bordssammanfattning",
     "couldNotCreate": "Kunde inte skapa session. Försök igen."
   },
   "summary": {
     "withAlcohol": "{count} med alkohol",
     "alcoholFree": "{count} alkoholfria",
-    "title": "Kvällssammanfattning",
+    "title": "Min sammanfattning",
     "drinksTotal": "{count, plural, one {drink} other {drinkar}} totalt",
     "personalBest": "Personligt rekord!",
     "pace": "Tempo: {emoji} {label}",
@@ -199,7 +199,7 @@
     "barNameLabel": "Barens namn"
   },
   "tableSummary": {
-    "title": "Bordsstatistik",
+    "title": "Bordssammanfattning",
     "drinksTotal": "{count, plural, one {drink} other {drinkar}} totalt",
     "people": "{count, plural, one {# person} other {# personer}}",
     "ranking": "Rankning",

@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Button, Input, Card, Modal, useOverlayState, toast } from "@heroui/react";
+import { Button, Input, Card, Modal, Popover, useOverlayState, toast } from "@heroui/react";
 import { useTranslations } from "next-intl";
 import { QrCode } from "@/components/QrCode";
 import { api } from "@/lib/api";
 import { formatNickname } from "@/lib/nicknames";
-import { RefreshCw, QrCode as QrCodeIcon, Copy, MessageCircle, Dices, Users } from "lucide-react";
+import { RefreshCw, QrCode as QrCodeIcon, Copy, Dices, Users } from "lucide-react";
 
 type Member = { nickname: string; total: number };
 
@@ -15,11 +15,13 @@ export function TableView({
   tableCode: initialCode,
   nickname: initialNickname,
   drinkTotal,
+  onTableChange,
 }: {
   slug: string;
   tableCode: string | null;
   nickname: string | null;
   drinkTotal: number;
+  onTableChange?: (code: string | null) => void;
 }) {
   const [localCode, setLocalCode] = useState<string | null>(null);
   const [nickname, setNickname] = useState(initialNickname);
@@ -56,11 +58,6 @@ export function TableView({
   function copyJoinLink() {
     navigator.clipboard.writeText(joinUrl);
     toast(t("linkCopied"), { timeout: 15000 });
-  }
-
-  function shareWhatsApp() {
-    const text = `Join my table on TipsyTap 🍻 ${joinUrl}`;
-    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank", "noopener");
   }
 
   const fetchRanking = useCallback(
@@ -103,6 +100,7 @@ export function TableView({
     }
     setLocalCode(data.code);
     setNickname(data.nickname);
+    onTableChange?.(data.code);
     fetchRanking(data.code);
   }
 
@@ -119,6 +117,7 @@ export function TableView({
     setLocalCode(data.code);
     setNickname(data.nickname);
     setShowJoin(false);
+    onTableChange?.(data.code);
     fetchRanking(data.code);
   }
 
@@ -142,9 +141,26 @@ export function TableView({
             >
               <RefreshCw className="w-4 h-4" />
             </Button>
-            <span className="text-xs font-mono text-default-500 bg-default-100 px-2 py-1 rounded">
-              {tableCode}
-            </span>
+            <Popover>
+              <Popover.Trigger>
+                <button
+                  type="button"
+                  className="text-xs font-mono text-default-500 bg-default-100 px-2 py-1 rounded"
+                  aria-label={t("shareCode", { code: tableCode })}
+                >
+                  {tableCode}
+                </button>
+              </Popover.Trigger>
+              <Popover.Content>
+                <Popover.Dialog>
+                  <div className="px-3 py-2 max-w-[200px]">
+                    <p className="text-xs text-default-500">
+                      {t("shareCode", { code: tableCode })}
+                    </p>
+                  </div>
+                </Popover.Dialog>
+              </Popover.Content>
+            </Popover>
           </div>
         </div>
         {members.length === 0 ? (
@@ -183,9 +199,6 @@ export function TableView({
             })}
           </div>
         )}
-        <p className="text-xs text-default-500 text-center mt-3">
-          {t("shareCode", { code: tableCode })}
-        </p>
         {nickname && (
           <p className="text-sm text-center mt-2 text-default-500">
             {t("youAre", { name: formatNickname(nickname, tAnimals) })}
@@ -205,10 +218,6 @@ export function TableView({
                 <Copy className="w-4 h-4" />
                 {t("copyLink")}
               </Button>
-              <Button variant="ghost" size="sm" className="gap-1" onPress={shareWhatsApp}>
-                <MessageCircle className="w-4 h-4" />
-                WhatsApp
-              </Button>
               <Button variant="ghost" size="sm" onPress={() => setShowQr(false)}>
                 {t("hideQr")}
               </Button>
@@ -224,10 +233,6 @@ export function TableView({
               <Copy className="w-4 h-4" />
               {t("copyLink")}
             </Button>
-            <Button variant="ghost" size="sm" className="gap-1" onPress={shareWhatsApp}>
-              <MessageCircle className="w-4 h-4" />
-              WhatsApp
-            </Button>
           </div>
         )}
 
@@ -238,7 +243,12 @@ export function TableView({
             className="text-danger"
             onPress={async () => {
               const result = await api.leaveTable(slug);
-              if (result) window.location.reload();
+              if (result) {
+                setLocalCode(null);
+                setNickname(null);
+                setMembers([]);
+                onTableChange?.(null);
+              }
             }}
           >
             {t("leave")}

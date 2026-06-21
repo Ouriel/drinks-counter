@@ -41,14 +41,14 @@
     "linkCopied": "Enllaç copiat!",
     "slugExplain": "El teu enllaç de sessió — guarda'l per tornar si tanques la pàgina!",
     "joinSession": "Uneix-te a la meva sessió a {bar}",
-    "eveningSummary": "Resum del vespre",
-    "tableSummary": "Estadístiques de la taula",
+    "eveningSummary": "El meu resum",
+    "tableSummary": "Resum de la taula",
     "couldNotCreate": "No s'ha pogut crear la sessió. Torna-ho a provar."
   },
   "summary": {
     "withAlcohol": "{count} amb alcohol",
     "alcoholFree": "{count} sense alcohol",
-    "title": "Resum del vespre",
+    "title": "El meu resum",
     "drinksTotal": "{count, plural, one {copa} other {copes}} en total",
     "personalBest": "Rècord personal!",
     "pace": "Ritme: {emoji} {label}",
@@ -199,7 +199,7 @@
     "barNameLabel": "Nom del bar"
   },
   "tableSummary": {
-    "title": "Estadístiques de la taula",
+    "title": "Resum de la taula",
     "drinksTotal": "{count, plural, one {beguda} other {begudes}} en total",
     "people": "{count, plural, one {# persona} other {# persones}}",
     "ranking": "Classificació",

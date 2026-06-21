@@ -43,6 +43,16 @@ export function getSessionHue(total: number, isDark = true): string {
   return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
 }
 
+// Icon tint: amber by default, shifting toward deep orange/red as drinks add up.
+// Tuned for legibility in both themes (darker in light mode, brighter in dark mode).
+export function getIconColor(total: number, isDark = true): string {
+  const t = Math.min(total, 20) / 20;
+  const hue = Math.round(45 - t * 33); // 45 (amber) → 12 (deep orange)
+  const saturation = Math.round(90 + t * 8); // 90% → 98%
+  const lightness = isDark ? 58 - t * 8 : 45 - t * 8; // dark: 58→50%, light: 45→37%
+  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+}
+
 /** Progressive visual effects based on drink count */
 export function getTipsyStyle(total: number): React.CSSProperties {
   if (total < 3) return {};

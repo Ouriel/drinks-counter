@@ -3,7 +3,21 @@
 
 :root {
   --accent: oklch(0.769 0.188 70.08);
+  --tipsy-icon: hsl(45, 90%, 45%);
   font-size: 18px;
+}
+
+.dark {
+  --tipsy-icon: hsl(45, 90%, 58%);
+}
+
+/* Tint all lucide icons amber by default; the session page overrides --tipsy-icon
+   per drink count so the tint shifts warmer as the night goes on. Kept in the
+   components layer so an explicit text-* utility on an icon can still override it. */
+@layer components {
+  .lucide {
+    color: var(--tipsy-icon);
+  }
 }
 
 /* Ensure primary buttons meet WCAG AA contrast (4.5:1) */

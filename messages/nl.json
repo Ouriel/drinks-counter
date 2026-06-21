@@ -41,14 +41,14 @@
     "linkCopied": "Link gekopieerd!",
     "slugExplain": "Je sessielink — bewaar hem om terug te komen als je de pagina sluit!",
     "joinSession": "Doe mee met mijn sessie bij {bar}",
-    "eveningSummary": "Avondoverzicht",
-    "tableSummary": "Tafelstatistieken",
+    "eveningSummary": "Mijn overzicht",
+    "tableSummary": "Tafeloverzicht",
     "couldNotCreate": "Kon sessie niet aanmaken. Probeer opnieuw."
   },
   "summary": {
     "withAlcohol": "{count} met alcohol",
     "alcoholFree": "{count} alcoholvrij",
-    "title": "Avondoverzicht",
+    "title": "Mijn overzicht",
     "drinksTotal": "{count, plural, one {drankje} other {drankjes}} totaal",
     "personalBest": "Persoonlijk record!",
     "pace": "Tempo: {emoji} {label}",
@@ -199,7 +199,7 @@
     "barNameLabel": "Naam van de bar"
   },
   "tableSummary": {
-    "title": "Tafelstatistieken",
+    "title": "Tafeloverzicht",
     "drinksTotal": "{count, plural, one {drankje} other {drankjes}} totaal",
     "people": "{count, plural, one {# persoon} other {# personen}}",
     "ranking": "Ranglijst",

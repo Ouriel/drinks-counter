@@ -41,14 +41,14 @@
     "linkCopied": "Link copiado!",
     "slugExplain": "O link da tua sessão — guarda-o para voltar se fechares a página!",
     "joinSession": "Junta-te à minha sessão no {bar}",
-    "eveningSummary": "Resumo da noite",
-    "tableSummary": "Estatísticas da mesa",
+    "eveningSummary": "O meu resumo",
+    "tableSummary": "Resumo da mesa",
     "couldNotCreate": "Não foi possível criar a sessão. Tenta novamente."
   },
   "summary": {
     "withAlcohol": "{count} com álcool",
     "alcoholFree": "{count} sem álcool",
-    "title": "Resumo da Noite",
+    "title": "O meu resumo",
     "drinksTotal": "{count, plural, one {bebida} other {bebidas}} no total",
     "personalBest": "Recorde pessoal!",
     "pace": "Ritmo: {emoji} {label}",
@@ -199,7 +199,7 @@
     "barNameLabel": "Nome do bar"
   },
   "tableSummary": {
-    "title": "Estatísticas da Mesa",
+    "title": "Resumo da mesa",
     "drinksTotal": "{count, plural, one {bebida} other {bebidas}} no total",
     "people": "{count, plural, one {# pessoa} other {# pessoas}}",
     "ranking": "Classificação",

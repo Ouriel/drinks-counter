@@ -41,14 +41,14 @@
     "linkCopied": "Link copied!",
     "slugExplain": "Your session link — save it to get back if you close the page!",
     "joinSession": "Join my session at {bar}",
-    "eveningSummary": "Evening summary",
-    "tableSummary": "Table stats",
+    "eveningSummary": "My Summary",
+    "tableSummary": "Table Summary",
     "couldNotCreate": "Could not create session. Please try again."
   },
   "summary": {
     "withAlcohol": "{count} with alcohol",
     "alcoholFree": "{count} alcohol-free",
-    "title": "Evening Summary",
+    "title": "My Summary",
     "drinksTotal": "{count, plural, one {drink} other {drinks}} total",
     "personalBest": "Personal best!",
     "pace": "Pace: {emoji} {label}",
@@ -199,7 +199,7 @@
     "barNameLabel": "Bar name"
   },
   "tableSummary": {
-    "title": "Table Stats",
+    "title": "Table Summary",
     "drinksTotal": "{count, plural, one {drink} other {drinks}} total",
     "people": "{count, plural, one {# person} other {# people}}",
     "ranking": "Ranking",

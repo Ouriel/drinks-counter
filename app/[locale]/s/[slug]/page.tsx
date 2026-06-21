@@ -15,7 +15,7 @@ import { DrinkCard } from "@/components/DrinkCard";
 import { DrinkPicker } from "@/components/DrinkPicker";
 import { Confetti } from "@/components/Confetti";
 import { TableView } from "@/components/TableView";
-import { getSessionHue, getPace, getTipsyStyle } from "@/lib/gamification";
+import { getSessionHue, getPace, getTipsyStyle, getIconColor } from "@/lib/gamification";
 import { useOptimisticDrinks } from "@/lib/useOptimisticDrinks";
 import { api } from "@/lib/api";
 import type { Drink, MenuItem } from "@/lib/types";
@@ -121,6 +121,7 @@ export default function SessionPage() {
   const { resolvedTheme } = useTheme();
   const bgColor = getSessionHue(total, resolvedTheme === "dark");
   const tipsyStyle = getTipsyStyle(total);
+  const iconColor = getIconColor(total, resolvedTheme === "dark");
 
   if (loading) {
     return (
@@ -133,7 +134,13 @@ export default function SessionPage() {
   return (
     <div
       className={`min-h-screen p-4 pb-[calc(6rem+env(safe-area-inset-bottom))] transition-all duration-1000 text-foreground ${total >= 15 ? "tipsy-vignette" : ""}`}
-      style={{ backgroundColor: bgColor, ...tipsyStyle }}
+      style={
+        {
+          backgroundColor: bgColor,
+          ...tipsyStyle,
+          "--tipsy-icon": iconColor,
+        } as React.CSSProperties
+      }
     >
       {/* Header */}
       <div className="mb-6 relative">
@@ -308,7 +315,13 @@ export default function SessionPage() {
       )}
 
       {/* Table */}
-      <TableView slug={slug} tableCode={tableCode} nickname={nickname} drinkTotal={total} />
+      <TableView
+        slug={slug}
+        tableCode={tableCode}
+        nickname={nickname}
+        drinkTotal={total}
+        onTableChange={setTableCode}
+      />
 
       {/* FAB */}
       <div className="fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom))] left-0 right-0 flex justify-center">
