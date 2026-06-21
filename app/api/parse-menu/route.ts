@@ -81,21 +81,31 @@ export async function POST(req: NextRequest) {
               type: "text",
               text: `Extract all drinks and food items from this bar/restaurant menu photo.
 
-Rules:
-- Use the generic type when there's only ONE of that kind (e.g. just "blonde beer" if there's only one blonde beer)
+LANGUAGE (important):
+- Write EVERY name in the SAME LANGUAGE as the menu. Do NOT translate to English. Keep the menu's own words (e.g. "rouge", "blanc", "rosé", "blonde", "ambrée", "brune", "pression", "demi", "pinte", "cidre").
+
+NAMING:
+- Use the generic type when there's only ONE of that kind (e.g. just "bière blonde" if there's only one blonde beer)
 - KEEP the brand/name when there are MULTIPLE variants of the same type (e.g. if there are 3 IPAs, keep "Marguerite IPA", "Punk IPA", "Lagunitas IPA")
-- BEER SIZES: if a beer is offered in multiple sizes (e.g. demi/half and pint, or 25cl and 50cl), create a SEPARATE entry for EACH size and put the size word FIRST in the name as written on the menu (e.g. "demi 1664", "pinte 1664", "half guinness", "pint guinness", "25cl heineken", "50cl heineken")
-- WINE: start the name with the colour (red, white, rosé) FOLLOWED by the wine name or grape/cépage (e.g. "red bordeaux", "white chardonnay", "rosé côtes de provence"). Infer the colour when obvious; omit it only if truly unknown
-- Include supplements and extras (e.g. "picon", "sirop", "grenadine") as separate items — these are small add-ons often listed in smaller text
+- Use lowercase names, kept short (2-4 words max)
+
+BEER SIZES (important):
+- Draft/pression beers are usually sold in several sizes. Sizes can be written inline (demi / pinte, 25cl / 50cl) OR as COLUMN HEADERS placed above the beer list (e.g. a "25 cl" column and a "50 cl" column, sometimes labelled "Happy Hour"/"Hors Happy").
+- When a beer section shows more than one size, create a SEPARATE entry for EACH beer × EACH size, putting the size FIRST in the name exactly as written on the menu (e.g. "25cl herrenbrau", "50cl herrenbrau", "demi 1664", "pinte 1664"). Ignore the happy-hour vs normal price distinction — only the volume matters, so do not duplicate the same volume twice.
+- If a beer is sold in a single size, just keep its name.
+
+WINE:
+- Start the name with the colour in the MENU'S language (rouge / blanc / rosé, or red / white / rosé), then the wine name or grape/cépage (e.g. "rouge bordeaux merlot", "blanc chardonnay", "rosé côtes de provence"). Infer the colour when obvious; omit it only if truly unknown.
+
+OTHER:
+- Include supplements and extras (e.g. "picon", "sirop", "grenadine") as separate items
 - Split combo items into separate entries (e.g. "Coca, Ice Tea, Limonade" → 3 separate items)
-- Use lowercase names
-- Keep names short (2-4 words max)
 - Category must be one of: beer, cocktail, wine, spirit, shot, mocktail, soft, food, other
 - "mocktail" = non-alcoholic cocktails (virgin drinks, alcohol-free mixes)
 - "soft" = non-alcoholic drinks (sodas, juices, water, coffee, tea)
 - "shot" = small 2-4cl drinks meant to be downed in one go (Jägerbomb, tequila shot, B52, etc.)
 - "spirit" = neat spirits served in a tumbler (whiskey, rum, vodka neat, digestifs)
-- Be accurate with categories: non-alcoholic drinks must use "soft" or "mocktail", never an alcoholic category
+- Non-alcoholic drinks must use "soft" or "mocktail", never an alcoholic category
 - Ignore prices, descriptions, and decorative text`,
             },
           ],
