@@ -131,9 +131,13 @@ export function SessionClient({
   const total = drinks.reduce((sum, drink) => sum + drink.count, 0);
   const pace = getPace(drinks);
   const { resolvedTheme } = useTheme();
-  const bgColor = getSessionHue(total, resolvedTheme === "dark");
+  // Until hydrated, assume the dark default theme (matches `defaultTheme="dark"` and the
+  // server-rendered <html class="dark">). Reading resolvedTheme during SSR/first render
+  // would yield light colors and mismatch the client → React #418.
+  const isDark = mounted ? resolvedTheme === "dark" : true;
+  const bgColor = getSessionHue(total, isDark);
   const tipsyStyle = getTipsyStyle(total);
-  const iconColor = getIconColor(total, resolvedTheme === "dark");
+  const iconColor = getIconColor(total, isDark);
 
   if (notFound) {
     return (
