@@ -46,6 +46,40 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ tables: allTables });
   }
 
+  if (tab === "session-detail") {
+    const id = req.nextUrl.searchParams.get("id");
+    if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
+    const sessionDrinks = await db
+      .select({ name: drinks.name, count: drinks.count, category: drinks.category })
+      .from(drinks)
+      .where(eq(drinks.sessionId, id))
+      .orderBy(sql`${drinks.count} DESC`);
+    return NextResponse.json({ drinks: sessionDrinks });
+  }
+
+  if (tab === "table-detail") {
+    const id = req.nextUrl.searchParams.get("id");
+    if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
+    const members = await db
+      .select({
+        nickname: sessions.nickname,
+        slug: sessions.slug,
+        total: sql<number>`COALESCE(SUM(${drinks.count}), 0)::int`,
+      })
+      .from(sessions)
+      .leftJoin(drinks, eq(drinks.sessionId, sessions.id))
+      .where(eq(sessions.tableId, id))
+      .groupBy(sessions.id, sessions.nickname, sessions.slug)
+      .orderBy(sql`COALESCE(SUM(${drinks.count}), 0) DESC`);
+    return NextResponse.json({
+      members: members.map((member) => ({
+        nickname: member.nickname || "???",
+        slug: member.slug,
+        total: Number(member.total),
+      })),
+    });
+  }
+
   // Default: bars
   const menus = await db.select().from(barMenus);
   const [sessionCount] = await db.select({ count: count() }).from(sessions);

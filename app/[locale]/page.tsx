@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Button, Input, Card, Chip, Spinner, toast } from "@heroui/react";
 import { useTranslations } from "next-intl";
+import { ChartColumn } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
 import { ThemeSwitch } from "@/lib/theme-switch";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
@@ -38,7 +39,19 @@ function HomeContent() {
     if (typeof window === "undefined") return [];
     try {
       const stored = localStorage.getItem("tipsytap_recent");
-      return stored ? JSON.parse(stored) : [];
+      const parsed: { slug: string; barName: string; date: string }[] = stored
+        ? JSON.parse(stored)
+        : [];
+      // Sessions have a 48h TTL — drop stale local entries on open.
+      const cutoff = Date.now() - 48 * 60 * 60 * 1000;
+      const fresh = parsed.filter((session) => {
+        const time = new Date(session.date).getTime();
+        return !Number.isNaN(time) && time >= cutoff;
+      });
+      if (fresh.length !== parsed.length) {
+        localStorage.setItem("tipsytap_recent", JSON.stringify(fresh));
+      }
+      return fresh;
     } catch {
       return [];
     }
@@ -234,8 +247,9 @@ function HomeContent() {
             </div>
           )}
         </div>
-        <Button variant="ghost" size="sm" onPress={() => router.push("/stats")}>
-          📊 {t("home.stats")}
+        <Button variant="ghost" size="sm" className="gap-1" onPress={() => router.push("/stats")}>
+          <ChartColumn className="w-4 h-4" />
+          {t("home.stats")}
         </Button>
       </div>
     );

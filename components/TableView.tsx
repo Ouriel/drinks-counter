@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Button, Input, Card, Modal, useOverlayState } from "@heroui/react";
+import { Button, Input, Card, Modal, useOverlayState, toast } from "@heroui/react";
 import { useTranslations } from "next-intl";
 import { QrCode } from "@/components/QrCode";
 import { api } from "@/lib/api";
+import { formatNickname } from "@/lib/nicknames";
+import { RefreshCw, QrCode as QrCodeIcon, Copy, MessageCircle, Dices } from "lucide-react";
 
 type Member = { nickname: string; total: number };
 
@@ -29,8 +31,37 @@ export function TableView({
   const [error, setError] = useState("");
   const [showQr, setShowQr] = useState(false);
   const [selectedMember, setSelectedMember] = useState<string | null>(null);
+  const [rerollsUsed, setRerollsUsed] = useState<number>(() => {
+    if (typeof window === "undefined") return 0;
+    return parseInt(localStorage.getItem(`tipsytap_rerolls_${slug}`) || "0", 10) || 0;
+  });
   const modalState = useOverlayState({ isOpen: !!selectedMember });
   const t = useTranslations("table");
+  const tAnimals = useTranslations("animals");
+
+  const MAX_REROLLS = 3;
+  const joinUrl = `${typeof window !== "undefined" ? window.location.origin : ""}/join/${tableCode}`;
+
+  async function handleReroll() {
+    if (rerollsUsed >= MAX_REROLLS) return;
+    const data = await api.rerollNickname(slug);
+    if (!data) return;
+    setNickname(data.nickname);
+    const used = rerollsUsed + 1;
+    setRerollsUsed(used);
+    localStorage.setItem(`tipsytap_rerolls_${slug}`, String(used));
+    fetchRanking();
+  }
+
+  function copyJoinLink() {
+    navigator.clipboard.writeText(joinUrl);
+    toast(t("linkCopied"));
+  }
+
+  function shareWhatsApp() {
+    const text = `Join my table on TipsyTap 🍻 ${joinUrl}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank", "noopener");
+  }
 
   const fetchRanking = useCallback(
     async (code?: string) => {
@@ -44,7 +75,6 @@ export function TableView({
 
   useEffect(() => {
     if (!tableCode) return;
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchRanking();
     const id = setInterval(() => {
       if (document.visibilityState === "visible") fetchRanking();
@@ -107,7 +137,7 @@ export function TableView({
               onPress={() => fetchRanking()}
               aria-label={t("refresh")}
             >
-              🔄
+              <RefreshCw className="w-4 h-4" />
             </Button>
             <span className="text-xs font-mono text-default-500 bg-default-100 px-2 py-1 rounded">
               {tableCode}
@@ -122,7 +152,10 @@ export function TableView({
               const isMe = member.nickname === nickname;
               const isTied = member.total === topScore && topScore > 0 && members.length > 1;
               return (
-                <Card key={member.nickname}>
+                <Card
+                  key={member.nickname}
+                  className={isMe ? "ring-2 ring-primary bg-primary/10" : undefined}
+                >
                   <button
                     type="button"
                     className="w-full px-4 py-3 flex items-center justify-between cursor-pointer"
@@ -131,12 +164,17 @@ export function TableView({
                       modalState.open();
                     }}
                   >
-                    <span className="text-base">
+                    <span className={`text-base ${isMe ? "font-bold text-primary" : ""}`}>
                       {isTied && "👑 "}
                       {isMe && "👉 "}
-                      {member.nickname}
+                      {formatNickname(member.nickname, tAnimals)}
+                      {isMe && ` (${t("you")})`}
                     </span>
-                    <span className="font-bold tabular-nums text-lg">{member.total}</span>
+                    <span
+                      className={`tabular-nums text-lg ${isMe ? "font-bold text-primary" : "font-bold"}`}
+                    >
+                      {member.total}
+                    </span>
                   </button>
                 </Card>
               );
@@ -146,20 +184,47 @@ export function TableView({
         <p className="text-xs text-default-500 text-center mt-3">
           {t("shareCode", { code: tableCode })}
         </p>
+        {nickname && (
+          <p className="text-sm text-center mt-2 text-default-500">
+            {t("youAre", { name: formatNickname(nickname, tAnimals) })}
+            {rerollsUsed < MAX_REROLLS && (
+              <Button variant="ghost" size="sm" className="ml-1 gap-1" onPress={handleReroll}>
+                <Dices className="w-3.5 h-3.5" />
+                {t("reroll")} ({MAX_REROLLS - rerollsUsed})
+              </Button>
+            )}
+          </p>
+        )}
         {showQr ? (
           <div className="mt-3 text-center">
-            <QrCode
-              url={`${typeof window !== "undefined" ? window.location.origin : ""}/join/${tableCode}`}
-              size={140}
-            />
-            <Button variant="ghost" size="sm" className="mt-2" onPress={() => setShowQr(false)}>
-              {t("hideQr")}
-            </Button>
+            <QrCode url={joinUrl} size={140} />
+            <div className="flex flex-wrap gap-2 justify-center mt-2">
+              <Button variant="ghost" size="sm" className="gap-1" onPress={copyJoinLink}>
+                <Copy className="w-4 h-4" />
+                {t("copyLink")}
+              </Button>
+              <Button variant="ghost" size="sm" className="gap-1" onPress={shareWhatsApp}>
+                <MessageCircle className="w-4 h-4" />
+                WhatsApp
+              </Button>
+              <Button variant="ghost" size="sm" onPress={() => setShowQr(false)}>
+                {t("hideQr")}
+              </Button>
+            </div>
           </div>
         ) : (
-          <div className="text-center mt-2">
-            <Button variant="ghost" size="sm" onPress={() => setShowQr(true)}>
+          <div className="flex flex-wrap gap-2 justify-center mt-2">
+            <Button variant="ghost" size="sm" className="gap-1" onPress={() => setShowQr(true)}>
+              <QrCodeIcon className="w-4 h-4" />
               {t("showQr")}
+            </Button>
+            <Button variant="ghost" size="sm" className="gap-1" onPress={copyJoinLink}>
+              <Copy className="w-4 h-4" />
+              {t("copyLink")}
+            </Button>
+            <Button variant="ghost" size="sm" className="gap-1" onPress={shareWhatsApp}>
+              <MessageCircle className="w-4 h-4" />
+              WhatsApp
             </Button>
           </div>
         )}
@@ -188,10 +253,15 @@ export function TableView({
             }}
           >
             <Modal.Container size="sm">
-              <Modal.Dialog>
+              <Modal.Dialog
+                onClick={() => {
+                  setSelectedMember(null);
+                  modalState.close();
+                }}
+              >
                 <Modal.Header>
                   <Modal.Heading>
-                    {selectedMember}
+                    {formatNickname(selectedMember, tAnimals)}
                     {selectedMember === nickname && ` (${t("you")})`}
                   </Modal.Heading>
                 </Modal.Header>

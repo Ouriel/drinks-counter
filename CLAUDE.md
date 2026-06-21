@@ -7,7 +7,7 @@ Drinks counter PWA. Next.js 16 + HeroUI v3 + Neon Postgres + Gemini AI. Strict T
 ## Before Making Changes
 
 1. `npx tsc --noEmit` — must pass clean
-2. `npm test` — 66 tests, all must pass
+2. `npm test` — 70 tests, all must pass
 3. `npx prettier --write` on every file you touch
 4. Check `lib/types.ts` before defining any type locally
 

@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Button, Popover, Spinner, toast } from "@heroui/react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
+import { Home, Share2, ChartColumn, Users, Info } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
 import { ThemeSwitch } from "@/lib/theme-switch";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
@@ -142,14 +143,16 @@ export default function SessionPage() {
             <Button
               variant="ghost"
               size="sm"
+              isIconOnly
               onPress={() => router.push("/")}
               aria-label={t("session.new")}
             >
-              🏠
+              <Home className="w-5 h-5" />
             </Button>
             <Button
               variant="ghost"
               size="sm"
+              isIconOnly
               onPress={() => {
                 if (navigator.share) {
                   navigator.share({
@@ -164,7 +167,7 @@ export default function SessionPage() {
               }}
               aria-label={t("session.share")}
             >
-              📤
+              <Share2 className="w-5 h-5" />
             </Button>
           </div>
           <div className="flex items-center gap-1">
@@ -232,6 +235,20 @@ export default function SessionPage() {
           <p className="text-sm mt-0.5 text-center text-default-500">
             {pace.emoji}{" "}
             {t(`pace.${pace.label.toLowerCase().replace(/ ./g, (c) => c[1].toUpperCase())}`)}
+            <Popover>
+              <Popover.Trigger>
+                <button type="button" className="ml-1 text-default-400" aria-label={t("pace.info")}>
+                  <Info className="inline w-3.5 h-3.5" />
+                </button>
+              </Popover.Trigger>
+              <Popover.Content>
+                <Popover.Dialog>
+                  <div className="px-3 py-2 max-w-[220px]">
+                    <p className="text-xs text-default-500">{t("pace.explain")}</p>
+                  </div>
+                </Popover.Dialog>
+              </Popover.Content>
+            </Popover>
           </p>
         )}
       </div>
@@ -269,10 +286,27 @@ export default function SessionPage() {
 
       {/* Summary link */}
       {drinks.length > 0 && (
-        <div className="text-center mt-4 mb-4">
-          <Button variant="ghost" size="sm" onPress={() => router.push(`/s/${slug}/summary`)}>
+        <div className="flex flex-wrap justify-center gap-2 mt-4 mb-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="gap-1"
+            onPress={() => router.push(`/s/${slug}/summary`)}
+          >
+            <ChartColumn className="w-4 h-4" />
             {t("session.eveningSummary")}
           </Button>
+          {tableCode && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="gap-1"
+              onPress={() => router.push(`/s/${slug}/table-summary`)}
+            >
+              <Users className="w-4 h-4" />
+              {t("session.tableSummary")}
+            </Button>
+          )}
         </div>
       )}
 

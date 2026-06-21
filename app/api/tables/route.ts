@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db, tables, sessions, drinks } from "@/lib/db";
 import { eq, sql, and } from "drizzle-orm";
 import { z } from "zod";
-import { generateNickname } from "@/lib/nicknames";
+import { pickUniqueNickname } from "@/lib/nicknames";
 import { parseBody } from "@/lib/schemas";
 
 const createTableSchema = z.object({ slug: z.string().min(1).max(50) });
@@ -23,14 +23,8 @@ async function uniqueNicknameForTable(tableId: string): Promise<string> {
     .select({ nickname: sessions.nickname })
     .from(sessions)
     .where(eq(sessions.tableId, tableId));
-  const taken = new Set(existing.map((entry) => entry.nickname));
-  for (let i = 0; i < 10; i++) {
-    const nick = generateNickname();
-    if (!taken.has(nick)) return nick;
-  }
-  // Fallback: append count to avoid collision
-  const base = generateNickname();
-  return `${base} ${taken.size + 1}`;
+  const taken = new Set(existing.map((entry) => entry.nickname).filter(Boolean) as string[]);
+  return pickUniqueNickname(taken);
 }
 
 // POST: create a table and link current session
@@ -114,6 +108,28 @@ export async function PATCH(req: NextRequest) {
   return NextResponse.json({ code: table.code, nickname });
 }
 
+// PUT: re-roll the current session's nickname to a new unique one in its table
+export async function PUT(req: NextRequest) {
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
+  const parsed = parseBody(createTableSchema, body);
+  if ("error" in parsed) return NextResponse.json({ error: parsed.error }, { status: 400 });
+  const { slug } = parsed.data;
+
+  const [session] = await db.select().from(sessions).where(eq(sessions.slug, slug)).limit(1);
+  if (!session) return NextResponse.json({ error: "Session not found" }, { status: 404 });
+  if (!session.tableId) return NextResponse.json({ error: "Not in a table" }, { status: 400 });
+
+  const nickname = await uniqueNicknameForTable(session.tableId);
+  await db.update(sessions).set({ nickname }).where(eq(sessions.id, session.id));
+
+  return NextResponse.json({ nickname });
+}
+
 // GET: read-only ranking (no slugs exposed) + member drinks
 export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get("code");
@@ -141,6 +157,63 @@ export async function GET(req: NextRequest) {
       .where(eq(drinks.sessionId, session.id))
       .orderBy(sql`${drinks.count} DESC`);
     return NextResponse.json({ drinks: memberDrinks });
+  }
+
+  // If stats param is provided, return aggregated table statistics
+  if (req.nextUrl.searchParams.get("stats")) {
+    const statsMembers = await db
+      .select({
+        nickname: sessions.nickname,
+        total: sql<number>`COALESCE(SUM(${drinks.count}), 0)::int`,
+      })
+      .from(sessions)
+      .leftJoin(drinks, eq(drinks.sessionId, sessions.id))
+      .where(eq(sessions.tableId, table.id))
+      .groupBy(sessions.id, sessions.nickname)
+      .orderBy(sql`COALESCE(SUM(${drinks.count}), 0) DESC`, sessions.nickname);
+
+    const byCategory = await db
+      .select({
+        category: drinks.category,
+        count: sql<number>`SUM(${drinks.count})::int`,
+      })
+      .from(drinks)
+      .innerJoin(sessions, eq(drinks.sessionId, sessions.id))
+      .where(eq(sessions.tableId, table.id))
+      .groupBy(drinks.category);
+
+    const topDrinks = await db
+      .select({
+        name: drinks.name,
+        category: drinks.category,
+        count: sql<number>`SUM(${drinks.count})::int`,
+      })
+      .from(drinks)
+      .innerJoin(sessions, eq(drinks.sessionId, sessions.id))
+      .where(eq(sessions.tableId, table.id))
+      .groupBy(drinks.name, drinks.category)
+      .orderBy(sql`SUM(${drinks.count}) DESC`)
+      .limit(8);
+
+    const total = byCategory.reduce((sum, row) => sum + Number(row.count), 0);
+
+    return NextResponse.json({
+      code: table.code,
+      total,
+      members: statsMembers.map((member) => ({
+        nickname: member.nickname || "???",
+        total: Number(member.total),
+      })),
+      byCategory: byCategory.map((row) => ({
+        category: row.category || "other",
+        count: Number(row.count),
+      })),
+      topDrinks: topDrinks.map((row) => ({
+        name: row.name,
+        category: row.category,
+        count: Number(row.count),
+      })),
+    });
   }
 
   const members = await db

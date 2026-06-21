@@ -10,7 +10,7 @@ Mobile-first drinks counter app. Users snap a bar menu photo, AI extracts drinks
 - HeroUI v3 (Card, Button, Chip, Spinner, Input, toast) + Tailwind CSS 4
 - Neon Postgres + Drizzle ORM
 - Vercel AI SDK + Google Gemini 2.5 Flash Lite
-- Vitest (66 tests), ESLint 9, Prettier, Husky
+- Vitest (70 tests), ESLint 9, Prettier, Husky
 
 ## Code Standards
 
@@ -59,7 +59,7 @@ app/s/[slug]/error.tsx    → Error boundary
 ## Commands
 
 ```bash
-npm test             # 66 tests
+npm test             # 70 tests
 npx tsc --noEmit    # Type check
 npm run format:check # Prettier
 npm run lint         # ESLint

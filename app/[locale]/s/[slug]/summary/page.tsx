@@ -5,7 +5,8 @@ import { useParams } from "next/navigation";
 import { Button, Card, Chip, Spinner, Popover } from "@heroui/react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { CATEGORY_EMOJI } from "@/lib/constants";
+import { Share2, Copy, Info } from "lucide-react";
+import { CATEGORY_EMOJI, isAlcoholic } from "@/lib/constants";
 import { titleCase } from "@/lib/sanitize";
 import {
   getAllEarnedBadges,
@@ -79,6 +80,11 @@ export default function SummaryPage() {
   }
 
   const total = drinks.reduce((sum, d) => sum + d.count, 0);
+  const alcoholicTotal = drinks.reduce(
+    (sum, drink) => sum + (isAlcoholic(drink.category) ? drink.count : 0),
+    0
+  );
+  const nonAlcoholicTotal = total - alcoholicTotal;
   const byCategory = drinks.reduce<Record<string, number>>((acc, d) => {
     const cat = d.category || "other";
     acc[cat] = (acc[cat] || 0) + d.count;
@@ -119,7 +125,7 @@ export default function SummaryPage() {
     )
     .sort((a, b) => a.time.localeCompare(b.time));
 
-  function copyAsText() {
+  function buildSummaryText(): string {
     const sorted = [...drinks].sort((a, b) => b.count - a.count);
     const lines = sorted.map(
       (drink) =>
@@ -133,7 +139,7 @@ export default function SummaryPage() {
     else if (total >= 10) opener = `👑 ${total} drinks (legend mode)`;
     else if (total >= 5) opener = `🔥 ${total} drinks (on fire)`;
 
-    const text = [
+    return [
       opener + (barName ? ` at ${titleCase(barName)}` : ""),
       durationMins > 0 ? `⏱ ${durationStr} of pure dedication` : "",
       topDrink ? `⭐ MVP: ${topDrink.name} (×${topDrink.count})` : "",
@@ -145,9 +151,22 @@ export default function SummaryPage() {
     ]
       .filter(Boolean)
       .join("\n");
-    navigator.clipboard.writeText(text);
+  }
+
+  function copyAsText() {
+    navigator.clipboard.writeText(buildSummaryText());
     setCopied(true);
     copiedTimeout.current = setTimeout(() => setCopied(false), 2000);
+  }
+
+  function shareSummary() {
+    // Privacy: share the text recap + public site URL only — never the private session slug.
+    const text = buildSummaryText();
+    if (navigator.share) {
+      navigator.share({ title: t("app.title"), text }).catch(() => {});
+    } else {
+      copyAsText();
+    }
   }
 
   return (
@@ -183,6 +202,12 @@ export default function SummaryPage() {
             {total === getPersonalBest() && total > 0 && (
               <p className="text-sm mt-1">{t("summary.personalBest")}</p>
             )}
+            {nonAlcoholicTotal > 0 && alcoholicTotal > 0 && (
+              <p className="text-sm text-default-500 mt-2">
+                🍸 {t("summary.withAlcohol", { count: alcoholicTotal })} · 🥤{" "}
+                {t("summary.alcoholFree", { count: nonAlcoholicTotal })}
+              </p>
+            )}
           </div>
 
           {/* Pace */}
@@ -197,6 +222,24 @@ export default function SummaryPage() {
                     `pace.${pace.label.toLowerCase().replace(/ ./g, (c) => c[1].toUpperCase())}`
                   ),
                 })}
+                <Popover>
+                  <Popover.Trigger>
+                    <button
+                      type="button"
+                      className="ml-1 text-default-400"
+                      aria-label={t("pace.info")}
+                    >
+                      <Info className="inline w-3.5 h-3.5" />
+                    </button>
+                  </Popover.Trigger>
+                  <Popover.Content>
+                    <Popover.Dialog>
+                      <div className="px-3 py-2 max-w-[220px]">
+                        <p className="text-xs text-default-500">{t("pace.explain")}</p>
+                      </div>
+                    </Popover.Dialog>
+                  </Popover.Content>
+                </Popover>
               </p>
             );
           })()}
@@ -328,23 +371,12 @@ export default function SummaryPage() {
 
           {/* Actions */}
           <div className="flex justify-center gap-3 mt-4">
-            <Button
-              variant="primary"
-              onPress={() => {
-                if (navigator.share) {
-                  navigator.share({
-                    title: t("app.title"),
-                    text: `${total} drinks at ${titleCase(barName || "the bar")} 🍻`,
-                    url: window.location.href,
-                  });
-                } else {
-                  navigator.clipboard.writeText(window.location.href);
-                }
-              }}
-            >
+            <Button variant="primary" className="gap-1" onPress={shareSummary}>
+              <Share2 className="w-4 h-4" />
               {t("summary.share")}
             </Button>
-            <Button variant="ghost" onPress={copyAsText}>
+            <Button variant="ghost" className="gap-1" onPress={copyAsText}>
+              <Copy className="w-4 h-4" />
               {copied ? t("summary.copied") : t("summary.copyText")}
             </Button>
           </div>

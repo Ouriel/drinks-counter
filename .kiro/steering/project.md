@@ -13,9 +13,9 @@ Mobile-first web app to count drinks during a night out. Users snap a bar menu p
 - **Framework**: Next.js 16 (App Router) + TypeScript 6 (strict mode)
 - **Styling**: HeroUI v3 + Tailwind CSS 4
 - **Database**: Neon Postgres + Drizzle ORM
-- **AI**: Vercel AI SDK + Google Gemini 2.5 Flash Lite (or Groq as alternative)
+- **AI**: Vercel AI SDK + Google Gemini 2.5 Flash Lite
 - **Deploy**: Vercel free tier
-- **Test**: Vitest (66 tests)
+- **Test**: Vitest (70 tests)
 - **Lint**: ESLint + Prettier
 - **Pre-commit**: Husky + lint-staged
 
@@ -46,7 +46,7 @@ lib/
 ├── schemas.ts                     # Zod input validation for API routes
 ├── menu-items.ts                  # normalizeMenuItems() with runtime JSONB validation
 ├── gamification.ts                # Badges, pace, nudges, achievements (pure functions)
-├── ai.ts                          # Configurable AI provider (gemini/groq)
+├── ai.ts                          # Gemini vision model (menu parsing)
 ├── slugs.ts                       # Fun slug generator (adjective-noun)
 ├── sanitize.ts                    # Shared input sanitization
 ├── nicknames.ts                   # Animal nickname generator for tables
@@ -125,7 +125,7 @@ components/
 ```bash
 npm run dev          # Local dev server
 npm run build        # Production build (needs POSTGRES_URL)
-npm test             # Run Vitest (69 tests)
+npm test             # Run Vitest (70 tests)
 npm run lint         # ESLint
 npm run format:check # Prettier check
 npx tsc --noEmit    # Type check
@@ -157,7 +157,7 @@ npx drizzle-kit push # Push schema to DB
 
 ## i18n
 
-- 6 locales: en, fr, de, es, ca, it
+- 9 locales: en, fr, de, es, ca, it, sv, nl, pt
 - ALL user-facing strings must use `t()` from `next-intl` — no hardcoded text in components
 - Exception: share/copy text can stay English (universal readability for recipients)
 - LocaleSwitcher uses flag emojis + locale code, available on home page AND session page
@@ -174,8 +174,6 @@ npx drizzle-kit push # Push schema to DB
 ## Environment Variables
 
 - `POSTGRES_URL` — Neon Postgres connection string
-- `GOOGLE_GENERATIVE_AI_API_KEY` — Gemini 2.5 Flash Lite (default AI provider)
-- `GROQ_API_KEY` — Alternative AI provider
-- `AI_PROVIDER` — "gemini" (default) or "groq"
+- `GOOGLE_GENERATIVE_AI_API_KEY` — Gemini 2.5 Flash Lite (vision menu parsing)
 - `ADMIN_SECRET` — Protects admin page and API
 - `CRON_SECRET` — Protects the cleanup cron endpoint

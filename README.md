@@ -25,7 +25,7 @@ Mobile-first web app to count drinks during a night out. Snap a bar menu photo, 
 | Database   | Neon Postgres + Drizzle ORM                  |
 | AI         | Vercel AI SDK + Google Gemini 2.5 Flash Lite |
 | Deploy     | Vercel (free tier)                           |
-| Test       | Vitest (26 tests)                            |
+| Test       | Vitest (70 tests)                            |
 | Lint       | ESLint 9 + Prettier                          |
 | Pre-commit | Husky + lint-staged                          |
 

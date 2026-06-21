@@ -1,8 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button, Input, Card } from "@heroui/react";
-import { CATEGORIES } from "@/lib/constants";
+import { useTranslations } from "next-intl";
+import { CATEGORIES, CATEGORY_EMOJI } from "@/lib/constants";
+import { formatNickname } from "@/lib/nicknames";
+import { Camera, Wine, ClipboardList, Users } from "lucide-react";
 import type { MenuItem } from "@/lib/types";
 
 type BarMenu = { id: string; barName: string; items: MenuItem[]; createdAt: string };
@@ -15,9 +18,12 @@ type Session = {
   expiresAt: string;
 };
 type Table = { id: string; code: string; memberCount: number; createdAt: string };
+type DrinkRow = { name: string; count: number; category: string | null };
+type MemberRow = { nickname: string; slug: string; total: number };
 type Tab = "bars" | "sessions" | "tables";
 
 export default function AdminPage() {
+  const tAnimals = useTranslations("animals");
   const [secret, setSecret] = useState(() => {
     if (typeof window !== "undefined") return sessionStorage.getItem("admin-secret") || "";
     return "";
@@ -30,8 +36,45 @@ export default function AdminPage() {
   const [editing, setEditing] = useState<string | null>(null);
   const [editBarName, setEditBarName] = useState("");
   const [editRows, setEditRows] = useState<MenuItem[]>([]);
+  const [openId, setOpenId] = useState<string | null>(null);
+  const [openDrinks, setOpenDrinks] = useState<DrinkRow[]>([]);
+  const [openMembers, setOpenMembers] = useState<MemberRow[]>([]);
+  const [rescanning, setRescanning] = useState(false);
+  const rescanRef = useRef<HTMLInputElement>(null);
 
   const headers = { Authorization: `Bearer ${secret}` };
+
+  async function handleRescan(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setRescanning(true);
+    try {
+      const { default: imageCompression } = await import("browser-image-compression");
+      const compressed = await imageCompression(file, {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1600,
+        useWebWorker: true,
+      });
+      const formData = new FormData();
+      formData.append("photo", compressed);
+      const res = await fetch("/api/parse-menu", { method: "POST", body: formData });
+      if (res.ok) {
+        const data = await res.json();
+        const seen = new Set(editRows.map((row) => row.name.toLowerCase()));
+        const merged = [...editRows];
+        for (const item of (data.items || []) as MenuItem[]) {
+          if (!seen.has(item.name.toLowerCase())) {
+            merged.push({ name: item.name, category: item.category });
+            seen.add(item.name.toLowerCase());
+          }
+        }
+        setEditRows(merged);
+      }
+    } finally {
+      setRescanning(false);
+      event.target.value = "";
+    }
+  }
 
   useEffect(() => {
     if (secret) login(secret);
@@ -51,12 +94,37 @@ export default function AdminPage() {
 
   async function loadTab(t: Tab) {
     setTab(t);
+    setOpenId(null);
     const res = await fetch(`/api/admin?tab=${t}`, { headers });
     if (!res.ok) return;
     const data = await res.json();
     if (t === "bars") setMenus(data.menus);
     if (t === "sessions") setSessionsList(data.sessions);
     if (t === "tables") setTablesList(data.tables);
+  }
+
+  async function toggleSession(id: string) {
+    if (openId === id) {
+      setOpenId(null);
+      return;
+    }
+    const res = await fetch(`/api/admin?tab=session-detail&id=${id}`, { headers });
+    if (!res.ok) return;
+    const data = await res.json();
+    setOpenDrinks(data.drinks);
+    setOpenId(id);
+  }
+
+  async function toggleTable(id: string) {
+    if (openId === id) {
+      setOpenId(null);
+      return;
+    }
+    const res = await fetch(`/api/admin?tab=table-detail&id=${id}`, { headers });
+    if (!res.ok) return;
+    const data = await res.json();
+    setOpenMembers(data.members);
+    setOpenId(id);
   }
 
   async function deleteItem(type: string, id: string) {
@@ -112,14 +180,22 @@ export default function AdminPage() {
 
       {/* Tabs */}
       <div className="flex gap-2 mb-6">
-        {(["bars", "sessions", "tables"] as Tab[]).map((t) => (
+        {(["bars", "sessions", "tables"] as Tab[]).map((tabKey) => (
           <Button
-            key={t}
-            variant={tab === t ? "primary" : "ghost"}
+            key={tabKey}
+            variant={tab === tabKey ? "primary" : "ghost"}
             size="sm"
-            onPress={() => loadTab(t)}
+            className="gap-1"
+            onPress={() => loadTab(tabKey)}
           >
-            {t === "bars" ? "🍸 Bars" : t === "sessions" ? "📋 Sessions" : "🍻 Tables"}
+            {tabKey === "bars" ? (
+              <Wine className="w-4 h-4" />
+            ) : tabKey === "sessions" ? (
+              <ClipboardList className="w-4 h-4" />
+            ) : (
+              <Users className="w-4 h-4" />
+            )}
+            {tabKey === "bars" ? "Bars" : tabKey === "sessions" ? "Sessions" : "Tables"}
           </Button>
         ))}
       </div>
@@ -203,13 +279,32 @@ export default function AdminPage() {
                         </div>
                       ))}
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onPress={() => setEditRows([...editRows, { name: "", category: "other" }])}
-                    >
-                      + Add item
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onPress={() => setEditRows([...editRows, { name: "", category: "other" }])}
+                      >
+                        + Add item
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        isDisabled={rescanning}
+                        className="gap-1"
+                        onPress={() => rescanRef.current?.click()}
+                      >
+                        <Camera className="w-4 h-4" />
+                        {rescanning ? "Scanning…" : "Re-scan menu"}
+                      </Button>
+                    </div>
+                    <input
+                      ref={rescanRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleRescan}
+                      className="hidden"
+                    />
                     <div className="flex gap-2">
                       <Button variant="primary" size="sm" onPress={() => saveItems(menu.id)}>
                         Save
@@ -238,18 +333,25 @@ export default function AdminPage() {
             return (
               <Card key={session.id}>
                 <div className="p-3 flex items-center justify-between">
-                  <div>
+                  <button
+                    type="button"
+                    className="text-left flex-1 cursor-pointer"
+                    onClick={() => toggleSession(session.id)}
+                  >
                     <p className="font-mono text-sm">
                       {session.slug}
                       {session.nickname && (
-                        <span className="text-default-500 ml-2">({session.nickname})</span>
+                        <span className="text-default-500 ml-2">
+                          ({formatNickname(session.nickname, tAnimals)})
+                        </span>
                       )}
                     </p>
                     <p className="text-xs text-default-500">
                       {session.drinkCount} drinks ·{" "}
-                      {expired ? <span className="text-danger">expired</span> : "active"}
+                      {expired ? <span className="text-danger">expired</span> : "active"} ·{" "}
+                      {openId === session.id ? "▲" : "▼"}
                     </p>
-                  </div>
+                  </button>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -259,6 +361,25 @@ export default function AdminPage() {
                     ✕
                   </Button>
                 </div>
+                {openId === session.id && (
+                  <div className="px-3 pb-3 space-y-1">
+                    {openDrinks.length === 0 ? (
+                      <p className="text-xs text-default-500">No drinks</p>
+                    ) : (
+                      openDrinks.map((drink) => (
+                        <div
+                          key={drink.name}
+                          className="flex justify-between text-sm border-t border-default-100 pt-1"
+                        >
+                          <span>
+                            {CATEGORY_EMOJI[drink.category || "other"] || "🍹"} {drink.name}
+                          </span>
+                          <span className="font-bold tabular-nums">×{drink.count}</span>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
               </Card>
             );
           })}
@@ -272,12 +393,17 @@ export default function AdminPage() {
           {tablesList.map((table) => (
             <Card key={table.id}>
               <div className="p-3 flex items-center justify-between">
-                <div>
+                <button
+                  type="button"
+                  className="text-left flex-1 cursor-pointer"
+                  onClick={() => toggleTable(table.id)}
+                >
                   <p className="font-mono text-base font-bold">{table.code}</p>
                   <p className="text-xs text-default-500">
-                    {table.memberCount} members · {new Date(table.createdAt).toLocaleDateString()}
+                    {table.memberCount} members · {new Date(table.createdAt).toLocaleDateString()} ·{" "}
+                    {openId === table.id ? "▲" : "▼"}
                   </p>
-                </div>
+                </button>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -287,6 +413,26 @@ export default function AdminPage() {
                   ✕
                 </Button>
               </div>
+              {openId === table.id && (
+                <div className="px-3 pb-3 space-y-1">
+                  {openMembers.length === 0 ? (
+                    <p className="text-xs text-default-500">No members</p>
+                  ) : (
+                    openMembers.map((member) => (
+                      <div
+                        key={member.slug}
+                        className="flex justify-between text-sm border-t border-default-100 pt-1"
+                      >
+                        <span>
+                          {formatNickname(member.nickname, tAnimals)}{" "}
+                          <span className="text-default-400 font-mono text-xs">{member.slug}</span>
+                        </span>
+                        <span className="font-bold tabular-nums">{member.total}</span>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
             </Card>
           ))}
           {tablesList.length === 0 && <p className="text-default-500 text-sm">No tables</p>}

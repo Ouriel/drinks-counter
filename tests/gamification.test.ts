@@ -51,10 +51,16 @@ describe("getPace", () => {
     expect(getPace([{ name: "beer", count: 1, category: null }])).toBeNull();
   });
 
-  it("returns Chill for 1 drink/hour", () => {
+  it("returns Easy for 1 drink/hour", () => {
     const twoHoursAgo = new Date(Date.now() - 2 * 3_600_000).toISOString();
     const drinks = [{ id: "1", name: "beer", count: 2, category: null, createdAt: twoHoursAgo }];
-    expect(getPace(drinks)?.label).toBe("Chill");
+    expect(getPace(drinks)?.label).toBe("Easy");
+  });
+
+  it("returns Classic for ~1 drink every 30 min", () => {
+    const twoHoursAgo = new Date(Date.now() - 2 * 3_600_000).toISOString();
+    const drinks = [{ id: "1", name: "beer", count: 4, category: null, createdAt: twoHoursAgo }];
+    expect(getPace(drinks)?.label).toBe("Classic");
   });
 
   it("returns Turbo for high pace", () => {

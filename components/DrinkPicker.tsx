@@ -3,7 +3,8 @@
 import { useState, useEffect, useRef } from "react";
 import { Button, Input, Card, Chip } from "@heroui/react";
 import { useTranslations } from "next-intl";
-import { CATEGORY_EMOJI } from "@/lib/constants";
+import { CATEGORY_EMOJI, CATEGORIES } from "@/lib/constants";
+import { Camera } from "lucide-react";
 import type { Drink, MenuItem } from "@/lib/types";
 
 export function DrinkPicker({
@@ -20,6 +21,7 @@ export function DrinkPicker({
   onSnapMenu?: () => void;
 }) {
   const [search, setSearch] = useState("");
+  const [customCategory, setCustomCategory] = useState("other");
   const containerRef = useRef<HTMLDivElement>(null);
   const onCloseRef = useRef(onClose);
   const t = useTranslations("picker");
@@ -93,7 +95,7 @@ export function DrinkPicker({
         <form
           onSubmit={(event) => {
             event.preventDefault();
-            if (search.trim()) onSelect(search.trim());
+            if (search.trim()) onSelect(search.trim(), showAddCustom ? customCategory : undefined);
           }}
           className="mb-4"
         >
@@ -107,13 +109,27 @@ export function DrinkPicker({
         </form>
 
         {showAddCustom && (
-          <Button
-            variant="ghost"
-            className="w-full mb-4 border border-accent/50 text-accent"
-            onPress={() => onSelect(search.trim())}
-          >
-            {t("addCustom", { name: search.trim() })}
-          </Button>
+          <div className="mb-4 space-y-2">
+            <select
+              aria-label={t("category")}
+              value={customCategory}
+              onChange={(event) => setCustomCategory(event.target.value)}
+              className="w-full bg-default-100 rounded-lg px-3 py-2 text-sm text-foreground outline-none"
+            >
+              {CATEGORIES.map((category) => (
+                <option key={category} value={category}>
+                  {CATEGORY_EMOJI[category]} {tCat(category)}
+                </option>
+              ))}
+            </select>
+            <Button
+              variant="ghost"
+              className="w-full border border-accent/50 text-accent"
+              onPress={() => onSelect(search.trim(), customCategory)}
+            >
+              {t("addCustom", { name: search.trim() })}
+            </Button>
+          </div>
         )}
 
         {currentDrinks.length > 0 && (
@@ -168,11 +184,12 @@ export function DrinkPicker({
           </div>
         )}
 
-        {onSnapMenu && filtered.length === 0 && (
+        {onSnapMenu && (
           <div className="text-center mt-6 pt-4 border-t border-default-200">
-            <p className="text-sm text-default-500 mb-3">{t("snapHint")}</p>
-            <Button variant="ghost" onPress={onSnapMenu}>
-              📸 {t("snapMenu")}
+            <p className="text-sm text-default-500 mb-3">{t("rescanHint")}</p>
+            <Button variant="ghost" className="gap-1" onPress={onSnapMenu}>
+              <Camera className="w-4 h-4" />
+              {t("rescanMenu")}
             </Button>
           </div>
         )}

@@ -84,14 +84,18 @@ export async function POST(req: NextRequest) {
 Rules:
 - Use the generic type when there's only ONE of that kind (e.g. just "blonde beer" if there's only one blonde beer)
 - KEEP the brand/name when there are MULTIPLE variants of the same type (e.g. if there are 3 IPAs, keep "Marguerite IPA", "Punk IPA", "Lagunitas IPA")
+- BEER SIZES: if a beer is offered in multiple sizes (e.g. demi/half and pint, or 25cl and 50cl), create a SEPARATE entry for EACH size and put the size word FIRST in the name as written on the menu (e.g. "demi 1664", "pinte 1664", "half guinness", "pint guinness", "25cl heineken", "50cl heineken")
+- WINE: start the name with the colour (red, white, rosé) FOLLOWED by the wine name or grape/cépage (e.g. "red bordeaux", "white chardonnay", "rosé côtes de provence"). Infer the colour when obvious; omit it only if truly unknown
 - Include supplements and extras (e.g. "picon", "sirop", "grenadine") as separate items — these are small add-ons often listed in smaller text
 - Split combo items into separate entries (e.g. "Coca, Ice Tea, Limonade" → 3 separate items)
 - Use lowercase names
 - Keep names short (2-4 words max)
 - Category must be one of: beer, cocktail, wine, spirit, shot, mocktail, soft, food, other
 - "mocktail" = non-alcoholic cocktails (virgin drinks, alcohol-free mixes)
+- "soft" = non-alcoholic drinks (sodas, juices, water, coffee, tea)
 - "shot" = small 2-4cl drinks meant to be downed in one go (Jägerbomb, tequila shot, B52, etc.)
 - "spirit" = neat spirits served in a tumbler (whiskey, rum, vodka neat, digestifs)
+- Be accurate with categories: non-alcoholic drinks must use "soft" or "mocktail", never an alcoholic category
 - Ignore prices, descriptions, and decorative text`,
             },
           ],

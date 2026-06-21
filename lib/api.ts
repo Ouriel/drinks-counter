@@ -68,6 +68,18 @@ export const TableRankingResponse = z.object({
 
 export const TableCreateResponse = z.object({ code: z.string(), nickname: z.string() });
 
+export const RerollResponse = z.object({ nickname: z.string() });
+
+export const TableStatsResponse = z.object({
+  code: z.string(),
+  total: z.number(),
+  members: z.array(z.object({ nickname: z.string(), total: z.number() })),
+  byCategory: z.array(z.object({ category: z.string(), count: z.number() })),
+  topDrinks: z.array(
+    z.object({ name: z.string(), category: z.string().nullable(), count: z.number() })
+  ),
+});
+
 export const MemberDrinksResponse = z.object({
   drinks: z.array(
     z.object({ name: z.string(), count: z.number(), category: z.string().nullable() })
@@ -136,6 +148,10 @@ export const api = {
     return apiFetch(`/api/tables?code=${code}`, TableRankingResponse);
   },
 
+  getTableStats(code: string) {
+    return apiFetch(`/api/tables?code=${encodeURIComponent(code)}&stats=1`, TableStatsResponse);
+  },
+
   createTable(slug: string) {
     return apiFetch("/api/tables", TableCreateResponse, {
       method: "POST",
@@ -149,6 +165,14 @@ export const api = {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ slug, code }),
+    });
+  },
+
+  rerollNickname(slug: string) {
+    return apiFetch("/api/tables", RerollResponse, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ slug }),
     });
   },
 

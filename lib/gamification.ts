@@ -75,10 +75,13 @@ export function getPace(drinks: DrinkLike[]): Pace | null {
   if (hours < 0.08) return null; // less than 5 min
   const total = drinks.reduce((sum, drink) => sum + drink.count, 0);
   const dph = total / hours;
-  if (dph <= 1) return { emoji: "🐢", label: "Chill" };
-  if (dph <= 2) return { emoji: "🚶", label: "Steady" };
+  // "Classic" pace = 1 drink every 30 min = 2 drinks/hour (the reference point)
+  if (dph <= 0.5) return { emoji: "🐢", label: "Nursing" };
+  if (dph <= 1) return { emoji: "🚶", label: "Easy" };
+  if (dph <= 2) return { emoji: "🍺", label: "Classic" };
   if (dph <= 3) return { emoji: "🏃", label: "Brisk" };
-  if (dph <= 5) return { emoji: "🚀", label: "Turbo" };
+  if (dph <= 4) return { emoji: "🚀", label: "Fast" };
+  if (dph <= 6) return { emoji: "🔥", label: "Turbo" };
   return { emoji: "⚡", label: "Warp speed" };
 }
 

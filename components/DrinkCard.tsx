@@ -53,25 +53,28 @@ export function DrinkCard({
           <span className="text-base font-medium break-words line-clamp-2">{drink.name}</span>
         </div>
         <div className="flex items-center gap-2">
+          {isTop && <span className="text-lg">👑</span>}
           <button
             type="button"
-            className="w-11 h-11 flex items-center justify-center rounded-full text-default-400 hover:text-danger hover:bg-danger/10 text-sm transition-colors"
+            className="w-11 h-11 flex items-center justify-center rounded-full text-2xl font-bold text-default-400 hover:text-danger hover:bg-danger/10 transition-colors"
             onClick={onLongPress}
             aria-label={t("remove")}
           >
             −
           </button>
+          <span className="text-3xl font-bold tabular-nums text-center min-w-[2ch]">
+            {drink.count}
+          </span>
           <button
             type="button"
-            className="flex items-center gap-1 px-3 py-1 rounded-full active:scale-95 transition-transform cursor-pointer"
+            className="w-11 h-11 flex items-center justify-center rounded-full text-2xl font-bold text-primary hover:bg-primary/10 active:scale-95 transition-transform cursor-pointer"
             {...longPressProps}
             onClick={handleClick}
             onContextMenu={(event) => event.preventDefault()}
+            aria-label={t("add")}
           >
-            <span className="text-3xl font-bold tabular-nums">{drink.count}</span>
-            <span className="text-xl font-bold text-primary">+</span>
+            +
           </button>
-          {isTop && <span className="text-lg">👑</span>}
         </div>
       </div>
     </Card>
