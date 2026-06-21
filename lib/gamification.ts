@@ -77,16 +77,17 @@ export function getTipsyStyle(total: number): React.CSSProperties {
 
 export type Pace = { emoji: string; label: string; dph: number };
 
-// Drinks-per-hour thresholds. "Social Pace" = 1 drink every 30 min (2/h) is the reference.
+// Drinks-per-hour thresholds, tuned so most real sessions (≈0.5–3/h) land across the
+// lower bands and only genuinely heavy paces (>3.2/h) reach the top tier.
 export const PACE_LEVELS: { maxDph: number; emoji: string; label: string }[] = [
-  { maxDph: 0.5, emoji: "🐢", label: "Nursing It" },
-  { maxDph: 1, emoji: "🐌", label: "Taking It Slow" },
-  { maxDph: 1.5, emoji: "😌", label: "Cruising" },
-  { maxDph: 2, emoji: "🍺", label: "Social Pace" },
-  { maxDph: 3, emoji: "🏃", label: "Picking It Up" },
-  { maxDph: 4, emoji: "🚀", label: "Sending It" },
-  { maxDph: 5, emoji: "🔥", label: "On A Mission" },
-  { maxDph: 6, emoji: "🌪️", label: "Off The Rails" },
+  { maxDph: 0.4, emoji: "🐢", label: "Nursing It" },
+  { maxDph: 0.8, emoji: "🐌", label: "Taking It Slow" },
+  { maxDph: 1.2, emoji: "😌", label: "Cruising" },
+  { maxDph: 1.6, emoji: "🍺", label: "Social Pace" },
+  { maxDph: 2, emoji: "🏃", label: "Picking It Up" },
+  { maxDph: 2.4, emoji: "🚀", label: "Sending It" },
+  { maxDph: 2.8, emoji: "🔥", label: "On A Mission" },
+  { maxDph: 3.2, emoji: "🌪️", label: "Off The Rails" },
   { maxDph: Infinity, emoji: "☄️", label: "Send Help" },
 ];
 

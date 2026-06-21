@@ -63,16 +63,16 @@ describe("getPace", () => {
     expect(getPace([{ name: "beer", count: 1, category: null }])).toBeNull();
   });
 
-  it("returns Taking It Slow for 1 drink/hour", () => {
+  it("returns Cruising for 1 drink/hour", () => {
     const twoHoursAgo = new Date(Date.now() - 2 * 3_600_000).toISOString();
     const drinks = [{ id: "1", name: "beer", count: 2, category: null, createdAt: twoHoursAgo }];
-    expect(getPace(drinks)?.label).toBe("Taking It Slow");
+    expect(getPace(drinks)?.label).toBe("Cruising");
   });
 
-  it("returns Social Pace for ~1 drink every 30 min", () => {
+  it("returns Picking It Up for 2 drinks/hour", () => {
     const twoHoursAgo = new Date(Date.now() - 2 * 3_600_000).toISOString();
     const drinks = [{ id: "1", name: "beer", count: 4, category: null, createdAt: twoHoursAgo }];
-    expect(getPace(drinks)?.label).toBe("Social Pace");
+    expect(getPace(drinks)?.label).toBe("Picking It Up");
   });
 
   it("returns a fast label for high pace", () => {

@@ -532,7 +532,7 @@ export default function AdminPage() {
                     <span className="flex-1 text-sm font-medium">{level.label}</span>
                     <span className="text-sm text-default-500 shrink-0">
                       {range}
-                      {level.label === "Social Pace" ? " · ~1 every 30 min" : ""}
+                      {level.label === "Social Pace" ? " · ~1 every 40 min" : ""}
                     </span>
                   </div>
                 );

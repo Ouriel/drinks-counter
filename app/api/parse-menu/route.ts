@@ -89,10 +89,10 @@ NAMING:
 - KEEP the brand/name when there are MULTIPLE variants of the same type (e.g. if there are 3 IPAs, keep "Marguerite IPA", "Punk IPA", "Lagunitas IPA")
 - Use lowercase names, kept short (2-4 words max)
 
-BEER SIZES (important):
-- Draft/pression beers are usually sold in several sizes. Sizes can be written inline (demi / pinte, 25cl / 50cl) OR as COLUMN HEADERS placed above the beer list (e.g. a "25 cl" column and a "50 cl" column, sometimes labelled "Happy Hour"/"Hors Happy").
-- When a beer section shows more than one size, create a SEPARATE entry for EACH beer × EACH size, putting the size FIRST in the name exactly as written on the menu (e.g. "25cl herrenbrau", "50cl herrenbrau", "demi 1664", "pinte 1664"). Ignore the happy-hour vs normal price distinction — only the volume matters, so do not duplicate the same volume twice.
-- If a beer is sold in a single size, just keep its name.
+SIZES / VOLUMES (mostly beers, sometimes wine or soft):
+- A drink may be offered in several sizes. Sizes can appear ANYWHERE: inline after the name, in parentheses, as column headers above a list, or as the labels of separate price columns (e.g. demi / pinte, 25cl / 33cl / 50cl, petit / grand).
+- ONLY split a drink into one-entry-per-size when you can CONFIDENTLY read distinct volumes for it. Then put the size first in the name, exactly as written (e.g. "25cl herrenbrau", "50cl herrenbrau", "demi 1664", "pinte 1664"). Never repeat the same volume, and ignore price-only distinctions such as happy-hour vs normal.
+- If a drink has a single size, or the sizes are unclear/ambiguous, just keep the plain name. Do NOT invent sizes.
 
 WINE:
 - Start the name with the colour in the MENU'S language (rouge / blanc / rosé, or red / white / rosé), then the wine name or grape/cépage (e.g. "rouge bordeaux merlot", "blanc chardonnay", "rosé côtes de provence"). Infer the colour when obvious; omit it only if truly unknown.

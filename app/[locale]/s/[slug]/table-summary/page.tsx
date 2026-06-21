@@ -6,9 +6,8 @@ import Image from "next/image";
 import { Button, Card, Chip, Spinner } from "@heroui/react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { isAlcoholic } from "@/lib/constants";
 import { CategoryIcon } from "@/lib/category-icon";
-import { Users, Beer, Wine, CupSoda, Utensils } from "lucide-react";
+import { Users, Beer } from "lucide-react";
 import { formatNickname } from "@/lib/nicknames";
 import { api } from "@/lib/api";
 
@@ -66,15 +65,6 @@ export default function TableSummaryPage() {
   }
 
   const topScore = stats.members.length > 0 ? stats.members[0].total : 0;
-  const alcoholicTotal = stats.byCategory.reduce(
-    (sum, row) => sum + (isAlcoholic(row.category) ? row.count : 0),
-    0
-  );
-  const foodTotal = stats.byCategory.reduce(
-    (sum, row) => sum + (row.category === "food" ? row.count : 0),
-    0
-  );
-  const nonAlcoholicTotal = stats.total - alcoholicTotal - foodTotal;
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-background text-foreground">
@@ -105,33 +95,6 @@ export default function TableSummaryPage() {
             <p className="text-sm text-default-500 mt-1">
               {t("tableSummary.people", { count: stats.members.length })}
             </p>
-            {[alcoholicTotal > 0, nonAlcoholicTotal > 0, foodTotal > 0].filter(Boolean).length >=
-              2 && (
-              <p className="text-sm text-default-500 mt-2 flex items-center justify-center gap-1 flex-wrap">
-                {alcoholicTotal > 0 && (
-                  <>
-                    <Wine className="w-4 h-4" />
-                    {t("summary.withAlcohol", { count: alcoholicTotal })}
-                  </>
-                )}
-                {alcoholicTotal > 0 && nonAlcoholicTotal > 0 && <span className="mx-1">·</span>}
-                {nonAlcoholicTotal > 0 && (
-                  <>
-                    <CupSoda className="w-4 h-4" />
-                    {t("summary.alcoholFree", { count: nonAlcoholicTotal })}
-                  </>
-                )}
-                {(alcoholicTotal > 0 || nonAlcoholicTotal > 0) && foodTotal > 0 && (
-                  <span className="mx-1">·</span>
-                )}
-                {foodTotal > 0 && (
-                  <>
-                    <Utensils className="w-4 h-4" />
-                    {t("summary.foodCount", { count: foodTotal })}
-                  </>
-                )}
-              </p>
-            )}
           </div>
 
           {/* By category */}
