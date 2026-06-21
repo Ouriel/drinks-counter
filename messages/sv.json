@@ -30,7 +30,6 @@
     "startCounting": "Börja räkna"
   },
   "session": {
-    "drinks": "{count, plural, one {# drink} other {# drinkar}}",
     "noDrinks": "Inga drinkar än",
     "noDrinksHint": "Tryck på + för att lägga till din första drink",
     "addDrink": "+ Lägg till en drink",

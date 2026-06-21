@@ -195,14 +195,14 @@ export function SessionClient({
             <ThemeSwitch />
           </div>
         </div>
-        <h1
-          className={`text-3xl font-bold text-center ${total >= 10 ? "animate-wobble" : ""}`}
-          key={total}
-        >
-          {t("session.drinks", { count: total })}
-        </h1>
+        {/* The bar name + slug + elapsed line is the session title. The big drink total was
+            removed — counts live on each drink card, the summary and the table ranking. */}
         {barName && (
-          <div className="text-base mt-1 text-center text-foreground/70">
+          <div
+            role="heading"
+            aria-level={1}
+            className="text-base mt-1 text-center text-foreground/70"
+          >
             {titleCase(barName)}
             {" · "}
             <Popover>
@@ -226,7 +226,11 @@ export function SessionClient({
           </div>
         )}
         {!barName && (
-          <div className="text-base mt-1 text-center text-foreground/70">
+          <div
+            role="heading"
+            aria-level={1}
+            className="text-base mt-1 text-center text-foreground/70"
+          >
             <Popover>
               <Popover.Trigger>
                 <button

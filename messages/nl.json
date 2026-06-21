@@ -30,7 +30,6 @@
     "startCounting": "Begin met tellen"
   },
   "session": {
-    "drinks": "{count, plural, one {# drankje} other {# drankjes}}",
     "noDrinks": "Nog geen drankjes",
     "noDrinksHint": "Tik op + om je eerste drankje toe te voegen",
     "addDrink": "+ Drankje toevoegen",

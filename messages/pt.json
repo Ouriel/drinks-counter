@@ -30,7 +30,6 @@
     "startCounting": "Começar a contar"
   },
   "session": {
-    "drinks": "{count, plural, one {# bebida} other {# bebidas}}",
     "noDrinks": "Ainda sem bebidas",
     "noDrinksHint": "Toca em + para adicionar a tua primeira bebida",
     "addDrink": "+ Adicionar uma bebida",
