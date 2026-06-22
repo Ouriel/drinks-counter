@@ -9,13 +9,33 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # allow the Dependabot lockfile-sync step to push back
     steps:
       - uses: actions/checkout@v6
+        with:
+          # Check out the PR branch (not the detached merge ref) so the sync step can push.
+          ref: ${{ github.head_ref }}
 
       - uses: actions/setup-node@v6
         with:
           node-version: 20
           cache: npm
+
+      # Dependabot's grouped updates sometimes leave package-lock.json out of sync with
+      # package.json (dropped transitive deps), which makes the `npm ci` below fail. For
+      # Dependabot PRs, regenerate the lockfile and push it back so the PR — and main after
+      # merge — stay installable with `npm ci`.
+      - name: Sync lockfile (Dependabot)
+        if: github.actor == 'dependabot[bot]'
+        run: |
+          npm install --package-lock-only --no-audit --no-fund
+          if ! git diff --quiet package-lock.json; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "chore(deps): sync package-lock.json" package-lock.json
+            git push
+          fi
 
       - run: npm ci
 
