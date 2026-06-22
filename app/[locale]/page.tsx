@@ -1,31 +1,54 @@
 "use client";
 
-import { useState, useRef, useEffect, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
-import Image from "next/image";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { Button, Input, Card, Chip, Spinner, toast } from "@heroui/react";
 import { useTranslations } from "next-intl";
 import { ChartColumn, MapPin, Camera, Beer } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
 import { ThemeSwitch } from "@/lib/theme-switch";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
+import { Logo } from "@/components/Logo";
 import { CategoryIcon } from "@/lib/category-icon";
-import { api } from "@/lib/api";
+import { useIsHydrated } from "@/lib/use-is-hydrated";
+
+function loadRecentSessions(): { slug: string; barName: string; date: string }[] {
+  try {
+    const stored = localStorage.getItem("tipsytap_recent");
+    const parsed: { slug: string; barName: string; date: string }[] = stored
+      ? JSON.parse(stored)
+      : [];
+    // Sessions have a 48h TTL — drop stale local entries on open.
+    const cutoff = Date.now() - 48 * 60 * 60 * 1000;
+    const fresh = parsed.filter((session) => {
+      const time = new Date(session.date).getTime();
+      return !Number.isNaN(time) && time >= cutoff;
+    });
+    if (fresh.length !== parsed.length) {
+      localStorage.setItem("tipsytap_recent", JSON.stringify(fresh));
+    }
+    return fresh;
+  } catch {
+    return [];
+  }
+}
 
 export default function Home() {
-  return (
-    <Suspense>
-      <HomeContent />
-    </Suspense>
-  );
+  return <HomeContent />;
 }
 
 function HomeContent() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const t = useTranslations();
-  const preferredSlug = searchParams.get("slug") || "";
-  const [step, setStep] = useState<"start" | "bar" | "review">(preferredSlug ? "bar" : "start");
+  const hydrated = useIsHydrated();
+  // ?slug= "resume" flow (rare — e.g. an expired session bounced back here). Read on the client
+  // only; the server renders the static start hero. Gating on `hydrated` keeps the SSR HTML and
+  // the first client render identical (no mismatch) — instead of useSearchParams(), which deopts
+  // the whole route to client-side rendering and left an empty <main> in the prerendered HTML.
+  const preferredSlug = hydrated
+    ? new URLSearchParams(window.location.search).get("slug") || ""
+    : "";
+  const [userStep, setUserStep] = useState<"start" | "bar" | "review" | null>(null);
+  const step: "start" | "bar" | "review" = userStep ?? (preferredSlug ? "bar" : "start");
   const [barName, setBarName] = useState("");
   const [barSuggestions, setBarSuggestions] = useState<
     { id: string; barName: string; items: { name: string; category: string }[] }[]
@@ -35,27 +58,9 @@ function HomeContent() {
   const [parsing, setParsing] = useState(false);
   const [creating, setCreating] = useState(false);
   const [slugInput, setSlugInput] = useState("");
-  const [recentSessions] = useState<{ slug: string; barName: string; date: string }[]>(() => {
-    if (typeof window === "undefined") return [];
-    try {
-      const stored = localStorage.getItem("tipsytap_recent");
-      const parsed: { slug: string; barName: string; date: string }[] = stored
-        ? JSON.parse(stored)
-        : [];
-      // Sessions have a 48h TTL — drop stale local entries on open.
-      const cutoff = Date.now() - 48 * 60 * 60 * 1000;
-      const fresh = parsed.filter((session) => {
-        const time = new Date(session.date).getTime();
-        return !Number.isNaN(time) && time >= cutoff;
-      });
-      if (fresh.length !== parsed.length) {
-        localStorage.setItem("tipsytap_recent", JSON.stringify(fresh));
-      }
-      return fresh;
-    } catch {
-      return [];
-    }
-  });
+  // Recent sessions live in localStorage (client-only). Read after hydration via a memo keyed on
+  // `hydrated` so the first render matches the server ([]), with no setState-in-effect.
+  const recentSessions = useMemo(() => (hydrated ? loadRecentSessions() : []), [hydrated]);
   const cameraRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<NodeJS.Timeout>(null);
   const geoRef = useRef<{ lat: number; lng: number } | null>(null);
@@ -76,6 +81,9 @@ function HomeContent() {
     }
     debounceRef.current = setTimeout(async () => {
       try {
+        // Validation layer (Zod) is only needed once the user searches — load it on demand so it
+        // stays out of the home page's initial bundle.
+        const { api } = await import("@/lib/api");
         // Fire DB and OSM searches in parallel
         const menuPromise = api.searchMenus(q);
 
@@ -116,6 +124,7 @@ function HomeContent() {
     if (!files.length) return;
     setParsing(true);
     const { default: imageCompression } = await import("browser-image-compression");
+    const { api } = await import("@/lib/api");
     const allItems: { name: string; category: string }[] = [...menuItems];
     const seen = new Set(allItems.map((item) => item.name.toLowerCase()));
 
@@ -144,7 +153,7 @@ function HomeContent() {
     setParsing(false);
     if (allItems.length > menuItems.length) {
       setMenuItems(allItems);
-      setStep("review");
+      setUserStep("review");
     } else {
       createSession([]);
     }
@@ -153,6 +162,7 @@ function HomeContent() {
   const createSession = async (items?: { name: string; category: string }[]) => {
     setCreating(true);
     try {
+      const { api } = await import("@/lib/api");
       const finalItems = items ?? menuItems;
       const data = await api.createSession({
         barName: barName.trim() || null,
@@ -194,19 +204,12 @@ function HomeContent() {
           <ThemeSwitch />
         </div>
         <div className="text-center">
-          <Image
-            src="/icon.svg"
-            alt="TipsyTap"
-            width={160}
-            height={160}
-            priority
-            className="mx-auto mb-4"
-          />
+          <Logo size={160} label="TipsyTap" className="mx-auto mb-4" />
           <h1 className="text-4xl font-bold">{t("app.title")}</h1>
           <p className="text-default-500 mt-2">{t("app.tagline")}</p>
         </div>
         <div className="w-full max-w-xs space-y-3">
-          <Button variant="primary" size="lg" className="w-full" onPress={() => setStep("bar")}>
+          <Button variant="primary" size="lg" className="w-full" onPress={() => setUserStep("bar")}>
             {t("home.startCounting")}
           </Button>
           <form
@@ -267,7 +270,7 @@ function HomeContent() {
     return (
       <div className="min-h-screen p-6">
         <div className="flex items-center gap-2 mb-4">
-          <Image src="/icon.svg" alt="" width={24} height={24} />
+          <Logo size={24} />
           <h2 className="text-xl font-bold">{t("bar.whereAreYou")}</h2>
         </div>
 

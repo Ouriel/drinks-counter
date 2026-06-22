@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import { Button, Popover, Spinner, toast } from "@heroui/react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
@@ -12,6 +11,7 @@ import { ThemeSwitch } from "@/lib/theme-switch";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { titleCase } from "@/lib/sanitize";
 import { DrinkCard } from "@/components/DrinkCard";
+import { Logo } from "@/components/Logo";
 import { TableView } from "@/components/TableView";
 import { getSessionHue, getPace, getTipsyStyle, getIconColor } from "@/lib/gamification";
 import { useOptimisticDrinks } from "@/lib/useOptimisticDrinks";
@@ -187,7 +187,7 @@ export function SessionClient({
             </Button>
           </div>
           <div className="flex items-center gap-1">
-            <Image src="/icon.svg" alt="" width={32} height={32} />
+            <Logo size={32} />
             <span className="font-bold text-sm">TipsyTap</span>
           </div>
           <div className="flex items-center gap-1">
@@ -251,30 +251,36 @@ export function SessionClient({
             <ElapsedTimer drinks={drinks} />
           </div>
         )}
-        {mounted && pace && (
-          <div className="text-sm mt-0.5 text-center text-default-500">
-            {pace.emoji}{" "}
-            {t(
-              `pace.${pace.label.toLowerCase().replace(/ ./g, (match) => match[1].toUpperCase())}`
-            )}
-            <Popover>
-              <Popover.Trigger>
-                <button type="button" className="ml-1 text-default-400" aria-label={t("pace.info")}>
-                  <Info className="inline w-3.5 h-3.5" />
-                </button>
-              </Popover.Trigger>
-              <Popover.Content>
-                <Popover.Dialog>
-                  <div className="px-3 py-2 w-max max-w-[260px]">
-                    <p className="text-xs text-default-500">
-                      {t("pace.explain", { dph: pace.dph })}
-                    </p>
-                  </div>
-                </Popover.Dialog>
-              </Popover.Content>
-            </Popover>
-          </div>
-        )}
+        <div className="text-sm mt-0.5 text-center text-default-500 min-h-[1.25rem]">
+          {mounted && pace && (
+            <>
+              {pace.emoji}{" "}
+              {t(
+                `pace.${pace.label.toLowerCase().replace(/ ./g, (match) => match[1].toUpperCase())}`
+              )}
+              <Popover>
+                <Popover.Trigger>
+                  <button
+                    type="button"
+                    className="ml-1 text-default-400"
+                    aria-label={t("pace.info")}
+                  >
+                    <Info className="inline w-3.5 h-3.5" />
+                  </button>
+                </Popover.Trigger>
+                <Popover.Content>
+                  <Popover.Dialog>
+                    <div className="px-3 py-2 w-max max-w-[260px]">
+                      <p className="text-xs text-default-500">
+                        {t("pace.explain", { dph: pace.dph })}
+                      </p>
+                    </div>
+                  </Popover.Dialog>
+                </Popover.Content>
+              </Popover>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Drinks list */}
