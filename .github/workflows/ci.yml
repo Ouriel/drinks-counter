@@ -12,7 +12,7 @@ jobs:
     permissions:
       contents: write # allow the Dependabot lockfile-sync step to push back
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           # Check out the PR branch (not the detached merge ref) so the sync step can push.
           ref: ${{ github.head_ref }}
