@@ -17,7 +17,7 @@ jobs:
           # Check out the PR branch (not the detached merge ref) so the sync step can push.
           ref: ${{ github.head_ref }}
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: 20
           cache: npm
