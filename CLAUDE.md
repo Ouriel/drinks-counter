@@ -69,4 +69,5 @@ Drinks counter PWA. Next.js 16 + HeroUI v3 + Neon Postgres + Gemini AI. Strict T
 - Don't define types locally when they exist in lib/types.ts
 - Don't use `(e) =>` or `(d) =>` — spell out parameter names
 - Don't write tests that assert `null === null` or `Date.now() > Date.now() - 1000`
+- Don't write or commit code when asked to research — present options and wait for explicit user choice first
 - Don't forget to run prettier after editing
