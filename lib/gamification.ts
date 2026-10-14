@@ -375,3 +375,83 @@ export function getNudge(
   }
   return null;
 }
+
+// === TABLE FUN ===
+
+const TABLE_MILESTONES = [10, 25, 50, 100, 150, 200];
+
+/** The highest group-total milestone crossed between two leaderboard refreshes, if any. */
+export function getTableMilestone(previous: number, current: number): number | null {
+  const crossed = TABLE_MILESTONES.filter(
+    (milestone) => previous < milestone && current >= milestone
+  );
+  return crossed.at(-1) ?? null;
+}
+
+type RankedMember = { nickname: string; total: number };
+
+/** How much each member went up since the previous refresh (nothing on the first load). */
+export function getRankingMoves(
+  previous: RankedMember[] | null,
+  current: RankedMember[]
+): Record<string, number> {
+  if (!previous) return {};
+  const before = new Map(previous.map((member) => [member.nickname, member.total]));
+  return Object.fromEntries(
+    current.flatMap((member) => {
+      const gain = member.total - (before.get(member.nickname) ?? member.total);
+      return gain > 0 ? [[member.nickname, gain]] : [];
+    })
+  );
+}
+
+export type TableMemberStats = RankedMember & {
+  distinct: number;
+  alcoholFree: number;
+  firstTap: string | null;
+  lastTap: string | null;
+};
+export type TableAwardKey = "explorer" | "hydration" | "pace" | "nightOwl" | "firstSip";
+export type TableAward = { key: TableAwardKey; nickname: string };
+
+/** The member with the single best score, if it reaches `min` (ties and nulls win nothing). */
+function soleLeader(
+  members: TableMemberStats[],
+  score: (member: TableMemberStats) => number | null,
+  min: number
+): string | null {
+  const scored = members.flatMap((member) => {
+    const value = score(member);
+    return value === null ? [] : [{ nickname: member.nickname, value }];
+  });
+  if (scored.length === 0) return null;
+  const best = Math.max(...scored.map((entry) => entry.value));
+  const leaders = scored.filter((entry) => entry.value === best);
+  return best >= min && leaders.length === 1 ? leaders[0].nickname : null;
+}
+
+const time = (iso: string | null) => (iso ? new Date(iso).getTime() : null);
+
+/** Table summary awards; a table of one gets none. */
+export function getTableAwards(members: TableMemberStats[]): TableAward[] {
+  if (members.length < 2) return [];
+  const pace = (member: TableMemberStats) => {
+    const first = time(member.firstTap);
+    const last = time(member.lastTap);
+    if (first === null || last === null || member.total < 3) return null;
+    const hours = (last - first) / 3_600_000;
+    return hours >= 0.25 ? member.total / hours : null;
+  };
+  const firstSip = (member: TableMemberStats) => {
+    const first = time(member.firstTap);
+    return first === null ? null : -first; // earliest wins
+  };
+  const winners: [TableAwardKey, string | null][] = [
+    ["explorer", soleLeader(members, (member) => member.distinct, 2)],
+    ["hydration", soleLeader(members, (member) => member.alcoholFree, 1)],
+    ["pace", soleLeader(members, pace, 0)],
+    ["nightOwl", soleLeader(members, (member) => time(member.lastTap), 0)],
+    ["firstSip", soleLeader(members, firstSip, -Infinity)],
+  ];
+  return winners.flatMap(([key, nickname]) => (nickname ? [{ key, nickname }] : []));
+}

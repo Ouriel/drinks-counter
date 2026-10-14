@@ -74,7 +74,8 @@
     "copyLink": "Link kopieren",
     "linkCopied": "Link kopiert!",
     "reroll": "Neuer Name",
-    "youAre": "Du bist {name}"
+    "youAre": "Du bist {name}",
+    "milestone": "Der Tisch knackt {count} Getränke!"
   },
   "picker": {
     "category": "Kategorie",
@@ -192,7 +193,13 @@
     "people": "{count, plural, one {# Person} other {# Personen}}",
     "ranking": "Rangliste",
     "topDrinks": "Top-Getränke",
-    "notInTable": "Du bist noch an keinem Tisch"
+    "notInTable": "Du bist noch an keinem Tisch",
+    "awards": "Auszeichnungen",
+    "awardExplorer": "Entdecker – die meisten verschiedenen Getränke",
+    "awardHydration": "Hydrations-Held – die meisten alkoholfreien Getränke",
+    "awardPace": "Raketenstart – das schnellste Tempo",
+    "awardNightOwl": "Nachteule – trinkt als Letzte(r)",
+    "awardFirstSip": "Erster Schluck – hat den Abend eröffnet"
   },
   "animals": {
     "fox": "Fuchs",

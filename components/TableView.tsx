@@ -6,6 +6,7 @@ import { Button, Input, Card, Modal, Popover, useOverlayState, toast } from "@he
 import { useTranslations } from "next-intl";
 import { api } from "@/lib/api";
 import { formatNickname } from "@/lib/nicknames";
+import { getRankingMoves, getTableMilestone } from "@/lib/gamification";
 import { useIsHydrated } from "@/lib/use-is-hydrated";
 import { RefreshCw, QrCode as QrCodeIcon, Copy, Dices, Users } from "lucide-react";
 
@@ -21,12 +22,14 @@ export function TableView({
   nickname: initialNickname,
   drinkTotal,
   onTableChange,
+  onCelebrate,
 }: {
   slug: string;
   tableCode: string | null;
   nickname: string | null;
   drinkTotal: number;
   onTableChange?: (code: string | null) => void;
+  onCelebrate?: () => void;
 }) {
   const [localCode, setLocalCode] = useState<string | null>(null);
   const [nickname, setNickname] = useState(initialNickname);
@@ -34,6 +37,7 @@ export function TableView({
   const [showJoin, setShowJoin] = useState(false);
   const [joinCode, setJoinCode] = useState("");
   const [members, setMembers] = useState<Member[]>([]);
+  const [moves, setMoves] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showQr, setShowQr] = useState(false);
@@ -71,14 +75,32 @@ export function TableView({
     toast(t("linkCopied"), { timeout: 10000 });
   }
 
+  // The previous refresh, to show who moved up and to spot a table milestone (null = first load).
+  const lastMembers = useRef<Member[] | null>(null);
+  const onCelebrateRef = useRef(onCelebrate);
+  useEffect(() => {
+    onCelebrateRef.current = onCelebrate;
+  });
+
   const fetchRanking = useCallback(
     async (code?: string) => {
       const c = code || tableCode;
       if (!c) return;
       const data = await api.getTableRanking(c);
-      if (data) setMembers(data.members);
+      if (!data) return;
+      const sum = (list: Member[]) => list.reduce((total, member) => total + member.total, 0);
+      const milestone = lastMembers.current
+        ? getTableMilestone(sum(lastMembers.current), sum(data.members))
+        : null;
+      setMoves(getRankingMoves(lastMembers.current, data.members));
+      lastMembers.current = data.members;
+      setMembers(data.members);
+      if (milestone) {
+        toast(`🎉 ${t("milestone", { count: milestone })}`, { timeout: 10000 });
+        onCelebrateRef.current?.();
+      }
     },
-    [tableCode]
+    [tableCode, t]
   );
 
   useEffect(() => {
@@ -202,6 +224,11 @@ export function TableView({
                     <span
                       className={`tabular-nums text-lg ${isMe ? "font-bold text-primary" : "font-bold"}`}
                     >
+                      {moves[member.nickname] > 0 && (
+                        <span className="text-xs font-medium text-success mr-2">
+                          +{moves[member.nickname]}
+                        </span>
+                      )}
                       {member.total}
                     </span>
                   </button>
@@ -258,6 +285,8 @@ export function TableView({
                 setLocalCode(null);
                 setNickname(null);
                 setMembers([]);
+                setMoves({});
+                lastMembers.current = null;
                 onTableChange?.(null);
               }
             }}

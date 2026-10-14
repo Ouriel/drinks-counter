@@ -87,6 +87,34 @@ describe("tables", () => {
     expect(row.barMenuId).toBe(bar.id);
   });
 
+  it("table stats award explorer, hydration, pace, night owl and first sip", async () => {
+    const fox = await seedSession("fox-slug");
+    const owl = await seedSession("owl-slug");
+    const { code } = await (
+      await POST(jsonRequest("/api/tables", "POST", { slug: "fox-slug" }))
+    ).json();
+    await PATCH(jsonRequest("/api/tables", "PATCH", { slug: "owl-slug", code }));
+    const at = (hour: number) => new Date(Date.UTC(2026, 9, 14, hour)).toISOString();
+    await db.insert(drinks).values([
+      { sessionId: fox.id, name: "ipa", count: 2, category: "beer", tappedAt: [at(19), at(23)] },
+      { sessionId: fox.id, name: "spritz", count: 1, category: "cocktail", tappedAt: [at(21)] },
+      { sessionId: owl.id, name: "coke", count: 2, category: "soft", tappedAt: [at(18), at(18)] },
+      { sessionId: owl.id, name: "lager", count: 1, category: "beer", tappedAt: [at(19)] },
+    ]);
+    const stats = await getTableStats({ code });
+    const [foxNick, owlNick] = await Promise.all(
+      [fox.id, owl.id].map(
+        async (id) => (await db.select().from(sessions).where(eq(sessions.id, id)))[0].nickname
+      )
+    );
+    expect(stats?.awards).toEqual([
+      { key: "hydration", nickname: owlNick },
+      { key: "pace", nickname: owlNick },
+      { key: "nightOwl", nickname: foxNick },
+      { key: "firstSip", nickname: owlNick },
+    ]);
+  });
+
   it("retries when a generated table code collides", async () => {
     await db.insert(tables).values({ code: "AAAAAA" });
     await seedSession("host-slug");

@@ -38,7 +38,8 @@ Every menu you scan, and every new drink you add, joins the bar's **shared menu*
 
 - Create a **table** to count with friends: you get a 6-character code and a random animal nickname (🦊 Fox, 🐧 Penguin…). You can re-roll the nickname up to 3 times.
 - Friends join with the code, a `/join/CODE` link or a QR code. A join link reuses your latest session on that phone if it started less than 12 h ago, otherwise it starts a new one. Joining gives you the bar and menu of the table. Anyone can leave a table.
-- A live **leaderboard** refreshes every 30 s. Tap a member to see their drinks. The **Table Summary** page shows the group total, ranking, categories and top drinks.
+- A live **leaderboard** refreshes every 30 s and shows who moved up ("+2"). Tap a member to see their drinks. When the group passes 10, 25, 50, 100, 150 or 200 drinks, everyone at the table gets a toast and confetti.
+- The **Table Summary** page shows the group total, ranking, categories, top drinks and **awards**: 🧭 Explorer (most different drinks), 💧 Hydration hero (most alcohol-free drinks), ⚡ Speed demon (fastest pace), 🌙 Night owl (last one drinking) and 🐣 First sip (started the night). Ties win nothing.
 
 ### Coming back, stats and admin
 

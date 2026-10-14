@@ -396,6 +396,7 @@ export function SessionClient({
         nickname={nickname}
         drinkTotal={total}
         onTableChange={handleTableChange}
+        onCelebrate={() => setShowConfetti(true)}
       />
 
       {/* FAB, from the first drink on (before that, the button is in the empty state) */}
