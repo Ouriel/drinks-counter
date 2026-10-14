@@ -121,8 +121,8 @@
     "noDrinks": "Nessun drink ancora",
     "noBars": "Nessun bar ancora",
     "active": "Attive ora",
-    "today": "Oggi",
-    "thisWeek": "Questa settimana",
+    "last24h": "Ultime 24 ore",
+    "retention": "Le sessioni e i loro drink vengono eliminati 2 giorni dopo l'inizio: questi numeri coprono solo le ultime serate.",
     "avgPerSession": "~{avg} bevande per sessione in media"
   },
   "badges": {

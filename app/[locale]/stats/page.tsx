@@ -5,23 +5,18 @@ import { CategoryIcon } from "@/lib/category-icon";
 import { ChartColumn, Beer, Martini } from "lucide-react";
 import Link from "next/link";
 
-export const revalidate = 60;
-
 export default async function StatsPage() {
   const t = await getTranslations("stats");
   const tBar = await getTranslations("bar");
   const tCat = await getTranslations("categories");
   const now = new Date();
-  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const weekStart = new Date(todayStart.getTime() - 6 * 24 * 60 * 60 * 1000);
 
   const [
     [menuCount],
     [sessionCount],
     [activeCount],
     [drinkTotal],
-    [drinksToday],
-    [drinksWeek],
+    [drinksLast24h],
     topDrinks,
     byCategory,
     topBarsRaw,
@@ -30,14 +25,14 @@ export default async function StatsPage() {
     db.select({ count: count() }).from(sessions),
     db.select({ count: count() }).from(sessions).where(gt(sessions.expiresAt, now)),
     db.select({ total: sql<number>`COALESCE(SUM(${drinks.count}), 0)` }).from(drinks),
+    // Individual taps (not drink rows) in a rolling 24h window, so no server-time-zone "day".
     db
-      .select({ total: sql<number>`COALESCE(SUM(${drinks.count}), 0)` })
+      .select({ total: sql<number>`COUNT(*)::int` })
       .from(drinks)
-      .where(gt(drinks.createdAt, todayStart)),
-    db
-      .select({ total: sql<number>`COALESCE(SUM(${drinks.count}), 0)` })
-      .from(drinks)
-      .where(gt(drinks.createdAt, weekStart)),
+      .innerJoin(
+        sql`jsonb_array_elements_text(${drinks.tappedAt}) AS tap(at)`,
+        sql`tap.at::timestamptz > now() - interval '24 hours'`
+      ),
     db
       .select({ name: drinks.name, total: sql<number>`SUM(${drinks.count})` })
       .from(drinks)
@@ -100,20 +95,18 @@ export default async function StatsPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-3 mb-8">
+      <div className="grid grid-cols-2 gap-3 mb-4">
         <div className="bg-default-100 rounded-xl p-4 text-center">
           <p className="text-3xl font-bold">{activeCount.count}</p>
           <p className="text-sm text-default-500 mt-1">{t("active")}</p>
         </div>
         <div className="bg-default-100 rounded-xl p-4 text-center">
-          <p className="text-3xl font-bold">{drinksToday.total}</p>
-          <p className="text-sm text-default-500 mt-1">{t("today")}</p>
-        </div>
-        <div className="bg-default-100 rounded-xl p-4 text-center">
-          <p className="text-3xl font-bold">{drinksWeek.total}</p>
-          <p className="text-sm text-default-500 mt-1">{t("thisWeek")}</p>
+          <p className="text-3xl font-bold">{drinksLast24h.total}</p>
+          <p className="text-sm text-default-500 mt-1">{t("last24h")}</p>
         </div>
       </div>
+
+      <p className="text-xs text-default-500 mb-4 text-center">{t("retention")}</p>
 
       <p className="text-sm text-default-500 mb-8 text-center">
         {t("avgPerSession", { avg: avgPerSession })}
