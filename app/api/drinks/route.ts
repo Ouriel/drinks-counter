@@ -1,17 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db, drinks, sessions, barMenus, normalizeMenuItems } from "@/lib/db";
+import { db, drinks, barMenus, normalizeMenuItems } from "@/lib/db";
 import { eq, and, sql } from "drizzle-orm";
 import { sanitizeDrinkName } from "@/lib/sanitize";
 import { addDrinkSchema, patchDrinkSchema, parseBody } from "@/lib/schemas";
+import { getLiveSession } from "@/lib/server-queries";
 
 // GET drinks for a session
 export async function GET(req: NextRequest) {
   const slug = req.nextUrl.searchParams.get("slug");
   if (!slug) return NextResponse.json({ error: "Missing slug" }, { status: 400 });
 
-  const [session] = await db.select().from(sessions).where(eq(sessions.slug, slug)).limit(1);
+  const session = await getLiveSession(slug);
 
-  if (!session || session.expiresAt < new Date()) {
+  if (!session) {
     return NextResponse.json({ error: "Session expired or not found" }, { status: 404 });
   }
 
@@ -35,9 +36,9 @@ export async function POST(req: NextRequest) {
   const cleanName = sanitizeDrinkName(name);
   if (!cleanName) return NextResponse.json({ error: "Invalid drink name" }, { status: 400 });
 
-  const [session] = await db.select().from(sessions).where(eq(sessions.slug, slug)).limit(1);
+  const session = await getLiveSession(slug);
 
-  if (!session || session.expiresAt < new Date()) {
+  if (!session) {
     return NextResponse.json({ error: "Session expired" }, { status: 404 });
   }
 
@@ -97,8 +98,8 @@ export async function PATCH(req: NextRequest) {
   if ("error" in parsed) return NextResponse.json({ error: parsed.error }, { status: 400 });
   const { slug, drinkId, delta } = parsed.data;
 
-  const [session] = await db.select().from(sessions).where(eq(sessions.slug, slug)).limit(1);
-  if (!session || session.expiresAt < new Date()) {
+  const session = await getLiveSession(slug);
+  if (!session) {
     return NextResponse.json({ error: "Session expired" }, { status: 404 });
   }
 

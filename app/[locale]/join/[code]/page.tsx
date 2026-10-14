@@ -6,6 +6,7 @@ import { Spinner, Button } from "@heroui/react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { api } from "@/lib/api";
+import { pickJoinableSlug } from "@/lib/recent-sessions";
 
 export default function JoinTablePage() {
   const { code } = useParams<{ code: string }>();
@@ -17,11 +18,10 @@ export default function JoinTablePage() {
     async function join() {
       let slug: string | null = null;
       try {
-        const recent = JSON.parse(localStorage.getItem("tipsytap_recent") || "[]");
-        if (recent.length > 0) slug = recent[0].slug;
+        slug = pickJoinableSlug(localStorage.getItem("tipsytap_recent"));
       } catch {}
 
-      // Try joining with existing session; if it fails (already in a table), create a new one
+      // Reuse tonight's session; if joining fails (already in a table, expired), create a new one
       if (slug) {
         const result = await api.joinTable(slug, code);
         if (result) {

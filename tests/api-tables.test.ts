@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { eq } from "drizzle-orm";
 import { NextRequest } from "next/server";
-import { db, sessions, tables, drinks } from "@/lib/db";
-import { POST, PATCH, GET } from "@/app/api/tables/route";
+import { db, sessions, tables, drinks, barMenus } from "@/lib/db";
+import { POST, PATCH, PUT, GET, DELETE } from "@/app/api/tables/route";
 import { GET as cleanup } from "@/app/api/cron/cleanup/route";
 import { getSessionView, getTableStats } from "@/lib/server-queries";
 import { jsonRequest, resetDb } from "./helpers/test-db";
@@ -64,6 +64,45 @@ describe("tables", () => {
       await GET(jsonRequest(`/api/tables?code=${created.code}`, "GET"))
     ).text();
     expect(ranking).not.toContain("slug");
+  });
+});
+
+// An expired session is read-only: no table create, join (bar menu overwrite), reroll or leave.
+describe("tables: expired sessions", () => {
+  beforeEach(async () => {
+    const [menu] = await db.insert(barMenus).values({ barName: "le salon" }).returning();
+    const [table] = await db.insert(tables).values({ code: "ABC234" }).returning();
+    await db.insert(sessions).values([
+      {
+        slug: "host-slug",
+        tableId: table.id,
+        barMenuId: menu.id,
+        nickname: "fox",
+        expiresAt: new Date(Date.now() + HOUR),
+      },
+      { slug: "lone-slug", expiresAt: new Date(Date.now() - HOUR) },
+      {
+        slug: "member-slug",
+        tableId: table.id,
+        nickname: "owl",
+        expiresAt: new Date(Date.now() - HOUR),
+      },
+    ]);
+  });
+
+  it.each([
+    ["POST", () => POST(jsonRequest("/api/tables", "POST", { slug: "lone-slug" }))],
+    [
+      "PATCH",
+      () => PATCH(jsonRequest("/api/tables", "PATCH", { slug: "lone-slug", code: "ABC234" })),
+    ],
+    ["PUT", () => PUT(jsonRequest("/api/tables", "PUT", { slug: "member-slug" }))],
+    ["DELETE", () => DELETE(jsonRequest("/api/tables?slug=member-slug", "DELETE"))],
+  ])("%s returns 404 and leaves every row untouched", async (_method, call) => {
+    const before = await db.select().from(sessions).orderBy(sessions.slug);
+    expect((await call()).status).toBe(404);
+    expect(await db.select().from(sessions).orderBy(sessions.slug)).toEqual(before);
+    expect(await db.select().from(tables)).toHaveLength(1);
   });
 });
 
