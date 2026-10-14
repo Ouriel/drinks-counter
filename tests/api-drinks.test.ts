@@ -76,6 +76,29 @@ describe("POST /api/drinks", () => {
     expect(after.items).toEqual([{ name: "spritz", category: "cocktail" }]);
   });
 
+  it("doesn't add a drink the bar menu already has, in any case", async () => {
+    const items = [{ name: "Spritz", category: "cocktail" }];
+    const [menu] = await db.insert(barMenus).values({ barName: "le salon", items }).returning();
+    await seedSession("fizzy-julep", 48 * HOUR, menu.id);
+    await tap("spritz", "fizzy-julep", "cocktail");
+    const [after] = await db.select().from(barMenus);
+    expect(after.items).toEqual(items);
+  });
+
+  it("keeps both new drinks when two first taps append to the bar menu at once", async () => {
+    const [menu] = await db.insert(barMenus).values({ barName: "le salon", items: [] }).returning();
+    await seedSession("fizzy-julep", 48 * HOUR, menu.id);
+    await Promise.all([tap("Spritz", "fizzy-julep", "cocktail"), tap("Mojito", "fizzy-julep")]);
+    const [after] = await db.select().from(barMenus);
+    expect(after.items).toHaveLength(2);
+    expect(after.items).toEqual(
+      expect.arrayContaining([
+        { name: "spritz", category: "cocktail" },
+        { name: "mojito", category: "other" },
+      ])
+    );
+  });
+
   it("rejects invalid JSON and invalid bodies with 400", async () => {
     const bad = new Request("http://localhost/api/drinks", { method: "POST", body: "{" });
     expect((await POST(bad as never)).status).toBe(400);

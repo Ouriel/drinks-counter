@@ -17,6 +17,7 @@ import { getSessionHue, getPace, getTipsyStyle, getIconColor } from "@/lib/gamif
 import { useOptimisticDrinks } from "@/lib/useOptimisticDrinks";
 import { useIsHydrated } from "@/lib/use-is-hydrated";
 import { api } from "@/lib/api";
+import { mergeMenuItems } from "@/lib/menu-items";
 import type { Drink, MenuItem } from "@/lib/types";
 
 // Interaction-only components — not needed for first paint, so they're code-split out of the
@@ -100,25 +101,31 @@ export function SessionClient({
     addDrink(name, category);
   }
 
-  async function handleSnapMenu(event: React.ChangeEvent<HTMLInputElement>) {
+  function handleSnapMenu(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
+    event.target.value = ""; // the same photo can be picked again
     if (!file) return;
     setShowPicker(false);
-    const { default: imageCompression } = await import("browser-image-compression");
-    const compressed = await imageCompression(file, {
-      maxSizeMB: 1,
-      maxWidthOrHeight: 1600,
-      useWebWorker: true,
+    const scan = (async () => {
+      const { default: imageCompression } = await import("browser-image-compression");
+      const compressed = await imageCompression(file, {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1600,
+        useWebWorker: true,
+      });
+      const formData = new FormData();
+      formData.append("photo", compressed);
+      formData.append("slug", slug); // the server saves the new items into the bar menu
+      const data = await api.parseMenu(formData);
+      if (!data?.items.length) throw new Error("No menu items found");
+      setMenuItems((prev) => mergeMenuItems(prev, data.items));
+      return mergeMenuItems(menuItems, data.items).length - menuItems.length;
+    })();
+    toast.promise(scan, {
+      loading: `📸 ${t("bar.readingMenu")}`,
+      success: (added) => `📸 ${t("toast.drinksImported", { count: added })}`,
+      error: t("toast.menuScanFailed"),
     });
-    const formData = new FormData();
-    formData.append("photo", compressed);
-    const data = await api.parseMenu(formData);
-    if (data.items.length > 0) {
-      const existing = new Set(menuItems.map((item) => item.name.toLowerCase()));
-      const newItems = data.items.filter((item) => !existing.has(item.name.toLowerCase()));
-      if (newItems.length > 0) setMenuItems((prev) => [...prev, ...newItems]);
-      toast(`📸 ${t("toast.drinksImported", { count: data.items.length })}`, { timeout: 15000 });
-    }
   }
 
   const total = drinks.reduce((sum, drink) => sum + drink.count, 0);

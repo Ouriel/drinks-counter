@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateText, Output } from "ai";
 import { z } from "zod";
+import { and, eq, sql } from "drizzle-orm";
 import { getVisionModel } from "@/lib/ai";
+import { db, barMenus, normalizeMenuItems } from "@/lib/db";
+import { mergeMenuItems } from "@/lib/menu-items";
+import type { MenuItem } from "@/lib/types";
+import { getLiveSession } from "@/lib/server-queries";
 
 const MAX_FILE_SIZE = 4 * 1024 * 1024; // 4MB
 
@@ -25,6 +30,28 @@ function isRateLimited(ip: string): boolean {
   }
   entry.count++;
   return entry.count > RATE_LIMIT;
+}
+
+// Re-scan from a live session: append the new items to its bar menu (like POST /api/drinks does).
+async function saveToSessionMenu(slug: string, items: MenuItem[]) {
+  const session = await getLiveSession(slug);
+  if (!session?.barMenuId) return;
+  const [menu] = await db
+    .select({ items: barMenus.items })
+    .from(barMenus)
+    .where(eq(barMenus.id, session.barMenuId))
+    .limit(1);
+  if (!menu) return;
+  const current = normalizeMenuItems(menu.items);
+  const newItems = mergeMenuItems(current, items).slice(current.length);
+  if (!newItems.length) return;
+  // Atomic append: a concurrent append or an admin Empty since the read is never overwritten.
+  await db
+    .update(barMenus)
+    .set({ items: sql`${barMenus.items} || ${JSON.stringify(newItems)}::jsonb` })
+    .where(
+      and(eq(barMenus.id, session.barMenuId), sql`jsonb_array_length(${barMenus.items}) < 200`)
+    );
 }
 
 export async function POST(req: NextRequest) {
@@ -115,6 +142,13 @@ OTHER:
       ],
     });
 
+    const slug = formData.get("slug");
+    if (typeof slug === "string" && slug) {
+      // Non-fatal: the client still keeps the scanned items for this visit.
+      await saveToSessionMenu(slug, output.items).catch((error) =>
+        console.error("Saving re-scanned menu failed:", error)
+      );
+    }
     return NextResponse.json(output);
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
