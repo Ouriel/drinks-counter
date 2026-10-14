@@ -24,7 +24,9 @@
     "creating": "Creazione…",
     "readingMenu": "Lettura menu…",
     "camera": "Fotografa il menu",
-    "skipManual": "Salta — aggiungerò manualmente"
+    "skipManual": "Salta — aggiungerò manualmente",
+    "noMenuYet": "Ancora nessun menu: fotografalo!",
+    "scanFirst": "Nessuno ha ancora scansionato il menu di questo bar. Fotografalo e il prossimo gruppo lo avrà subito."
   },
   "review": {
     "title": "Controlla le bevande",
@@ -90,7 +92,8 @@
     "alreadyOrdered": "Già ordinato · tocca per +1",
     "emptyTitle": "Scrivi un nome di bevanda sopra",
     "emptyHint": "per cercare o aggiungere",
-    "close": "Chiudi"
+    "close": "Chiudi",
+    "noMenuYet": "Ancora nessun menu per questo bar: scansionalo così ce l'hanno tutti qui"
   },
   "drinkCard": {
     "aria": "{name}, {count}. Tocca + per aggiungere, tocca − per rimuovere",

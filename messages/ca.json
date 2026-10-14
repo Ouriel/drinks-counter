@@ -24,7 +24,9 @@
     "creating": "Creant…",
     "readingMenu": "Llegint el menú…",
     "camera": "Fotografiar el menú",
-    "skipManual": "Saltar — afegiré manualment"
+    "skipManual": "Saltar — afegiré manualment",
+    "noMenuYet": "Encara no hi ha menú: fes-li una foto!",
+    "scanFirst": "Ningú no ha escanejat encara el menú d'aquest bar. Fes-li una foto i el proper grup ja el tindrà."
   },
   "review": {
     "title": "Revisar begudes",
@@ -90,7 +92,8 @@
     "alreadyOrdered": "Ja demanat · toca per +1",
     "emptyTitle": "Escriu un nom de beguda a dalt",
     "emptyHint": "per cercar o afegir",
-    "close": "Tancar"
+    "close": "Tancar",
+    "noMenuYet": "Encara no hi ha menú per a aquest bar: escaneja'l perquè el tinguin tots aquí"
   },
   "drinkCard": {
     "aria": "{name}, {count}. Toca + per afegir, toca − per treure",

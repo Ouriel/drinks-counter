@@ -24,7 +24,9 @@
     "creating": "Wird erstellt…",
     "readingMenu": "Karte wird gelesen…",
     "camera": "Menü fotografieren",
-    "skipManual": "Überspringen — ich füge manuell hinzu"
+    "skipManual": "Überspringen — ich füge manuell hinzu",
+    "noMenuYet": "Noch keine Karte – fotografier sie!",
+    "scanFirst": "Die Karte dieser Bar hat noch niemand gescannt. Fotografier sie, dann hat die nächste Gruppe sie gleich."
   },
   "review": {
     "title": "Getränke überprüfen",
@@ -90,7 +92,8 @@
     "alreadyOrdered": "Bereits bestellt · tippe für +1",
     "emptyTitle": "Gib oben einen Drink-Namen ein",
     "emptyHint": "zum Suchen oder Hinzufügen",
-    "close": "Schließen"
+    "close": "Schließen",
+    "noMenuYet": "Noch keine Karte für diese Bar – scanne sie, damit alle hier sie haben"
   },
   "drinkCard": {
     "aria": "{name}, {count}. Tippe + zum Hinzufügen, tippe − zum Entfernen",

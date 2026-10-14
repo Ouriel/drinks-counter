@@ -83,6 +83,7 @@ function HomeContent() {
   const [osmResults, setOsmResults] = useState<{ name: string; address: string }[]>([]);
   const [placesStatus, setPlacesStatus] = useState<"idle" | "searching" | "done">("idle");
   const [menuItems, setMenuItems] = useState<{ name: string; category: string }[]>([]);
+  const [pickedEmptyBar, setPickedEmptyBar] = useState(false);
   const [parsing, setParsing] = useState(false);
   const [creating, setCreating] = useState(false);
   const [slugInput, setSlugInput] = useState("");
@@ -104,6 +105,7 @@ function HomeContent() {
 
   const searchBars = (q: string) => {
     setBarName(q);
+    setPickedEmptyBar(false);
     setOsmResults([]);
     setPlacesStatus("idle");
     const seq = ++searchSeq.current;
@@ -156,6 +158,7 @@ function HomeContent() {
     setBarName(bar.barName);
     setBarSuggestions([]);
     setMenuItems(bar.items);
+    setPickedEmptyBar(bar.items.length === 0);
   };
 
   const handlePhoto = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -371,7 +374,9 @@ function HomeContent() {
                 >
                   <span className="font-medium">{bar.barName}</span>
                   <span className="text-default-500 text-sm ml-2">
-                    {t("bar.items", { count: bar.items.length })}
+                    {bar.items.length > 0
+                      ? t("bar.items", { count: bar.items.length })
+                      : t("bar.noMenuYet")}
                   </span>
                 </button>
               </Card>
@@ -447,16 +452,21 @@ function HomeContent() {
             </div>
           ) : (
             menuItems.length === 0 && (
-              <Button
-                variant="ghost"
-                size="lg"
-                className="w-full text-foreground gap-1"
-                isDisabled={barName.trim().length < 2}
-                onPress={() => cameraRef.current?.click()}
-              >
-                <Camera className="w-5 h-5" />
-                {t("bar.camera")}
-              </Button>
+              <>
+                {pickedEmptyBar && (
+                  <p className="text-sm text-default-500 text-center">{t("bar.scanFirst")}</p>
+                )}
+                <Button
+                  variant={pickedEmptyBar ? "primary" : "ghost"}
+                  size="lg"
+                  className={pickedEmptyBar ? "w-full gap-1" : "w-full text-foreground gap-1"}
+                  isDisabled={barName.trim().length < 2}
+                  onPress={() => cameraRef.current?.click()}
+                >
+                  <Camera className="w-5 h-5" />
+                  {t("bar.camera")}
+                </Button>
+              </>
             )
           )}
 

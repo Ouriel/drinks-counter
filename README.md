@@ -8,7 +8,7 @@ Live at **https://tipsy-tap.vercel.app** (9 languages, dark and light themes, in
 
 ### Start an evening
 
-- **Pick the bar.** As you type (2+ letters), TipsyTap suggests bars it already knows. A known bar comes with its saved menu, so you can start right away.
+- **Pick the bar.** As you type (2+ letters), TipsyTap suggests bars it already knows. A known bar comes with its saved menu, so you can start right away; a known bar with no menu yet asks you to snap it.
 - **Find a new bar nearby.** Press Enter or the keyboard's Search key to look the name up on OpenStreetMap. Your location is asked only at that moment, and is sent rounded to about 1 km. With it, you get up to 5 bars, pubs, cafés, restaurants, nightclubs and beer gardens within about 5 km, nearest first; without it, the search is worldwide.
 - **Snap the menu.** Take a photo of the menu. Gemini reads it and lists the drinks, keeping the menu's own language. It splits sizes when they are legible (e.g. `25cl herrenbrau`) and gives each drink one of 9 categories: beer, wine, cocktail, spirit, shot, mocktail, soft, food or other. You then review the list: edit names, remove junk, start counting.
 - **Or skip the menu** and add drinks by hand later.
@@ -86,7 +86,7 @@ Phone ──> Vercel (Next.js 16, App Router)
 
 **Data model** (`lib/db.ts`):
 
-- `bar_menus`: one row per bar name (kept unique by the app, there is no DB unique index), with a shared, permanent menu (`items`: `{ name, category }[]`).
+- `bar_menus`: one row per bar name (unique index `bar_menus_bar_name_idx`), with a shared, permanent menu (`items`: `{ name, category }[]`).
 - `sessions`: one person's evening, with a unique slug, a 48 h `expires_at`, and an optional bar and table with a nickname.
 - `drinks`: one row per drink name per session (unique index `drinks_session_name_idx`), with `count` and one timestamp per tap (`tapped_at`). Drinks are deleted along with their session.
 - `tables`: a group with a unique 6-character code.

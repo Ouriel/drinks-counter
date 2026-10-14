@@ -190,7 +190,9 @@ export function DrinkPicker({
 
         {onSnapMenu && (
           <div className="text-center mt-6 pt-4 border-t border-default-200">
-            <p className="text-sm text-default-500 mb-3">{t("rescanHint")}</p>
+            <p className="text-sm text-default-500 mb-3">
+              {menuItems.length > 0 ? t("rescanHint") : t("noMenuYet")}
+            </p>
             <Button variant="ghost" className="gap-1" onPress={onSnapMenu}>
               <Camera className="w-4 h-4" />
               {t("rescanMenu")}

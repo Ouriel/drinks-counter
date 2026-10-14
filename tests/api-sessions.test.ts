@@ -84,6 +84,27 @@ describe("POST /api/sessions bar menu merge", () => {
   });
 });
 
+describe("POST /api/sessions: one row per bar", () => {
+  it("creates a single bar when two first sessions of a new bar arrive at once", async () => {
+    const [first, second] = await Promise.all([
+      create({ barName: "Chez Paulette", menuItems: [{ name: "pastis", category: "spirit" }] }),
+      create({ barName: "chez paulette", menuItems: [{ name: "kir", category: "wine" }] }),
+    ]);
+    expect(first.status).toBe(200);
+    expect(second.status).toBe(200);
+    const bars = await db.select().from(barMenus);
+    expect(bars).toHaveLength(1);
+    expect(bars[0].items).toEqual(
+      expect.arrayContaining([
+        { name: "pastis", category: "spirit" },
+        { name: "kir", category: "wine" },
+      ])
+    );
+    const linked = await db.select().from(sessions);
+    expect(new Set(linked.map((session) => session.barMenuId))).toEqual(new Set([bars[0].id]));
+  });
+});
+
 describe("POST /api/sessions slugs", () => {
   it("keeps a custom name exactly as typed", async () => {
     expect(await (await create({ slug: "party" })).json()).toEqual({ slug: "party" });

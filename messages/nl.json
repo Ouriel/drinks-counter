@@ -24,7 +24,9 @@
     "creating": "Bezig met aanmaken…",
     "readingMenu": "Menu lezen…",
     "camera": "Fotografeer het menu",
-    "skipManual": "Overslaan — ik voeg handmatig toe"
+    "skipManual": "Overslaan — ik voeg handmatig toe",
+    "noMenuYet": "Nog geen menu — maak er een foto van!",
+    "scanFirst": "Niemand heeft het menu van deze bar nog gescand. Maak er een foto van, dan heeft de volgende groep het meteen."
   },
   "review": {
     "title": "Menu-items controleren",
@@ -90,7 +92,8 @@
     "alreadyOrdered": "Al besteld · tik voor +1",
     "emptyTitle": "Typ hierboven een dranknaam",
     "emptyHint": "om te zoeken of toe te voegen",
-    "close": "Sluiten"
+    "close": "Sluiten",
+    "noMenuYet": "Nog geen menu voor deze bar — scan het zodat iedereen hier het heeft"
   },
   "drinkCard": {
     "aria": "{name}, {count}. Tik + om toe te voegen, tik − om te verwijderen",
