@@ -30,4 +30,8 @@ describe("verifySecret", () => {
   it("returns false for different length strings", () => {
     expect(verifySecret("Bearer short", "a-much-longer-secret-value")).toBe(false);
   });
+
+  it("returns false (no RangeError) for a non-ASCII header of the same string length", () => {
+    expect(verifySecret("Bearer ébc", "abc")).toBe(false);
+  });
 });

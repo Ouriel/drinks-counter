@@ -51,6 +51,39 @@ describe("POST /api/sessions", () => {
   });
 });
 
+// sec-5c: the shared bar menu is capped at 200 items and only ever appended to.
+describe("POST /api/sessions bar menu merge", () => {
+  const menu = (count: number, prefix: string) =>
+    Array.from({ length: count }, (_, index) => ({ name: `${prefix}${index}`, category: "beer" }));
+  const barMenu = async () => (await db.select().from(barMenus))[0].items;
+
+  it("leaves a bar menu that already has 250 items untouched", async () => {
+    await db.insert(barMenus).values({ barName: "le salon", items: menu(250, "old") });
+    await create({ barName: "le salon", menuItems: [{ name: "ipa", category: "beer" }] });
+    expect(await barMenu()).toEqual(menu(250, "old"));
+  });
+
+  it("adds new items only up to 200 in total", async () => {
+    await db.insert(barMenus).values({ barName: "le salon", items: menu(150, "old") });
+    await create({ barName: "le salon", menuItems: menu(200, "new") });
+    expect(await barMenu()).toEqual([...menu(150, "old"), ...menu(50, "new")]);
+  });
+
+  it("keeps both new items when two sessions of the bar are created at once", async () => {
+    const beer = { name: "beer", category: "beer" };
+    const spritz = { name: "spritz", category: "cocktail" };
+    const mojito = { name: "mojito", category: "cocktail" };
+    await db.insert(barMenus).values({ barName: "le salon", items: [beer] });
+    await Promise.all([
+      create({ barName: "le salon", menuItems: [spritz] }),
+      create({ barName: "le salon", menuItems: [mojito] }),
+    ]);
+    const items = await barMenu();
+    expect(items).toHaveLength(3);
+    expect(items).toEqual(expect.arrayContaining([beer, spritz, mojito]));
+  });
+});
+
 describe("POST /api/sessions slugs", () => {
   it("keeps a custom name exactly as typed", async () => {
     expect(await (await create({ slug: "party" })).json()).toEqual({ slug: "party" });

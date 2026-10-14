@@ -62,8 +62,8 @@ export async function POST(req: NextRequest) {
       { status: 429 }
     );
   }
-  const formData = await req.formData();
-  const file = formData.get("photo");
+  const formData = await req.formData().catch(() => null);
+  const file = formData?.get("photo");
   if (!file || typeof file === "string") {
     return NextResponse.json({ error: "No photo" }, { status: 400 });
   }
@@ -142,7 +142,7 @@ OTHER:
       ],
     });
 
-    const slug = formData.get("slug");
+    const slug = formData?.get("slug");
     if (typeof slug === "string" && slug) {
       // Non-fatal: the client still keeps the scanned items for this visit.
       await saveToSessionMenu(slug, output.items).catch((error) =>

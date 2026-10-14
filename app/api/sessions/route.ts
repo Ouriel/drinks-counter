@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db, sessions, barMenus, normalizeMenuItems } from "@/lib/db";
+import { mergeMenuItems } from "@/lib/menu-items";
 import type { MenuItem } from "@/lib/types";
 import { generateSlug } from "@/lib/slugs";
 import { sanitizeBarName } from "@/lib/sanitize";
-import { eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { createSessionSchema, parseBody } from "@/lib/schemas";
 import { getSessionView } from "@/lib/server-queries";
 
@@ -34,16 +35,18 @@ export async function POST(req: NextRequest) {
       barMenuId = existing[0].id;
       if (menuItems?.length) {
         const currentItems = normalizeMenuItems(existing[0].items);
-        const existingLower = new Set(currentItems.map((item) => item.name.toLowerCase()));
         const incoming: MenuItem[] = menuItems.map((item: MenuItem | string) =>
           typeof item === "string" ? { name: item, category: "other" } : item
         );
-        const newItems = incoming.filter((item) => !existingLower.has(item.name.toLowerCase()));
+        const newItems = mergeMenuItems(currentItems, incoming).slice(currentItems.length);
         if (newItems.length > 0) {
+          // Atomic append: a concurrent append or an admin Empty since the read is never overwritten.
           await db
             .update(barMenus)
-            .set({ items: [...currentItems, ...newItems] })
-            .where(eq(barMenus.id, existing[0].id));
+            .set({ items: sql`${barMenus.items} || ${JSON.stringify(newItems)}::jsonb` })
+            .where(
+              and(eq(barMenus.id, existing[0].id), sql`jsonb_array_length(${barMenus.items}) < 200`)
+            );
         }
       }
     } else {
