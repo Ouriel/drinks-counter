@@ -117,7 +117,7 @@
     "drinks": "Drinks",
     "active": "Active now",
     "last24h": "Last 24h",
-    "retention": "Sessions and their drinks are deleted 2 days after they start, so these numbers only cover the last few nights.",
+    "retention": "Sessions end 48h after they start and are deleted with their drinks at the next daily cleanup (2 to 3 days in total). So apart from bars, these numbers only cover the last 2 to 3 days.",
     "avgPerSession": "~{avg} drinks per session on average",
     "byCategory": "By Category",
     "topDrinks": "Top Drinks",

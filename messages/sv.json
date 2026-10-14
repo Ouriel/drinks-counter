@@ -117,7 +117,7 @@
     "drinks": "Drinkar",
     "active": "Aktiva nu",
     "last24h": "Senaste 24 h",
-    "retention": "Sessioner och deras drinkar raderas 2 dagar efter start, så siffrorna gäller bara de senaste kvällarna.",
+    "retention": "En session slutar 48 h efter start och raderas med sina drinkar vid nästa dagliga rensning (2–3 dagar totalt). Förutom barerna gäller siffrorna alltså bara de senaste 2–3 dagarna.",
     "avgPerSession": "~{avg} drinkar per session i snitt",
     "byCategory": "Per kategori",
     "topDrinks": "Toppdrinkar",

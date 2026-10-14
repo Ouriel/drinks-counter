@@ -72,6 +72,21 @@ describe("tables", () => {
     expect(ranking).not.toContain("slug");
   });
 
+  it("join takes the bar of a member who has one, even when the first member has none", async () => {
+    const [bar] = await db.insert(barMenus).values({ barName: "le salon", items: [] }).returning();
+    await seedSession("host-slug"); // no bar
+    const withBar = await seedSession("bar-slug");
+    await db.update(sessions).set({ barMenuId: bar.id }).where(eq(sessions.id, withBar.id));
+    const joiner = await seedSession("joiner-slug");
+    const { code } = await (
+      await POST(jsonRequest("/api/tables", "POST", { slug: "host-slug" }))
+    ).json();
+    await PATCH(jsonRequest("/api/tables", "PATCH", { slug: "bar-slug", code }));
+    await PATCH(jsonRequest("/api/tables", "PATCH", { slug: "joiner-slug", code }));
+    const [row] = await db.select().from(sessions).where(eq(sessions.id, joiner.id));
+    expect(row.barMenuId).toBe(bar.id);
+  });
+
   it("retries when a generated table code collides", async () => {
     await db.insert(tables).values({ code: "AAAAAA" });
     await seedSession("host-slug");

@@ -122,7 +122,7 @@
     "noBars": "Encara no hi ha bars",
     "active": "Actives ara",
     "last24h": "Últimes 24 h",
-    "retention": "Les sessions i les seves begudes s'esborren 2 dies després de començar, així que aquestes xifres només cobreixen les últimes nits.",
+    "retention": "Una sessió acaba 48 h després de començar i s'esborra amb les seves begudes a la neteja diària següent (de 2 a 3 dies en total). Tret dels bars, aquestes xifres només cobreixen els últims 2 o 3 dies.",
     "avgPerSession": "~{avg} begudes per sessió de mitjana"
   },
   "badges": {

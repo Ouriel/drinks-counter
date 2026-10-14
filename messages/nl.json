@@ -117,7 +117,7 @@
     "drinks": "Drankjes",
     "active": "Nu actief",
     "last24h": "Laatste 24 u",
-    "retention": "Sessies en hun drankjes worden 2 dagen na de start verwijderd, dus deze cijfers gaan alleen over de laatste avonden.",
+    "retention": "Een sessie eindigt 48 uur na de start en wordt met haar drankjes verwijderd bij de volgende dagelijkse opschoning (2 tot 3 dagen in totaal). Behalve de bars gaan deze cijfers dus alleen over de laatste 2 tot 3 dagen.",
     "avgPerSession": "~{avg} drankjes per sessie gemiddeld",
     "byCategory": "Per categorie",
     "topDrinks": "Topdrankjes",

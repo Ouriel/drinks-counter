@@ -122,7 +122,7 @@
     "noBars": "Aún no hay bares",
     "active": "Activas ahora",
     "last24h": "Últimas 24 h",
-    "retention": "Las sesiones y sus bebidas se borran 2 días después de empezar, así que estas cifras solo cubren las últimas noches.",
+    "retention": "Una sesión termina 48 h después de empezar y se borra con sus bebidas en la siguiente limpieza diaria (de 2 a 3 días en total). Salvo los bares, estas cifras solo cubren los últimos 2 o 3 días.",
     "avgPerSession": "~{avg} bebidas por sesión de media"
   },
   "badges": {

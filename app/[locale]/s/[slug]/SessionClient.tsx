@@ -77,7 +77,7 @@ export function SessionClient({
   const t = useTranslations();
   const [showConfetti, setShowConfetti] = useState(false);
   const [menuItems, setMenuItems] = useState<MenuItem[]>(initialMenuItems);
-  const [barName] = useState(initialBarName);
+  const [barName, setBarName] = useState(initialBarName);
   const [tableCode, setTableCode] = useState<string | null>(initialTableCode);
   const nickname = initialNickname;
   const [showPicker, setShowPicker] = useState(false);
@@ -106,6 +106,8 @@ export function SessionClient({
     event.target.value = ""; // the same photo can be picked again
     if (!file) return;
     setShowPicker(false);
+    // Not toast.promise: it hard-codes HeroUI's 4 s, the result should stay 5 s.
+    const toastId = toast(`📸 ${t("bar.readingMenu")}`, { isLoading: true, timeout: 0 });
     const scan = (async () => {
       const { default: imageCompression } = await import("browser-image-compression");
       const compressed = await imageCompression(file, {
@@ -121,11 +123,31 @@ export function SessionClient({
       setMenuItems((prev) => mergeMenuItems(prev, data.items));
       return mergeMenuItems(menuItems, data.items).length - menuItems.length;
     })();
-    toast.promise(scan, {
-      loading: `📸 ${t("bar.readingMenu")}`,
-      success: (added) => `📸 ${t("toast.drinksImported", { count: added })}`,
-      error: t("toast.menuScanFailed"),
-    });
+    scan.then(
+      (added) =>
+        toast.update(toastId, `📸 ${t("toast.drinksImported", { count: added })}`, {
+          isLoading: false,
+          timeout: 5000,
+          variant: "success",
+        }),
+      () =>
+        toast.update(toastId, t("toast.menuScanFailed"), {
+          isLoading: false,
+          timeout: 5000,
+          variant: "danger",
+        })
+    );
+  }
+
+  async function handleTableChange(code: string | null) {
+    setTableCode(code);
+    if (!code) return;
+    // Joining a table can switch this session to the table's bar: show its name and menu now.
+    // Same or no bar on the server: keep the local menu (a re-scan without a bar lives only here).
+    const view = await api.getSession(slug);
+    if (!view?.session.barName || view.session.barName === barName) return;
+    setBarName(view.session.barName);
+    setMenuItems(view.menuItems);
   }
 
   const total = drinks.reduce((sum, drink) => sum + drink.count, 0);
@@ -355,7 +377,7 @@ export function SessionClient({
         tableCode={tableCode}
         nickname={nickname}
         drinkTotal={total}
-        onTableChange={setTableCode}
+        onTableChange={handleTableChange}
       />
 
       {/* FAB, from the first drink on (before that, the button is in the empty state) */}

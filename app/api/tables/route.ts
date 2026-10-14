@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db, tables, sessions, drinks } from "@/lib/db";
-import { eq, sql, and } from "drizzle-orm";
+import { eq, sql, and, isNotNull } from "drizzle-orm";
 import { randomInt } from "crypto";
 import { z } from "zod";
 import { pickUniqueNickname } from "@/lib/nicknames";
@@ -93,11 +93,11 @@ export async function PATCH(req: NextRequest) {
   if (!table) return NextResponse.json({ error: "Table not found" }, { status: 404 });
 
   const nickname = await uniqueNicknameForTable(table.id);
-  // Inherit bar menu from existing table members
+  // Inherit the bar menu of a table member who has one
   const [existingMember] = await db
     .select({ barMenuId: sessions.barMenuId })
     .from(sessions)
-    .where(eq(sessions.tableId, table.id))
+    .where(and(eq(sessions.tableId, table.id), isNotNull(sessions.barMenuId)))
     .limit(1);
   const barMenuId = existingMember?.barMenuId ?? null;
 
