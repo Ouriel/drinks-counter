@@ -12,6 +12,7 @@
   },
   "bar": {
     "whereAreYou": "Waar ben je?",
+    "resumeSlug": "Geen actieve sessie ‘{slug}’. Kies je bar om een nieuwe te starten.",
     "barName": "Naam van de bar…",
     "items": "{count, plural, one {# item} other {# items}}",
     "nearbyPlaces": "Plekken in de buurt",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, useSyncExternalStore } from "react";
 import { Button, Input, Card, Chip, Spinner, toast } from "@heroui/react";
 import { useTranslations } from "next-intl";
 import { ChartColumn, MapPin, Camera, Beer } from "lucide-react";
@@ -10,6 +10,7 @@ import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { Logo } from "@/components/Logo";
 import { CategoryIcon } from "@/lib/category-icon";
 import { useIsHydrated } from "@/lib/use-is-hydrated";
+import { RESERVED_PATHS } from "@/lib/reserved-paths";
 
 function loadRecentSessions(): { slug: string; barName: string; date: string }[] {
   try {
@@ -32,6 +33,8 @@ function loadRecentSessions(): { slug: string; barName: string; date: string }[]
   }
 }
 
+const noopSubscribe = () => () => {};
+
 export default function Home() {
   return <HomeContent />;
 }
@@ -40,13 +43,19 @@ function HomeContent() {
   const router = useRouter();
   const t = useTranslations();
   const hydrated = useIsHydrated();
-  // ?slug= "resume" flow (rare — e.g. an expired session bounced back here). Read on the client
-  // only; the server renders the static start hero. Gating on `hydrated` keeps the SSR HTML and
-  // the first client render identical (no mismatch) — instead of useSearchParams(), which deopts
-  // the whole route to client-side rendering and left an empty <main> in the prerendered HTML.
-  const preferredSlug = hydrated
-    ? new URLSearchParams(window.location.search).get("slug") || ""
-    : "";
+  // ?slug= "resume" flow (an expired/unknown session bounced back here). The server snapshot is
+  // "" so the start hero stays prerendered (useSearchParams() would deopt the route to CSR).
+  // A plain read during render missed soft navigations: Next writes the new URL only at commit,
+  // after this renders — useSyncExternalStore re-reads the snapshot after commit and re-renders.
+  const search = useSyncExternalStore(
+    noopSubscribe,
+    () => window.location.search,
+    () => ""
+  );
+  const slugParam = new URLSearchParams(search).get("slug") || "";
+  // Only a name sessions POST accepts; anything else gets the normal start screen.
+  const preferredSlug =
+    /^[a-z0-9-]{1,50}$/.test(slugParam) && !RESERVED_PATHS.includes(slugParam) ? slugParam : "";
   const [userStep, setUserStep] = useState<"start" | "bar" | "review" | null>(null);
   const step: "start" | "bar" | "review" = userStep ?? (preferredSlug ? "bar" : "start");
   const [barName, setBarName] = useState("");
@@ -273,6 +282,11 @@ function HomeContent() {
           <Logo size={24} />
           <h2 className="text-xl font-bold">{t("bar.whereAreYou")}</h2>
         </div>
+        {preferredSlug && (
+          <p className="text-sm text-default-500 mb-3">
+            {t("bar.resumeSlug", { slug: preferredSlug })}
+          </p>
+        )}
 
         <Input
           className="w-full mb-3"

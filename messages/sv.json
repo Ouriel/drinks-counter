@@ -12,6 +12,7 @@
   },
   "bar": {
     "whereAreYou": "Var är du?",
+    "resumeSlug": "Ingen aktiv session ”{slug}”. Välj din bar för att starta en ny.",
     "barName": "Barens namn…",
     "items": "{count, plural, one {# artikel} other {# artiklar}}",
     "nearbyPlaces": "Platser i närheten",
