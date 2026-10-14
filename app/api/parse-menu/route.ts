@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { generateObject } from "ai";
+import { generateText, Output } from "ai";
 import { z } from "zod";
 import { getVisionModel } from "@/lib/ai";
 
@@ -48,33 +48,35 @@ export async function POST(req: NextRequest) {
   const mediaType = file.type || "image/jpeg";
 
   try {
-    const { object } = await generateObject({
+    const { output } = await generateText({
       model: getVisionModel(),
-      schema: z.object({
-        items: z.array(
-          z.object({
-            name: z.string(),
-            category: z.enum([
-              "beer",
-              "cocktail",
-              "wine",
-              "spirit",
-              "shot",
-              "mocktail",
-              "soft",
-              "food",
-              "other",
-            ]),
-          })
-        ),
+      output: Output.object({
+        schema: z.object({
+          items: z.array(
+            z.object({
+              name: z.string(),
+              category: z.enum([
+                "beer",
+                "cocktail",
+                "wine",
+                "spirit",
+                "shot",
+                "mocktail",
+                "soft",
+                "food",
+                "other",
+              ]),
+            })
+          ),
+        }),
       }),
       messages: [
         {
           role: "user",
           content: [
             {
-              type: "image",
-              image: new Uint8Array(bytes),
+              type: "file",
+              data: new Uint8Array(bytes),
               mediaType: mediaType,
             },
             {
@@ -113,7 +115,7 @@ OTHER:
       ],
     });
 
-    return NextResponse.json(object);
+    return NextResponse.json(output);
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     console.error("Menu parsing failed:", msg);

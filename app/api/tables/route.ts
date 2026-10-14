@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db, tables, sessions, drinks } from "@/lib/db";
 import { eq, sql, and } from "drizzle-orm";
+import { randomInt } from "crypto";
 import { z } from "zod";
 import { pickUniqueNickname } from "@/lib/nicknames";
 import { parseBody } from "@/lib/schemas";
-import { getTableStats } from "@/lib/server-queries";
+import { getLiveSession, getTableStats } from "@/lib/server-queries";
 
 const createTableSchema = z.object({ slug: z.string().min(1).max(50) });
 const joinTableSchema = z.object({
@@ -15,7 +16,7 @@ const joinTableSchema = z.object({
 function generateTableCode(): string {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   let code = "";
-  for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  for (let i = 0; i < 6; i++) code += chars[randomInt(chars.length)];
   return code;
 }
 
@@ -40,7 +41,7 @@ export async function POST(req: NextRequest) {
   if ("error" in parsed) return NextResponse.json({ error: parsed.error }, { status: 400 });
   const { slug } = parsed.data;
 
-  const [session] = await db.select().from(sessions).where(eq(sessions.slug, slug)).limit(1);
+  const session = await getLiveSession(slug);
   if (!session) return NextResponse.json({ error: "Session not found" }, { status: 404 });
   if (session.tableId) {
     return NextResponse.json({ error: "Already in a table" }, { status: 409 });
@@ -79,7 +80,7 @@ export async function PATCH(req: NextRequest) {
   if ("error" in parsed) return NextResponse.json({ error: parsed.error }, { status: 400 });
   const { slug, code } = parsed.data;
 
-  const [session] = await db.select().from(sessions).where(eq(sessions.slug, slug)).limit(1);
+  const session = await getLiveSession(slug);
   if (!session) return NextResponse.json({ error: "Session not found" }, { status: 404 });
   if (session.tableId) {
     return NextResponse.json({ error: "Already in a table" }, { status: 409 });
@@ -121,7 +122,7 @@ export async function PUT(req: NextRequest) {
   if ("error" in parsed) return NextResponse.json({ error: parsed.error }, { status: 400 });
   const { slug } = parsed.data;
 
-  const [session] = await db.select().from(sessions).where(eq(sessions.slug, slug)).limit(1);
+  const session = await getLiveSession(slug);
   if (!session) return NextResponse.json({ error: "Session not found" }, { status: 404 });
   if (!session.tableId) return NextResponse.json({ error: "Not in a table" }, { status: 400 });
 
@@ -197,7 +198,7 @@ export async function DELETE(req: NextRequest) {
   const slug = req.nextUrl.searchParams.get("slug");
   if (!slug) return NextResponse.json({ error: "Missing slug" }, { status: 400 });
 
-  const [session] = await db.select().from(sessions).where(eq(sessions.slug, slug)).limit(1);
+  const session = await getLiveSession(slug);
   if (!session) return NextResponse.json({ error: "Session not found" }, { status: 404 });
   if (!session.tableId) return NextResponse.json({ error: "Not in a table" }, { status: 400 });
 

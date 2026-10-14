@@ -24,6 +24,12 @@ export type SessionView = {
   menuItems: MenuItem[];
 };
 
+/** The session for a slug, or undefined if unknown or expired. Every write route goes through this. */
+export async function getLiveSession(slug: string) {
+  const [session] = await db.select().from(sessions).where(eq(sessions.slug, slug)).limit(1);
+  return session && session.expiresAt >= new Date() ? session : undefined;
+}
+
 /** Session + bar menu + table resolved in ONE round-trip. Returns null if not found/expired. */
 export async function getSessionView(slug: string): Promise<SessionView | null> {
   const rows = await db

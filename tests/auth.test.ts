@@ -6,8 +6,9 @@ describe("verifySecret", () => {
     expect(verifySecret("Bearer my-secret-123", "my-secret-123")).toBe(true);
   });
 
-  it("returns false for wrong secret", () => {
-    expect(verifySecret("Bearer wrong", "my-secret-123")).toBe(false);
+  it("returns false for a wrong secret of the same length", () => {
+    // Same length, so this reaches timingSafeEqual instead of the length short-circuit.
+    expect(verifySecret("Bearer my-secret-124", "my-secret-123")).toBe(false);
   });
 
   it("returns false for missing header", () => {

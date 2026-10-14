@@ -6,6 +6,16 @@ export default defineConfig({
     environment: "node",
     // .agents holds local, untracked plans and review artifacts.
     exclude: [...configDefaults.exclude, ".agents/**"],
+    restoreMocks: true,
+    unstubEnvs: true,
+    unstubGlobals: true,
+    coverage: {
+      // Server + hook logic only: pages/components untested until an e2e smoke exists.
+      include: ["lib/**/*.ts", "app/api/**/*.ts"],
+      reporter: ["text-summary"],
+      // Floor, not goal: raise it when a PR adds tests (never lower it to make CI pass).
+      thresholds: { statements: 60, branches: 55, functions: 65, lines: 60 },
+    },
   },
   resolve: {
     alias: {
