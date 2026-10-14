@@ -38,7 +38,7 @@
     "share": "Compartir",
     "linkCopied": "¡Enlace copiado!",
     "slugExplain": "Tu enlace de sesión — guárdalo para volver si cierras la página!",
-    "joinSession": "Únete a mi sesión en {bar}",
+    "joinSession": "Únete a mi mesa en {bar}",
     "eveningSummary": "Mi resumen",
     "tableSummary": "Resumen de la mesa",
     "couldNotCreate": "No se pudo crear la sesión. Inténtalo de nuevo."
