@@ -114,7 +114,7 @@ cp .env.example .env.local   # fill only what you need; never the prod POSTGRES_
 npm run dev          # http://localhost:3000
 ```
 
-Lint, build and tests need no database or secrets. There is no shared dev database: for DB pages, use your own Postgres or a Neon branch. Pointed at prod, every local tap and new bar name is a real, permanent write. Without `POSTGRES_URL`, the home page and the OpenStreetMap lookup work, but known-bar suggestions, starting a session, session pages and stats fail. Menu scans need `GOOGLE_GENERATIVE_AI_API_KEY`.
+Lint, build and tests need no database or secrets. For DB pages, use the Neon `preview` branch (or your own Postgres), never prod: pointed at prod, every local tap and new bar name is a real, permanent write. Without `POSTGRES_URL`, the home page and the OpenStreetMap lookup work, but known-bar suggestions, starting a session, session pages and stats fail. Menu scans need `GOOGLE_GENERATIVE_AI_API_KEY`.
 
 ```bash
 npm run lint         # ESLint + Prettier check
@@ -128,7 +128,7 @@ Tests run the real SQL on an in-memory PGlite database and make no network calls
 ## Delivery
 
 - **Branches and PRs.** A ruleset on `main` requires a green `ci` check on every commit that lands, so changes go through a PR, and a direct push of an unchecked commit is rejected. The owner can bypass it on a PR in an emergency. CI runs `npm ci`, lint, build and test on Node 24.
-- **Deploy.** Every merge to `main` deploys to production on Vercel. Preview deployments have no database.
+- **Deploy.** Every merge to `main` deploys to production on Vercel. Preview deployments use the Neon branch `preview` (a copy of prod, separate from it), so a PR can be tried end to end without touching prod data.
 - **Dependencies.** Dependabot opens grouped updates every Monday. A PR merges on its own once `ci` is green, unless one of its packages matches a pattern in the repo variable `AUTOMERGE_MANUAL`: then the whole PR is merged by hand. With the variable unset, majors stay manual.
 - **Database changes.** The build never changes the schema. A schema change is applied to prod by hand, together with the migration of the existing data, then mirrored in `lib/db.ts`. See `AGENTS.md` (Guardrails) for the procedure.
 
@@ -136,12 +136,12 @@ Engineering rules for contributors and coding agents live in [`AGENTS.md`](AGENT
 
 ## Environment variables
 
-| Variable                       | Purpose                                                     |
-| ------------------------------ | ----------------------------------------------------------- |
-| `POSTGRES_URL`                 | Neon Postgres connection string (production only on Vercel) |
-| `GOOGLE_GENERATIVE_AI_API_KEY` | Gemini, for menu scanning                                   |
-| `ADMIN_SECRET`                 | Protects the admin API; the `/admin` page asks for it       |
-| `CRON_SECRET`                  | Protects the cleanup cron; Vercel sends it automatically    |
+| Variable                       | Purpose                                                                                      |
+| ------------------------------ | -------------------------------------------------------------------------------------------- |
+| `POSTGRES_URL`                 | Neon Postgres connection string (Production: the main branch; Preview: the `preview` branch) |
+| `GOOGLE_GENERATIVE_AI_API_KEY` | Gemini, for menu scanning                                                                    |
+| `ADMIN_SECRET`                 | Protects the admin API; the `/admin` page asks for it                                        |
+| `CRON_SECRET`                  | Protects the cleanup cron; Vercel sends it automatically                                     |
 
 ## License
 
