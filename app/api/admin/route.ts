@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db, barMenus, sessions, drinks, tables, normalizeMenuItems } from "@/lib/db";
-import { eq, sql, count } from "drizzle-orm";
+import { and, eq, ne, sql, count } from "drizzle-orm";
 import { verifySecret } from "@/lib/auth";
+import { sanitizeBarName } from "@/lib/sanitize";
 import { adminPatchSchema, parseBody } from "@/lib/schemas";
 import { z } from "zod";
 
@@ -112,7 +113,18 @@ export async function PATCH(req: NextRequest) {
 
   const updates: { items?: { name: string; category: string }[]; barName?: string } = {};
   if (items) updates.items = items;
-  if (barName) updates.barName = barName;
+  if (barName) {
+    // Same normalization as POST /api/sessions, which looks bars up by exact sanitized name.
+    const cleanName = sanitizeBarName(barName);
+    if (!cleanName) return NextResponse.json({ error: "Invalid bar name" }, { status: 400 });
+    const [clash] = await db
+      .select({ id: barMenus.id })
+      .from(barMenus)
+      .where(and(eq(barMenus.barName, cleanName), ne(barMenus.id, id)))
+      .limit(1);
+    if (clash) return NextResponse.json({ error: "Bar name already exists" }, { status: 409 });
+    updates.barName = cleanName;
+  }
 
   if (Object.keys(updates).length === 0) {
     return NextResponse.json({ error: "No valid fields to update" }, { status: 400 });
