@@ -10,7 +10,8 @@ Mobile-first drinks counter app. Users snap a bar menu photo, AI extracts drinks
 - HeroUI v3 (Card, Button, Chip, Spinner, Input, toast) + Tailwind CSS 4
 - Neon Postgres + Drizzle ORM
 - Vercel AI SDK + Google Gemini 2.5 Flash Lite
-- Vitest (76 tests), ESLint 9, Prettier, Husky
+- Vitest, ESLint 10, Prettier, Husky
+- Node 24 / npm 11 (`.nvmrc`)
 
 ## Code Standards
 
@@ -23,6 +24,9 @@ Mobile-first drinks counter app. Users snap a bar menu photo, AI extracts drinks
 - useEffect ONLY for: DOM events, timers, initial data fetch
 - Run `npx prettier --write` on every modified file
 - One component per file, named exports for lib/
+- Bug fixes start with a failing test; tests that assert buggy behaviour are rewritten
+- Route/query tests mock `@/lib/db` with PGlite (`tests/helpers/test-db.ts`); hook tests use `// @vitest-environment jsdom` + `tests/helpers/render-hook.ts`
+- Data-model changes ship with the migration of the existing prod data and are mirrored in `lib/db.ts` (see CLAUDE.md, Database Changes)
 
 ### MUST NOT
 
@@ -30,7 +34,7 @@ Mobile-first drinks counter app. Users snap a bar menu photo, AI extracts drinks
 - No useEffect for derived state or reacting to state changes
 - No raw `fetch().json()` in components — use `api.*` helpers
 - No placeholder tests (asserting inline math) — test real code paths
-- No importing `lib/db.ts` in tests
+- No `drizzle-kit push`, in the build or by hand against prod
 - No custom notification overlays — use HeroUI toast system
 
 ## Architecture
@@ -53,15 +57,16 @@ app/s/[slug]/error.tsx    → Error boundary
 - **Server-rendered pages**: session pages are server components (`page.tsx`) that fetch via `lib/server-queries.ts` and pass initial data to a `*Client.tsx`; the client inits state from props (no fetch-on-mount). Interaction-only components (`DrinkPicker`, `Confetti`, `QrCode`) are `next/dynamic`.
 - **Optimistic updates**: `useOptimisticDrinks` hook handles all drink mutations with rollback
 - **Gamification**: triggered inline in event handlers (not useEffect), fires confetti via `onBadge` callback
-- **TableView**: syncs with parent prop changes, polls every 60s with visibility check
+- **TableView**: syncs with parent prop changes, polls every 30s with visibility check
 - **DrinkPicker**: keyboard trap with `onCloseRef` pattern (stable useEffect deps)
 - **PwaInstallPrompt**: auto-dismiss 8s, hidden in standalone mode, in layout (global)
 - **Geolocation**: lazy — only requested when OSM search triggers (not on mount)
+- **Dependabot**: green updates auto-merge, except packages listed in the repo variable `AUTOMERGE_MANUAL` (merged by hand)
 
 ## Commands
 
 ```bash
-npm test             # 76 tests
+npm test             # i18n check + Vitest
 npx tsc --noEmit    # Type check
 npm run format:check # Prettier
 npm run lint         # ESLint
