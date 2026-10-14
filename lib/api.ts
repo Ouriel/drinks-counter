@@ -197,10 +197,7 @@ export const api = {
     );
   },
 
-  async parseMenu(formData: FormData) {
-    const res = await fetch("/api/parse-menu", { method: "POST", body: formData });
-    if (!res.ok) return { items: [] as MenuItem[] };
-    const data = await res.json();
-    return ParseMenuResponse.parse(data);
+  parseMenu(formData: FormData) {
+    return apiFetch("/api/parse-menu", ParseMenuResponse, { method: "POST", body: formData });
   },
 };

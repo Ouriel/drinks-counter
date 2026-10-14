@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db, drinks, barMenus, normalizeMenuItems } from "@/lib/db";
+import { db, drinks, barMenus } from "@/lib/db";
 import { eq, and, sql } from "drizzle-orm";
 import { sanitizeDrinkName } from "@/lib/sanitize";
 import { addDrinkSchema, patchDrinkSchema, parseBody } from "@/lib/schemas";
@@ -65,25 +65,20 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ count: drink.count });
   }
 
-  // Add to bar menu if session has one and item isn't already in it
+  // Add to bar menu if session has one and item isn't already in it. Atomic append (no
+  // read-then-write), so a concurrent append or an admin Empty is never overwritten.
   if (session.barMenuId) {
-    const [menu] = await db
-      .select()
-      .from(barMenus)
-      .where(eq(barMenus.id, session.barMenuId))
-      .limit(1);
-    if (menu) {
-      const currentItems = normalizeMenuItems(menu.items);
-      if (
-        currentItems.length < 200 &&
-        !currentItems.some((item) => item.name.toLowerCase() === cleanName)
-      ) {
-        await db
-          .update(barMenus)
-          .set({ items: [...currentItems, { name: cleanName, category: category || "other" }] })
-          .where(eq(barMenus.id, session.barMenuId));
-      }
-    }
+    const newItem = { name: cleanName, category: category || "other" };
+    await db
+      .update(barMenus)
+      .set({ items: sql`${barMenus.items} || ${JSON.stringify([newItem])}::jsonb` })
+      .where(
+        and(
+          eq(barMenus.id, session.barMenuId),
+          sql`jsonb_array_length(${barMenus.items}) < 200`,
+          sql`NOT EXISTS (SELECT 1 FROM jsonb_array_elements(${barMenus.items}) AS item WHERE lower(item->>'name') = ${cleanName})`
+        )
+      );
   }
 
   return NextResponse.json({ drink });

@@ -131,22 +131,25 @@ function HomeContent() {
   const handlePhoto = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
     if (!files.length) return;
+    event.target.value = ""; // the same photo can be picked again
     setParsing(true);
-    const { default: imageCompression } = await import("browser-image-compression");
-    const { api } = await import("@/lib/api");
     const allItems: { name: string; category: string }[] = [...menuItems];
     const seen = new Set(allItems.map((item) => item.name.toLowerCase()));
+    let failed = 0;
 
     for (const file of files) {
-      const compressed = await imageCompression(file, {
-        maxSizeMB: 1,
-        maxWidthOrHeight: 1600,
-        useWebWorker: true,
-      });
-      const formData = new FormData();
-      formData.append("photo", compressed);
       try {
+        const { default: imageCompression } = await import("browser-image-compression");
+        const { api } = await import("@/lib/api");
+        const compressed = await imageCompression(file, {
+          maxSizeMB: 1,
+          maxWidthOrHeight: 1600,
+          useWebWorker: true,
+        });
+        const formData = new FormData();
+        formData.append("photo", compressed);
         const data = await api.parseMenu(formData);
+        if (!data) throw new Error("Menu scan failed");
         for (const item of data.items) {
           const name = item.name.toLowerCase().trim();
           if (name && !seen.has(name)) {
@@ -155,7 +158,7 @@ function HomeContent() {
           }
         }
       } catch {
-        /* continue */
+        failed++; // unreadable image, offline, AI error or rate limit: try the next photo
       }
     }
 
@@ -163,6 +166,8 @@ function HomeContent() {
     if (allItems.length > menuItems.length) {
       setMenuItems(allItems);
       setUserStep("review");
+    } else if (failed === files.length) {
+      toast.danger(t("toast.menuScanFailed")); // stay on this step: retry or skip
     } else {
       createSession([]);
     }

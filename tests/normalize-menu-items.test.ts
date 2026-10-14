@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { normalizeMenuItems } from "@/lib/menu-items";
+import { mergeMenuItems, normalizeMenuItems } from "@/lib/menu-items";
 
 describe("normalizeMenuItems", () => {
   it("converts string[] to MenuItem[]", () => {
@@ -54,5 +54,30 @@ describe("normalizeMenuItems", () => {
       { name: "ipa", category: "other" },
       { name: "rum", category: "other" },
     ]);
+  });
+});
+
+describe("mergeMenuItems", () => {
+  const beer = { name: "beer", category: "beer" };
+  const spritz = { name: "spritz", category: "cocktail" };
+  const many = (count: number, prefix: string) =>
+    Array.from({ length: count }, (_, index) => ({
+      name: `${prefix} ${index}`,
+      category: "other",
+    }));
+
+  it("adds only the names it doesn't have yet, case-insensitively", () => {
+    expect(
+      mergeMenuItems([beer], [beer, spritz, { name: " Spritz", category: "cocktail" }])
+    ).toEqual([beer, spritz]);
+  });
+
+  it("never trims existing items above the cap", () => {
+    const existing = many(250, "old");
+    expect(mergeMenuItems(existing, [spritz])).toEqual(existing);
+  });
+
+  it("caps additions at 200 items in total", () => {
+    expect(mergeMenuItems(many(150, "old"), many(200, "new"))).toHaveLength(200);
   });
 });

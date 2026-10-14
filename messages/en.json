@@ -262,6 +262,7 @@
   "toast": {
     "personalBest": "Personal Best!",
     "personalBestDesc": "{count} drinks — new record",
-    "drinksImported": "{count} drinks imported"
+    "drinksImported": "{count} drinks imported",
+    "menuScanFailed": "Couldn't read that menu — try another photo."
   }
 }
