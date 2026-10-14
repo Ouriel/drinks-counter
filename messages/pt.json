@@ -8,7 +8,10 @@
     "sessionCode": "Retomar uma sessão ou escolher um nome personalizado…",
     "goToSession": "Ir para a sessão",
     "recentSessions": "Sessões recentes",
-    "stats": "Estatísticas"
+    "stats": "Estatísticas",
+    "yourNights": "As tuas noites",
+    "nightsOnPhone": "só neste telemóvel",
+    "nightDrinks": "{count, plural, one {# bebida} other {# bebidas}}"
   },
   "bar": {
     "whereAreYou": "Onde estás?",

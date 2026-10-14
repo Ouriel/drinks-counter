@@ -19,6 +19,7 @@ import { useIsHydrated } from "@/lib/use-is-hydrated";
 import { api } from "@/lib/api";
 import { mergeMenuItems } from "@/lib/menu-items";
 import { addRecentSession } from "@/lib/recent-sessions";
+import { saveNight, withTap } from "@/lib/nights";
 import type { Drink, MenuItem } from "@/lib/types";
 
 // Interaction-only components — not needed for first paint, so they're code-split out of the
@@ -102,11 +103,13 @@ export function SessionClient({
   // Remember a session opened on this phone (home's recent list), dated from its first
   // drink. An empty one waits for its first drink: its start date is unknown here.
   useEffect(() => {
+    if (notFound) return;
+    saveNight(slug, initialBarName, initialDrinks);
     const started = initialDrinks
       .map((drink) => drink.createdAt)
       .filter(Boolean)
       .sort()[0];
-    if (notFound || !started) return;
+    if (!started) return;
     try {
       const entry = { slug, barName: initialBarName || slug, date: started };
       const updated = addRecentSession(localStorage.getItem("tipsytap_recent"), entry);
@@ -114,9 +117,23 @@ export function SessionClient({
     } catch {}
   }, [notFound, slug, initialBarName, initialDrinks]);
 
+  // ponytail: "Your nights" records the tap optimistically; a failed tap is corrected
+  // on the next tap or page open.
   function handleAddDrink(name: string, category?: string) {
     setShowPicker(false);
     addDrink(name, category);
+    saveNight(slug, barName, withTap(drinks, name, 1, category));
+  }
+
+  function handleTap(drink: Drink) {
+    increment(drink);
+    saveNight(slug, barName, withTap(drinks, drink.name, 1));
+  }
+
+  function handleRemove(drink: Drink) {
+    if (drink.id.startsWith("temp")) return; // the hook ignores it too until the add lands
+    decrement(drink);
+    saveNight(slug, barName, withTap(drinks, drink.name, -1));
   }
 
   function handleSnapMenu(event: React.ChangeEvent<HTMLInputElement>) {
@@ -353,8 +370,8 @@ export function SessionClient({
                 <DrinkCard
                   key={drink.id.startsWith("temp") ? drink.name : drink.id}
                   drink={drink}
-                  onTap={() => increment(drink)}
-                  onLongPress={() => decrement(drink)}
+                  onTap={() => handleTap(drink)}
+                  onLongPress={() => handleRemove(drink)}
                   isTop={drinks.length > 1 && drink.count === maxCount}
                 />
               ));
