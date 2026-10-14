@@ -15,6 +15,7 @@ import {
   getPace,
   getPersonalBest,
 } from "@/lib/gamification";
+import { useIsHydrated } from "@/lib/use-is-hydrated";
 import type { Drink } from "@/lib/types";
 
 export function SummaryClient({
@@ -32,9 +33,10 @@ export function SummaryClient({
   const t = useTranslations();
   const tCat = useTranslations("categories");
   const [showTimeline, setShowTimeline] = useState(false);
-  // Personal best is read from localStorage (unavailable during SSR → 0), mirroring how
-  // TableView reads its localStorage state via a useState initializer.
-  const [personalBest] = useState(() => getPersonalBest());
+  // localStorage (personal best) and the viewer's time zone/locale (date, hour-based
+  // achievements) don't exist on the server: render them only after hydration (#418).
+  const hydrated = useIsHydrated();
+  const personalBest = hydrated ? getPersonalBest() : 0;
 
   if (expired) {
     return (
@@ -155,7 +157,8 @@ export function SummaryClient({
             {barName && <p className="text-foreground/70 mt-1">{titleCase(barName)}</p>}
             {firstDrink && (
               <p className="text-sm text-default-500 mt-1">
-                {new Date(firstDrink).toLocaleDateString()} · {durationStr}
+                {hydrated && `${new Date(firstDrink).toLocaleDateString()} · `}
+                {durationStr}
               </p>
             )}
           </div>
@@ -227,7 +230,7 @@ export function SummaryClient({
           {/* Badges + achievements */}
           {(() => {
             const badges = getAllEarnedBadges(total);
-            const achievements = getDrinkAchievements(drinks);
+            const achievements = hydrated ? getDrinkAchievements(drinks) : [];
             return (
               <>
                 {badges.length > 0 && (
