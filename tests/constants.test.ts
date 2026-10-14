@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { isAlcoholic, CATEGORIES, CATEGORY_EMOJI } from "@/lib/constants";
+import { isAlcoholic, CATEGORIES } from "@/lib/constants";
+import messages from "@/messages/en.json";
 
 describe("isAlcoholic", () => {
   it("returns true for alcoholic categories", () => {
@@ -21,9 +22,7 @@ describe("isAlcoholic", () => {
 });
 
 describe("CATEGORIES", () => {
-  it("lists every emoji-mapped category", () => {
-    expect(CATEGORIES).toEqual(Object.keys(CATEGORY_EMOJI));
-    expect(CATEGORIES).toContain("beer");
-    expect(CATEGORIES).toContain("other");
+  it("has a label for every category and no extra label", () => {
+    expect(new Set(CATEGORIES)).toEqual(new Set(Object.keys(messages.categories)));
   });
 });

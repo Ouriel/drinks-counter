@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { getBadgeForCount, getPace, getNudge, getDrinkAchievements } from "@/lib/gamification";
 
 describe("getBadgeForCount", () => {
@@ -55,6 +55,14 @@ describe("getNudge", () => {
 });
 
 describe("getPace", () => {
+  const NOW = new Date("2026-10-10T22:00:00Z");
+  const ago = (ms: number) => new Date(NOW.getTime() - ms).toISOString();
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(NOW);
+  });
+  afterEach(() => vi.useRealTimers());
+
   it("returns null with no drinks", () => {
     expect(getPace([])).toBeNull();
   });
@@ -64,22 +72,18 @@ describe("getPace", () => {
   });
 
   it("returns Cruising for 1 drink/hour", () => {
-    const twoHoursAgo = new Date(Date.now() - 2 * 3_600_000).toISOString();
-    const drinks = [{ id: "1", name: "beer", count: 2, category: null, createdAt: twoHoursAgo }];
-    expect(getPace(drinks)?.label).toBe("Cruising");
+    const drinks = [{ name: "beer", count: 2, category: null, createdAt: ago(2 * 3_600_000) }];
+    expect(getPace(drinks)).toMatchObject({ label: "Cruising", dph: 1 });
   });
 
-  it("returns Picking It Up for 2 drinks/hour", () => {
-    const twoHoursAgo = new Date(Date.now() - 2 * 3_600_000).toISOString();
-    const drinks = [{ id: "1", name: "beer", count: 4, category: null, createdAt: twoHoursAgo }];
-    expect(getPace(drinks)?.label).toBe("Picking It Up");
+  it("returns Picking It Up at exactly 2 drinks/hour (inclusive upper bound)", () => {
+    const drinks = [{ name: "beer", count: 4, category: null, createdAt: ago(2 * 3_600_000) }];
+    expect(getPace(drinks)).toMatchObject({ label: "Picking It Up", dph: 2 });
   });
 
-  it("returns a fast label for high pace", () => {
-    const tenMinAgo = new Date(Date.now() - 600_000).toISOString();
-    const drinks = [{ id: "1", name: "beer", count: 5, category: null, createdAt: tenMinAgo }];
-    const pace = getPace(drinks);
-    expect(["Off The Rails", "Send Help"]).toContain(pace?.label);
+  it("returns Send Help above 3.2 drinks/hour", () => {
+    const drinks = [{ name: "beer", count: 5, category: null, createdAt: ago(600_000) }];
+    expect(getPace(drinks)).toMatchObject({ label: "Send Help", dph: 30 });
   });
 });
 
@@ -96,13 +100,15 @@ describe("getDrinkAchievements", () => {
       { id: "4", name: "water", count: 1, category: "soft" },
     ];
     const achievements = getDrinkAchievements(drinks);
-    expect(achievements.some((achievement) => achievement.text.includes("Rainbow"))).toBe(true);
+    expect(achievements.map((item) => item.key)).toContain("rainbow");
   });
 
   it("returns Signature for drink with 4+ count", () => {
     const drinks = [{ id: "1", name: "mojito", count: 4, category: "cocktail" }];
     const achievements = getDrinkAchievements(drinks);
-    expect(achievements.some((achievement) => achievement.text.includes("Signature"))).toBe(true);
+    expect(achievements.find((item) => item.key === "signature")?.params).toEqual({
+      name: "mojito",
+    });
   });
 
   it("returns Wildcard when all counts are 1 with 4+ drinks", () => {
@@ -113,7 +119,7 @@ describe("getDrinkAchievements", () => {
       { id: "4", name: "d", count: 1, category: "soft" },
     ];
     const achievements = getDrinkAchievements(drinks);
-    expect(achievements.some((achievement) => achievement.text.includes("Wildcard"))).toBe(true);
+    expect(achievements.map((item) => item.key)).toContain("wildcard");
   });
 
   it("returns Designated driver when all drinks are alcohol-free", () => {

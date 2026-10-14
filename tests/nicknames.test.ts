@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { ANIMALS, generateNickname, pickUniqueNickname, formatNickname } from "@/lib/nicknames";
 
 const keys = new Set(ANIMALS.map((animal) => animal.key));
@@ -19,12 +19,9 @@ describe("pickUniqueNickname", () => {
     expect(keys.has(picked)).toBe(true);
   });
 
-  it("falls back to a free key when the random draws keep colliding", () => {
-    // Take all but one key — the random loop will almost certainly collide and fall
-    // back to the deterministic scan that finds the single remaining free key.
-    const lastKey = ANIMALS[ANIMALS.length - 1].key;
-    const taken = new Set([...keys].filter((key) => key !== lastKey));
-    expect(pickUniqueNickname(taken)).toBe(lastKey);
+  it("falls back to the first free key when the random draws keep colliding", () => {
+    vi.spyOn(Math, "random").mockReturnValue(0); // always draws ANIMALS[0]
+    expect(pickUniqueNickname(new Set([ANIMALS[0].key]))).toBe(ANIMALS[1].key);
   });
 
   it("returns some key even when every key is taken", () => {

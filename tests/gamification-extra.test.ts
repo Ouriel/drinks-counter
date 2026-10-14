@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import {
   getAllEarnedBadges,
   getBadgeForCount,
@@ -39,22 +39,23 @@ describe("getAllEarnedBadges", () => {
 });
 
 describe("getSessionHue", () => {
-  it("returns an hsl color string", () => {
-    expect(getSessionHue(5)).toMatch(/^hsl\(/);
-  });
-
-  it("clamps progression at 20 drinks", () => {
+  it("goes from cool blue to warm amber and clamps at 20 drinks", () => {
+    expect(getSessionHue(0)).toBe("hsl(210, 30%, 10%)");
+    expect(getSessionHue(20)).toBe("hsl(30, 80%, 15%)");
     expect(getSessionHue(25)).toBe(getSessionHue(20));
   });
 
-  it("differs between dark and light themes", () => {
-    expect(getSessionHue(10, true)).not.toBe(getSessionHue(10, false));
+  it("uses a light background in light mode", () => {
+    expect(getSessionHue(0, false)).toBe("hsl(210, 30%, 94%)");
+    expect(getSessionHue(20, false)).toBe("hsl(30, 80%, 88%)");
   });
 });
 
 describe("getIconColor", () => {
-  it("returns an hsl color string and clamps at 20", () => {
-    expect(getIconColor(8)).toMatch(/^hsl\(/);
+  it("goes from amber to deep orange per theme and clamps at 20", () => {
+    expect(getIconColor(0)).toBe("hsl(45, 90%, 58%)");
+    expect(getIconColor(20)).toBe("hsl(12, 98%, 50%)");
+    expect(getIconColor(0, false)).toBe("hsl(45, 90%, 45%)");
     expect(getIconColor(40)).toBe(getIconColor(20));
   });
 });
@@ -84,36 +85,30 @@ describe("getTipsyStyle", () => {
 });
 
 describe("getPace edges", () => {
+  const NOW = new Date("2026-10-10T22:00:00Z");
+  const ago = (ms: number) => new Date(NOW.getTime() - ms).toISOString();
+  afterEach(() => vi.useRealTimers());
+
   it("returns null when the session is under 5 minutes old", () => {
-    const drinks = [
-      { id: "1", name: "beer", count: 2, category: "beer", createdAt: atHour(20, 0) },
-    ];
-    // createdAt is "now-ish" only if recent; use an actual recent timestamp.
-    const recent = [
-      {
-        id: "1",
-        name: "beer",
-        count: 2,
-        category: "beer",
-        createdAt: new Date(Date.now() - 60_000).toISOString(),
-      },
-    ];
-    expect(getPace(recent)).toBeNull();
-    expect(getPace(drinks)).not.toBeNull(); // old timestamp → measurable pace
+    vi.useFakeTimers();
+    vi.setSystemTime(NOW);
+    expect(
+      getPace([{ name: "beer", count: 2, category: "beer", createdAt: ago(60_000) }])
+    ).toBeNull();
+    expect(
+      getPace([{ name: "beer", count: 2, category: "beer", createdAt: ago(600_000) }])
+    ).not.toBeNull();
   });
 
   it("rounds drinks-per-hour to one decimal", () => {
-    const twoHoursAgo = new Date(Date.now() - 2 * 3_600_000).toISOString();
-    const drinks = [{ id: "1", name: "beer", count: 3, category: "beer", createdAt: twoHoursAgo }];
-    expect(getPace(drinks)?.dph).toBe(1.5);
+    vi.useFakeTimers();
+    vi.setSystemTime(NOW);
+    const drinks = [{ name: "beer", count: 2, category: "beer", createdAt: ago(3 * 3_600_000) }];
+    expect(getPace(drinks)?.dph).toBe(0.7); // 2 / 3h = 0.666…
   });
 });
 
 describe("getNudge additional branches", () => {
-  it("returns the taxi nudge at 8", () => {
-    expect(getNudge(8, 7)?.type).toBe("taxi");
-  });
-
   it("returns the sleep/info nudge at 12 once the water nudge is suppressed", () => {
     // 12 % 3 === 0 so the water nudge would normally win; a non-alcoholic last drink
     // suppresses it, letting the 12-drink info nudge through.

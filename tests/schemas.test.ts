@@ -76,6 +76,11 @@ describe("addDrinkSchema", () => {
     expect(result.success).toBe(false);
   });
 
+  it("rejects uppercase and reserved slugs", () => {
+    expect(addDrinkSchema.safeParse({ slug: "Fizzy-Julep", name: "beer" }).success).toBe(false);
+    expect(addDrinkSchema.safeParse({ slug: "admin", name: "beer" }).success).toBe(false);
+  });
+
   it("rejects name over 100 chars", () => {
     const result = addDrinkSchema.safeParse({ slug: "test", name: "x".repeat(101) });
     expect(result.success).toBe(false);
@@ -159,20 +164,18 @@ describe("adminPatchSchema", () => {
 
 describe("parseBody helper", () => {
   it("returns data on valid input", () => {
-    const result = parseBody(addDrinkSchema, { slug: "test", name: "beer" });
-    expect("data" in result).toBe(true);
-    if ("data" in result) {
-      expect(result.data.slug).toBe("test");
-    }
+    expect(parseBody(addDrinkSchema, { slug: "test", name: "beer" })).toEqual({
+      data: { slug: "test", name: "beer" },
+    });
   });
 
-  it("returns error on invalid input", () => {
-    const result = parseBody(addDrinkSchema, { slug: "", name: "" });
-    expect("error" in result).toBe(true);
+  it("returns the first issue message on invalid input", () => {
+    expect(parseBody(addDrinkSchema, { slug: "Bad Slug", name: "beer" })).toEqual({
+      error: "Slug must be lowercase alphanumeric with dashes",
+    });
   });
 
   it("returns error on completely wrong shape", () => {
-    const result = parseBody(addDrinkSchema, "not an object");
-    expect("error" in result).toBe(true);
+    expect(parseBody(addDrinkSchema, "not an object")).toEqual({ error: expect.any(String) });
   });
 });

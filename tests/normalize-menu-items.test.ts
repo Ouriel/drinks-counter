@@ -48,4 +48,11 @@ describe("normalizeMenuItems", () => {
     ]);
     expect(result).toEqual([{ name: "valid", category: "wine" }]);
   });
+
+  it("defaults a missing or non-string category to other", () => {
+    expect(normalizeMenuItems([{ name: "ipa" }, { name: "rum", category: 3 }])).toEqual([
+      { name: "ipa", category: "other" },
+      { name: "rum", category: "other" },
+    ]);
+  });
 });
