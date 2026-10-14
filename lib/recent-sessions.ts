@@ -11,3 +11,19 @@ export function pickJoinableSlug(stored: string | null, now = Date.now()): strin
     return null;
   }
 }
+
+export type RecentSession = { slug: string; barName: string; date: string };
+
+/** Adds a session to the stored list: newest start first, one entry per slug, at most 10. */
+export function addRecentSession(stored: string | null, entry: RecentSession): RecentSession[] {
+  let list: RecentSession[] = [];
+  try {
+    const parsed: unknown = JSON.parse(stored || "[]");
+    if (Array.isArray(parsed)) list = parsed;
+  } catch {}
+  // A session opened again keeps its first known start date (the join link relies on it).
+  const known = list.find((item) => item.slug === entry.slug);
+  return [known ?? entry, ...list.filter((item) => item.slug !== entry.slug)]
+    .sort((left, right) => String(right.date).localeCompare(String(left.date)))
+    .slice(0, 10);
+}

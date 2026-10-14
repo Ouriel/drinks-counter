@@ -184,7 +184,7 @@
   "nudges": {
     "water": "Watertijd?",
     "taxi": "Bewaar misschien dat taxinummer",
-    "sleep": "De toekomstige jij bedankt je dat je binnenkort stopt"
+    "sleep": "Bijna stoppen???"
   },
   "tableSummary": {
     "title": "Tafeloverzicht",
@@ -263,6 +263,7 @@
     "personalBest": "Persoonlijk record!",
     "personalBestDesc": "{count} drankjes — nieuw record",
     "drinksImported": "{count} drankjes geïmporteerd",
-    "menuScanFailed": "Kon dat menu niet lezen — probeer een andere foto."
+    "menuScanFailed": "Kon dat menu niet lezen — probeer een andere foto.",
+    "tapFailed": "Niet opgeslagen — check je verbinding"
   }
 }

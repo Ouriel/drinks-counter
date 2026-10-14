@@ -184,7 +184,7 @@
   "nudges": {
     "water": "Un verre d'eau ?",
     "taxi": "Pense à noter le numéro du taxi",
-    "sleep": "Le toi de demain te remercie d'arrêter bientôt"
+    "sleep": "On s'arrête bientôt ???"
   },
   "tableSummary": {
     "title": "Résumé de la table",
@@ -263,6 +263,7 @@
     "personalBest": "Record personnel !",
     "personalBestDesc": "{count} verres — nouveau record",
     "drinksImported": "{count} boissons importées",
-    "menuScanFailed": "Impossible de lire ce menu — essaie une autre photo."
+    "menuScanFailed": "Impossible de lire ce menu — essaie une autre photo.",
+    "tapFailed": "Pas enregistré — vérifie ta connexion"
   }
 }

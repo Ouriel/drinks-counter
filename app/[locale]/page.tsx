@@ -11,6 +11,7 @@ import { Logo } from "@/components/Logo";
 import { CategoryIcon } from "@/lib/category-icon";
 import { useIsHydrated } from "@/lib/use-is-hydrated";
 import { RESERVED_PATHS } from "@/lib/reserved-paths";
+import { addRecentSession } from "@/lib/recent-sessions";
 
 function loadRecentSessions(): { slug: string; barName: string; date: string }[] {
   try {
@@ -210,12 +211,8 @@ function HomeContent() {
       if (!data) throw new Error("Failed");
       const { slug } = data;
       try {
-        const recent = JSON.parse(localStorage.getItem("tipsytap_recent") || "[]");
         const entry = { slug, barName: barName || slug, date: new Date().toISOString() };
-        const updated = [
-          entry,
-          ...recent.filter((session: { slug: string }) => session.slug !== slug),
-        ].slice(0, 10);
+        const updated = addRecentSession(localStorage.getItem("tipsytap_recent"), entry);
         localStorage.setItem("tipsytap_recent", JSON.stringify(updated));
       } catch {}
       router.push(`/s/${slug}`);

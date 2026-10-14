@@ -17,15 +17,15 @@ Every menu you scan, and every new drink you add, joins the bar's **shared menu*
 
 ### Count
 
-- Each drink is a card: tap **+** to add one; tap **−** or long-press **+** to remove one. A drink disappears when it reaches 0. The screen updates instantly, with a short vibration, and rolls back if the server refuses the change.
+- Each drink is a card: tap **+** to add one; tap **−** or long-press **+** to remove one. A drink disappears when it reaches 0. The screen updates instantly, with a short vibration, and rolls back, with a short "Not saved" message, if the change doesn't reach the server.
 - The **drink picker** lists what you already ordered first (tap for +1), then the bar's menu grouped by category, with a search box. Type a name that isn't on the menu to add a custom drink with its category. Changed menu? **Re-scan** it from the picker.
 - 👑 marks your most-ordered drink (once you have 2 different drinks; ties share it). The header shows the time since your first drink and your **pace** (drinks per hour, from "🐢 Nursing It" to "☄️ Send Help", once 5 minutes have passed).
 
 ### The fun layer
 
 - **11 milestone badges** (1, 2, 3, 5, 7, 10, 13, 15, 20, 25 and 30 drinks), each with a toast and confetti.
-- A **personal best** per device: beat your record from an earlier night and you get a 🏅 toast (unless that same tap earns a badge, which takes its place).
-- **Nudges**: a water break every 3rd drink (skipped when that drink was alcohol-free), a taxi reminder at 8 drinks, and a gentle "stop soon" at 12 when that drink was alcohol-free (otherwise the water break wins).
+- A **personal best** per device: beat your record from an earlier night and you get a 🏅 toast (inside the badge toast when both land on the same tap).
+- **Nudges**: a water break every 3rd drink (skipped when that drink was alcohol-free), a taxi reminder at 8 drinks, and a cheeky "👀 Stopping soon???" at 12.
 - The screen **gets tipsy with you**: the background warms from cool blue to amber, the page starts to tilt after 3 drinks, the text gets a shadow from 7, and a pulsing vignette appears from 15.
 
 ### Summary and sharing
@@ -42,7 +42,7 @@ Every menu you scan, and every new drink you add, joins the bar's **shared menu*
 
 ### Coming back, stats and admin
 
-- **Recent sessions**: the home screen lists the last 10 sessions started on this device (from home or a join link) in the last 48 h.
+- **Recent sessions**: the home screen lists the last 10 sessions started or opened on this device in the last 48 h, newest first.
 - **Your session link** (`/s/<name>`) is your key. Generated names look like `velvet-negroni-x7k2` and are hard to guess. The home screen's session box opens `/s/<name>`: it resumes a live session with that name, or starts a new evening under it (lowercase letters, digits and dashes, up to 50). A custom name is only as private as it is hard to guess. An expired link brings you back home to start again under that name (or a generated one while the old session is still stored).
 - **Stats** (public): bars known (all time), then, over the sessions still stored (the last 2 to 3 days): sessions, drinks, active sessions, taps in the last 24 h, the split by category and top drinks; plus the bars with the biggest menus.
 - **Admin** (protected by a secret): edit, rename, re-scan, empty or delete bar menus; inspect and delete sessions and tables; a Guide tab explaining badges, pace, achievements and visual effects.

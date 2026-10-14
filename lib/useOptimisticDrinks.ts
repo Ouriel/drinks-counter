@@ -21,13 +21,16 @@ function notifyGamification(
   addedCategory?: string | null
 ): boolean {
   const badge = getBadgeForCount(newTotal);
+  const isPersonalBest = checkPersonalBest(newTotal, slug);
   if (badge) {
+    const record = `🏅 ${translate("toast.personalBestDesc", { count: newTotal })}`;
     toast(`${badge.emoji} ${translate(`badges.${badge.key}`)}`, {
-      description: translate(`badges.${badge.key}Sub`),
+      description: [translate(`badges.${badge.key}Sub`), isPersonalBest && record]
+        .filter(Boolean)
+        .join(" · "),
       timeout: 10000,
     });
   }
-  const isPersonalBest = checkPersonalBest(newTotal, slug);
   if (isPersonalBest && !badge) {
     toast(`🏅 ${translate("toast.personalBest")}`, {
       description: translate("toast.personalBestDesc", { count: newTotal }),
@@ -66,6 +69,10 @@ export function useOptimisticDrinks(
     peakRef.current = Math.max(peakRef.current, newTotal);
     totalRef.current = newTotal;
     if (earned && onBadge) onBadge();
+  }
+
+  function tapFailed() {
+    toast.danger(translate("toast.tapFailed"), { timeout: 2000 });
   }
 
   /** Rollback a drink to its previous count, or re-insert if it was removed */
@@ -108,6 +115,7 @@ export function useOptimisticDrinks(
     await withPendingOp(async () => {
       const data = await api.addDrink({ slug, name, category });
       if (!data) {
+        tapFailed();
         totalRef.current = Math.max(0, totalRef.current - 1);
         setDrinks((prev) =>
           existing
@@ -145,6 +153,7 @@ export function useOptimisticDrinks(
         category: drink.category || undefined,
       });
       if (!data) {
+        tapFailed();
         totalRef.current = Math.max(0, totalRef.current - 1);
         setDrinks((prev) =>
           prev.map((item) => (item.id === drink.id ? { ...item, count: item.count - 1 } : item))
@@ -173,6 +182,7 @@ export function useOptimisticDrinks(
     await withPendingOp(async () => {
       const data = await api.patchDrink({ slug, drinkId: drink.id, delta: -1 });
       if (!data) {
+        tapFailed();
         totalRef.current += 1;
         rollback(drink, prevCount);
       }

@@ -184,7 +184,7 @@
   "nudges": {
     "water": "Vattenpaus?",
     "taxi": "Spara kanske det där taxinumret",
-    "sleep": "Framtida du tackar för att du snart slutar"
+    "sleep": "Snart dags att sluta???"
   },
   "tableSummary": {
     "title": "Bordssammanfattning",
@@ -263,6 +263,7 @@
     "personalBest": "Personbästa!",
     "personalBestDesc": "{count} drinkar — nytt rekord",
     "drinksImported": "{count} drinkar importerade",
-    "menuScanFailed": "Kunde inte läsa menyn – prova ett annat foto."
+    "menuScanFailed": "Kunde inte läsa menyn – prova ett annat foto.",
+    "tapFailed": "Inte sparat – kolla din anslutning"
   }
 }

@@ -109,9 +109,8 @@ describe("getPace edges", () => {
 });
 
 describe("getNudge additional branches", () => {
-  it("returns the sleep/info nudge at 12 once the water nudge is suppressed", () => {
-    // 12 % 3 === 0 so the water nudge would normally win; a non-alcoholic last drink
-    // suppresses it, letting the 12-drink info nudge through.
+  it("lets the 12-drink 'stopping soon' nudge win over the water break", () => {
+    expect(getNudge(12, 11, "beer")).toMatchObject({ type: "info", emoji: "👀" });
     expect(getNudge(12, 11, "soft")?.type).toBe("info");
   });
 });
