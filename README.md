@@ -128,7 +128,7 @@ Tests run the real SQL on an in-memory PGlite database and make no network calls
 ## Delivery
 
 - **Branches and PRs.** A ruleset on `main` requires a green `ci` check on every commit that lands, so changes go through a PR, and a direct push of an unchecked commit is rejected. The owner can bypass it on a PR in an emergency. CI runs `npm ci`, lint, build and test on Node 24.
-- **Deploy.** Every merge to `main` deploys to production on Vercel. Preview deployments use the Neon branch `preview` (a copy of prod, separate from it), so a PR can be tried end to end without touching prod data.
+- **Deploy.** Every merge to `main` deploys to production on Vercel. Preview deployments use the Neon branch `preview` (a copy of prod, separate from it), so a PR can be tried end to end without touching prod data. `scripts/preview-seed.sql` adds demo sessions (`/en/s/demo-solo`, `demo-wild`, `demo-empty`, table `DEMO42` with `demo-fox`, `demo-owl`, `demo-bee`); re-run it in the Neon SQL editor whenever they expire.
 - **Dependencies.** Dependabot opens grouped updates every Monday. A PR merges on its own once `ci` is green, unless one of its packages matches a pattern in the repo variable `AUTOMERGE_MANUAL`: then the whole PR is merged by hand. With the variable unset, majors stay manual.
 - **Database changes.** The build never changes the schema. A schema change is applied to prod by hand, together with the migration of the existing data, then mirrored in `lib/db.ts`. See `AGENTS.md` (Guardrails) for the procedure.
 
