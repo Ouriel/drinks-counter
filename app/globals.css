@@ -1,5 +1,25 @@
+@layer theme, base, components, utilities;
 @import "tailwindcss";
-@import "@heroui/styles";
+@import "tw-animate-css";
+/* HeroUI à la carte: only the components the app renders (was: @import "@heroui/styles").
+   Rendered: Button, Card, Chip, Input, Modal, Popover, Spinner, Toast; their sub-parts use
+   close-button and surface. tests/heroui-css.test.ts fails when a rendered one is missing.
+   Same order as @heroui/styles/dist/index.css and components/index.css (later files override earlier). */
+@import "@heroui/styles/base/base.css" layer(base);
+@import "@heroui/styles/base/scrollbar.css" layer(base);
+@import "@heroui/styles/components/close-button.css" layer(components);
+@import "@heroui/styles/components/button.css" layer(components);
+@import "@heroui/styles/components/chip.css" layer(components);
+@import "@heroui/styles/components/spinner.css" layer(components);
+@import "@heroui/styles/components/toast.css" layer(components);
+@import "@heroui/styles/components/input.css" layer(components);
+@import "@heroui/styles/components/card.css" layer(components);
+@import "@heroui/styles/components/surface.css" layer(components);
+@import "@heroui/styles/components/modal.css" layer(components);
+@import "@heroui/styles/components/popover.css" layer(components);
+@import "@heroui/styles/themes/default" layer(theme);
+@import "@heroui/styles/utilities";
+@import "@heroui/styles/variants";
 
 :root {
   --accent: oklch(0.769 0.188 70.08);
