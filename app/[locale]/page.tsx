@@ -35,6 +35,20 @@ function loadRecentSessions(): { slug: string; barName: string; date: string }[]
 
 const noopSubscribe = () => () => {};
 
+// Asked on the first Enter, not on the first keystroke, so the search that triggers the prompt
+// already uses the answer. The browser caches the fix for 10 min.
+function locate() {
+  return new Promise<GeolocationPosition | null>((resolve) => {
+    if (!navigator.geolocation) return resolve(null);
+    navigator.geolocation.getCurrentPosition(resolve, () => resolve(null), {
+      timeout: 3000,
+      maximumAge: 600_000,
+    });
+    // `timeout` does not count the time the permission prompt stays unanswered.
+    setTimeout(resolve, 10_000, null);
+  });
+}
+
 export default function Home() {
   return <HomeContent />;
 }
@@ -63,6 +77,7 @@ function HomeContent() {
     { id: string; barName: string; items: { name: string; category: string }[] }[]
   >([]);
   const [osmResults, setOsmResults] = useState<{ name: string; address: string }[]>([]);
+  const [placesStatus, setPlacesStatus] = useState<"idle" | "searching" | "done">("idle");
   const [menuItems, setMenuItems] = useState<{ name: string; category: string }[]>([]);
   const [parsing, setParsing] = useState(false);
   const [creating, setCreating] = useState(false);
@@ -72,7 +87,8 @@ function HomeContent() {
   const recentSessions = useMemo(() => (hydrated ? loadRecentSessions() : []), [hydrated]);
   const cameraRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<NodeJS.Timeout>(null);
-  const geoRef = useRef<{ lat: number; lng: number } | null>(null);
+  // Bumped on every keystroke: a response that started before the latest keystroke is dropped.
+  const searchSeq = useRef(0);
 
   useEffect(() => {
     return () => {
@@ -82,44 +98,52 @@ function HomeContent() {
 
   const searchBars = (q: string) => {
     setBarName(q);
+    setOsmResults([]);
+    setPlacesStatus("idle");
+    const seq = ++searchSeq.current;
     if (debounceRef.current) clearTimeout(debounceRef.current);
     if (q.length < 2) {
       setBarSuggestions([]);
-      setOsmResults([]);
       return;
     }
+    // Type-ahead searches our own menus only: Nominatim's usage policy forbids search-as-you-type.
     debounceRef.current = setTimeout(async () => {
       try {
         // Validation layer (Zod) is only needed once the user searches — load it on demand so it
         // stays out of the home page's initial bundle.
         const { api } = await import("@/lib/api");
-        // Fire DB and OSM searches in parallel
-        const menuPromise = api.searchMenus(q);
-
-        if (!geoRef.current && navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(
-            (pos) => {
-              geoRef.current = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-            },
-            () => {},
-            { timeout: 5000 }
-          );
-        }
-        const geo = geoRef.current;
-        const params = new URLSearchParams({ q });
-        if (geo) {
-          params.set("lat", String(geo.lat));
-          params.set("lng", String(geo.lng));
-        }
-        const osmPromise = api.searchBars(params);
-
-        const [data, osmData] = await Promise.all([menuPromise, osmPromise]);
-        if (data) setBarSuggestions(data.menus);
-        setOsmResults(osmData?.results || []);
+        const data = await api.searchMenus(q);
+        if (data && seq === searchSeq.current) setBarSuggestions(data.menus);
       } catch {
         // Network error — silently ignore for search
       }
     }, 300);
+  };
+
+  // OpenStreetMap is searched only when the user presses Enter / the keyboard's Search key.
+  const searchPlaces = async () => {
+    const seq = searchSeq.current;
+    if (barName.trim().length < 2 || placesStatus === "searching") return;
+    setPlacesStatus("searching");
+    let results: { name: string; address: string }[] = [];
+    try {
+      const { api } = await import("@/lib/api");
+      const position = await locate();
+      const params = new URLSearchParams({ q: barName });
+      if (position) {
+        // ~1 km is enough for the ±5 km box; the exact position never leaves the phone.
+        params.set("lat", position.coords.latitude.toFixed(2));
+        params.set("lng", position.coords.longitude.toFixed(2));
+      }
+      const data = await api.searchBars(params);
+      results = data?.results || [];
+    } catch {
+      // Network error: shown as "no results"
+    }
+    if (seq === searchSeq.current) {
+      setOsmResults(results);
+      setPlacesStatus("done");
+    }
   };
 
   const selectBar = (bar: { barName: string; items: { name: string; category: string }[] }) => {
@@ -293,14 +317,22 @@ function HomeContent() {
           </p>
         )}
 
-        <Input
-          className="w-full mb-3"
-          placeholder={t("bar.barName")}
-          value={barName}
-          onChange={(event) => searchBars(event.target.value)}
-          autoComplete="off"
-          autoFocus
-        />
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            searchPlaces();
+          }}
+        >
+          <Input
+            className="w-full mb-3"
+            placeholder={t("bar.barName")}
+            value={barName}
+            onChange={(event) => searchBars(event.target.value)}
+            autoComplete="off"
+            enterKeyHint="search"
+            autoFocus
+          />
+        </form>
 
         {barSuggestions.length > 0 && (
           <div className="mb-4 space-y-2">
@@ -321,11 +353,25 @@ function HomeContent() {
           </div>
         )}
 
-        {osmResults.length > 0 && barSuggestions.length === 0 && (
+        {placesStatus === "searching" && (
+          <div className="flex justify-center mb-4">
+            <Spinner size="sm" />
+          </div>
+        )}
+
+        {osmResults.length > 0 && menuItems.length === 0 && (
           <div className="mb-4 space-y-2">
             <p className="text-xs text-default-500 flex items-center gap-1">
               <MapPin className="w-3.5 h-3.5" />
               {t("bar.nearbyPlaces")}
+              <a
+                href="https://www.openstreetmap.org/copyright"
+                target="_blank"
+                rel="noreferrer"
+                className="ml-auto"
+              >
+                © OpenStreetMap contributors
+              </a>
             </p>
             {osmResults.map((place, i) => (
               <Card key={i}>
@@ -347,7 +393,7 @@ function HomeContent() {
           </div>
         )}
 
-        {barName.length >= 2 &&
+        {placesStatus === "done" &&
           barSuggestions.length === 0 &&
           osmResults.length === 0 &&
           menuItems.length === 0 &&

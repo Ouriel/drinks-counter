@@ -1,0 +1,158 @@
+{
+  "paradiso_soft": [
+    {
+      "class": "amenity",
+      "type": "concert_hall",
+      "name": "Paradiso",
+      "display_name": "Paradiso, 6, Weteringschans, Centrum, Amsterdam, Noord-Holland, Nederland, 1017 SG, Nederland",
+      "lat": "52.3621554",
+      "lon": "4.8837824",
+      "address": {
+        "road": "Weteringschans",
+        "city": "Amsterdam"
+      }
+    },
+    {
+      "class": "place",
+      "type": "village",
+      "name": "Paradiso",
+      "display_name": "Paradiso, Pocenia, Udine, Friuli-Venezia Giulia, 33050, Italia",
+      "lat": "45.8679060",
+      "lon": "13.1462690",
+      "address": {
+        "village": "Paradiso"
+      }
+    },
+    {
+      "class": "boundary",
+      "type": "administrative",
+      "name": "Paradiso",
+      "display_name": "Paradiso, Circolo di Carona, Distretto di Lugano, Ticino, 6900, Schweiz/Suisse/Svizzera/Svizra",
+      "lat": "45.9897313",
+      "lon": "8.9461979",
+      "address": {
+        "village": "Paradiso"
+      }
+    },
+    {
+      "class": "place",
+      "type": "suburb",
+      "name": "Paradiso",
+      "display_name": "Paradiso, V Circoscrizione, Messina, Sicilia, 98168, Italia",
+      "lat": "38.2271241",
+      "lon": "15.5677426",
+      "address": {
+        "city": "Messina"
+      }
+    },
+    {
+      "class": "boundary",
+      "type": "administrative",
+      "name": "Paradiso",
+      "display_name": "Paradiso, Brindisi, Puglia, Italia",
+      "lat": "40.6495808",
+      "lon": "17.9183659",
+      "address": {
+        "city": "Brindisi"
+      }
+    },
+    {
+      "class": "place",
+      "type": "suburb",
+      "name": "Paradiso",
+      "display_name": "Paradiso, La Quercia, Viterbo, Lazio, Italia",
+      "lat": "42.4240783",
+      "lon": "12.1151703",
+      "address": {
+        "village": "La Quercia",
+        "city": "Viterbo"
+      }
+    },
+    {
+      "class": "place",
+      "type": "suburb",
+      "name": "Paradiso",
+      "display_name": "Paradiso, Gravataí, Rio Grande do Sul, Região Sul, 94035-430, Brasil",
+      "lat": "-29.9419034",
+      "lon": "-51.0027596",
+      "address": {
+        "city": "Gravataí"
+      }
+    },
+    {
+      "class": "place",
+      "type": "village",
+      "name": "Paradiso",
+      "display_name": "Paradiso, Mbinga, Ruvuma, Southern Highlands Zone, Tanzania",
+      "lat": "-10.5898301",
+      "lon": "35.0268733",
+      "address": {
+        "village": "Paradiso"
+      }
+    }
+  ],
+  "perle_bounded": [
+    {
+      "class": "amenity",
+      "type": "restaurant",
+      "name": "La perle",
+      "display_name": "La perle, Rue de Laghouat, Quartier de la Goutte-d'Or, Paris 18e Arrondissement, Paris, Île-de-France, France métropolitaine, 75018, France",
+      "lat": "48.8879337",
+      "lon": "2.3560752",
+      "address": {
+        "road": "Rue de Laghouat",
+        "city": "Paris"
+      }
+    },
+    {
+      "class": "amenity",
+      "type": "restaurant",
+      "name": "La Perle",
+      "display_name": "La Perle, 78, Rue Vieille du Temple, Quartier des Archives, Paris 3e Arrondissement, Paris, Île-de-France, France métropolitaine, 75003, France",
+      "lat": "48.8598113",
+      "lon": "2.3606767",
+      "address": {
+        "road": "Rue Vieille du Temple",
+        "city": "Paris"
+      }
+    }
+  ],
+  "kenavo_poi": [
+    {
+      "class": "amenity",
+      "type": "restaurant",
+      "name": "Kenavo",
+      "display_name": "Kenavo, 2, Plaça Puríssima Sang, Horts de Miró, horts de miró, Reus, Baix Camp, Tarragona, Catalunya, 43201, España",
+      "lat": "41.1559663",
+      "lon": "1.1118190",
+      "address": {
+        "road": "Plaça Puríssima Sang",
+        "city": "Reus"
+      }
+    },
+    {
+      "class": "tourism",
+      "type": "ship",
+      "name": "Kenavo",
+      "display_name": "Kenavo, Place de L'Etoile, Saint-Clair, Le Lavandou, Toulon, Var, Provence-Alpes-Côte d'Azur, France métropolitaine, 83980, France",
+      "lat": "43.1362076",
+      "lon": "6.3737601",
+      "address": {
+        "road": "Place de L'Etoile",
+        "village": "Le Lavandou"
+      }
+    },
+    {
+      "class": "amenity",
+      "type": "cafe",
+      "name": "Le Kenavo",
+      "display_name": "Le Kenavo, Quai Hippolyte Rossignol, Melun, Seine-et-Marne, Île-de-France, France métropolitaine, 77000, France",
+      "lat": "48.5350438",
+      "lon": "2.6571838",
+      "address": {
+        "road": "Quai Hippolyte Rossignol",
+        "town": "Melun"
+      }
+    }
+  ]
+}
