@@ -1,7 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { db, sessions, drinks, barMenus } from "@/lib/db";
 import { GET, POST, PATCH } from "@/app/api/drinks/route";
+import { getSessionDrinks } from "@/lib/server-queries";
 import { jsonRequest, resetDb } from "./helpers/test-db";
 
 vi.mock("@/lib/db", async (importOriginal) => {
@@ -43,6 +44,23 @@ describe("POST /api/drinks", () => {
     const rows = await db.select().from(drinks);
     expect(rows).toHaveLength(1);
     expect(rows[0].tappedAt).toHaveLength(2);
+  });
+
+  it("concurrent first taps of the same drink keep one row with every tap", async () => {
+    await seedSession();
+    const responses = await Promise.all([tap("Beer"), tap("beer"), tap("BEER ")]);
+    expect(responses.map((res) => res.status)).toEqual([200, 200, 200]);
+    const rows = await db.select().from(drinks);
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toMatchObject({ name: "beer", count: 3 });
+    expect(rows[0].tappedAt).toHaveLength(3);
+  });
+
+  it("returns the new row on insert and only the count on increment", async () => {
+    await seedSession();
+    const first = await (await tap("Mojito")).json();
+    expect(first.drink).toMatchObject({ name: "mojito", count: 1 });
+    expect(await (await tap("mojito")).json()).toEqual({ count: 2 });
   });
 
   it("returns 404 for an expired session", async () => {
@@ -105,5 +123,19 @@ describe("GET /api/drinks", () => {
   it("returns 400 without slug and 404 for unknown slug", async () => {
     expect((await GET(jsonRequest("/api/drinks", "GET"))).status).toBe(400);
     expect((await GET(jsonRequest("/api/drinks?slug=nope", "GET"))).status).toBe(404);
+  });
+
+  it("keeps creation order after the first drink is tapped again", async () => {
+    await seedSession();
+    await tap("wine");
+    await tap("beer");
+    await tap("wine");
+    // Planner stats as in prod: a seq scan, where the updated "wine" row reads last.
+    await db.execute(sql`ANALYZE drinks`);
+    const res = await GET(jsonRequest("/api/drinks?slug=fizzy-julep", "GET"));
+    const body = await res.json();
+    expect(body.drinks.map((drink: { name: string }) => drink.name)).toEqual(["wine", "beer"]);
+    const serverDrinks = await getSessionDrinks("fizzy-julep");
+    expect(serverDrinks.map((drink) => drink.name)).toEqual(["wine", "beer"]);
   });
 });

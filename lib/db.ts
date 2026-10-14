@@ -1,6 +1,15 @@
 import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
-import { pgTable, uuid, text, jsonb, integer, timestamp, varchar } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  uuid,
+  text,
+  jsonb,
+  integer,
+  timestamp,
+  varchar,
+  uniqueIndex,
+} from "drizzle-orm/pg-core";
 
 export type { MenuItem } from "./menu-items";
 export { normalizeMenuItems } from "./menu-items";
@@ -29,17 +38,23 @@ export const sessions = pgTable("sessions", {
   expiresAt: timestamp("expires_at").notNull(),
 });
 
-export const drinks = pgTable("drinks", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  sessionId: uuid("session_id")
-    .references(() => sessions.id, { onDelete: "cascade" })
-    .notNull(),
-  name: text("name").notNull(),
-  count: integer("count").notNull().default(1),
-  category: text("category"),
-  tappedAt: jsonb("tapped_at").$type<string[]>().default([]).notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+export const drinks = pgTable(
+  "drinks",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    sessionId: uuid("session_id")
+      .references(() => sessions.id, { onDelete: "cascade" })
+      .notNull(),
+    name: text("name").notNull(),
+    count: integer("count").notNull().default(1),
+    category: text("category"),
+    tappedAt: jsonb("tapped_at").$type<string[]>().default([]).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  // One row per drink per session; POST /api/drinks upserts on it. A unique INDEX, not a
+  // unique constraint (a constraint makes drizzle-kit push prompt). Created in prod by hand (O2).
+  (table) => [uniqueIndex("drinks_session_name_idx").on(table.sessionId, table.name)]
+);
 
 let cachedDb: ReturnType<typeof drizzle> | null = null;
 
