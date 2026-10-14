@@ -177,14 +177,17 @@ export function SessionClient({
               size="sm"
               isIconOnly
               onPress={() => {
+                // Never share the session URL: its slug is the write key. Invite to the table
+                // (others join with their own session), or just to the app.
+                const origin = window.location.origin;
+                const url = tableCode ? `${origin}/join/${tableCode}` : origin;
+                const text = tableCode
+                  ? t("session.joinSession", { bar: titleCase(barName) || "TipsyTap" })
+                  : t("app.tagline");
                 if (navigator.share) {
-                  navigator.share({
-                    title: t("app.title"),
-                    text: t("session.joinSession", { bar: titleCase(barName || slug) }),
-                    url: window.location.href,
-                  });
+                  navigator.share({ title: t("app.title"), text, url }).catch(() => {});
                 } else {
-                  navigator.clipboard.writeText(window.location.href);
+                  navigator.clipboard.writeText(url);
                   toast(t("session.linkCopied"), { timeout: 15000 });
                 }
               }}
