@@ -62,6 +62,17 @@ describe("POST /api/parse-menu", () => {
     expect(response.status).toBe(413);
   });
 
+  it("returns 400 (not 500) on a malformed body", async () => {
+    const response = await POST(
+      new NextRequest("http://localhost/api/parse-menu", {
+        method: "POST",
+        body: "nope",
+        headers: { "x-forwarded-for": "10.0.0.4" },
+      })
+    );
+    expect(response.status).toBe(400);
+  });
+
   it("rate-limits after 5 requests per IP", async () => {
     for (let attempt = 0; attempt < 5; attempt++) await POST(photoRequest("10.0.0.3"));
     expect((await POST(photoRequest("10.0.0.3"))).status).toBe(429);
