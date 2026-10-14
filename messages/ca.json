@@ -121,8 +121,8 @@
     "noDrinks": "Encara no hi ha copes",
     "noBars": "Encara no hi ha bars",
     "active": "Actives ara",
-    "today": "Avui",
-    "thisWeek": "Aquesta setmana",
+    "last24h": "Últimes 24 h",
+    "retention": "Les sessions i les seves begudes s'esborren 2 dies després de començar, així que aquestes xifres només cobreixen les últimes nits.",
     "avgPerSession": "~{avg} begudes per sessió de mitjana"
   },
   "badges": {
