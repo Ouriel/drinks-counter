@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as z from "zod/mini";
 import type { MenuItem } from "./types";
 
 // === Response Schemas ===
@@ -7,17 +7,17 @@ const drinkSchema = z.object({
   id: z.string(),
   name: z.string(),
   count: z.number(),
-  category: z.string().nullable(),
-  tappedAt: z.array(z.string()).optional(),
-  createdAt: z.string().optional(),
+  category: z.nullable(z.string()),
+  tappedAt: z.optional(z.array(z.string())),
+  createdAt: z.optional(z.string()),
 });
 
 const sessionInfoSchema = z.object({
   id: z.string(),
   slug: z.string(),
-  barName: z.string().nullable(),
-  tableCode: z.string().nullable(),
-  nickname: z.string().nullable(),
+  barName: z.nullable(z.string()),
+  tableCode: z.nullable(z.string()),
+  nickname: z.nullable(z.string()),
 });
 
 export const DrinksResponse = z.object({
@@ -76,13 +76,13 @@ export const TableStatsResponse = z.object({
   members: z.array(z.object({ nickname: z.string(), total: z.number() })),
   byCategory: z.array(z.object({ category: z.string(), count: z.number() })),
   topDrinks: z.array(
-    z.object({ name: z.string(), category: z.string().nullable(), count: z.number() })
+    z.object({ name: z.string(), category: z.nullable(z.string()), count: z.number() })
   ),
 });
 
 export const MemberDrinksResponse = z.object({
   drinks: z.array(
-    z.object({ name: z.string(), count: z.number(), category: z.string().nullable() })
+    z.object({ name: z.string(), count: z.number(), category: z.nullable(z.string()) })
   ),
 });
 
@@ -94,7 +94,7 @@ export const ParseMenuResponse = z.object({
 
 async function apiFetch<T>(
   url: string,
-  schema: z.ZodType<T>,
+  schema: z.ZodMiniType<T>,
   init?: RequestInit
 ): Promise<T | null> {
   const res = await fetch(url, init).catch(() => null); // offline = failed request
