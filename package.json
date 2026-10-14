@@ -9,7 +9,7 @@
     "lint": "eslint . --ext .ts,.tsx && prettier --check .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "vitest run",
+    "test": "node scripts/check-i18n.mjs && vitest run --coverage",
     "test:watch": "vitest",
     "prepare": "husky"
   },
