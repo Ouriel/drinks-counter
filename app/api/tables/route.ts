@@ -50,19 +50,18 @@ export async function POST(req: NextRequest) {
   // Retry loop for unique code
   for (let i = 0; i < 5; i++) {
     const code = generateTableCode();
-    try {
-      const [table] = await db.insert(tables).values({ code }).returning();
-      const nickname = await uniqueNicknameForTable(table.id);
-      await db
-        .update(sessions)
-        .set({ tableId: table.id, nickname })
-        .where(eq(sessions.id, session.id));
-      return NextResponse.json({ code: table.code, nickname });
-    } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : "";
-      if (msg.includes("unique") || msg.includes("duplicate")) continue;
-      throw e;
-    }
+    const [table] = await db
+      .insert(tables)
+      .values({ code })
+      .onConflictDoNothing({ target: tables.code })
+      .returning();
+    if (!table) continue;
+    const nickname = await uniqueNicknameForTable(table.id);
+    await db
+      .update(sessions)
+      .set({ tableId: table.id, nickname })
+      .where(eq(sessions.id, session.id));
+    return NextResponse.json({ code: table.code, nickname });
   }
 
   return NextResponse.json({ error: "Could not create table" }, { status: 500 });

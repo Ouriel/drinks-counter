@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { eq } from "drizzle-orm";
+import { randomInt } from "crypto";
 import { NextRequest } from "next/server";
 import { db, sessions, tables, drinks, barMenus } from "@/lib/db";
 import { POST, PATCH, PUT, GET, DELETE } from "@/app/api/tables/route";
@@ -11,6 +12,11 @@ vi.mock("@/lib/db", async (importOriginal) => {
   const real = await importOriginal<typeof import("@/lib/db")>();
   const { createTestDb } = await import("./helpers/test-db");
   return { ...real, db: await createTestDb(real) };
+});
+
+vi.mock("crypto", async (importOriginal) => {
+  const real = await importOriginal<typeof import("crypto")>();
+  return { ...real, randomInt: vi.fn(real.randomInt) };
 });
 
 const HOUR = 3_600_000;
@@ -64,6 +70,16 @@ describe("tables", () => {
       await GET(jsonRequest(`/api/tables?code=${created.code}`, "GET"))
     ).text();
     expect(ranking).not.toContain("slug");
+  });
+
+  it("retries when a generated table code collides", async () => {
+    await db.insert(tables).values({ code: "AAAAAA" });
+    await seedSession("host-slug");
+    for (let char = 0; char < 6; char++) vi.mocked(randomInt).mockReturnValueOnce(0 as never);
+    const res = await POST(jsonRequest("/api/tables", "POST", { slug: "host-slug" }));
+    expect(res.status).toBe(200);
+    expect((await res.json()).code).not.toBe("AAAAAA");
+    expect(await db.select().from(tables)).toHaveLength(2);
   });
 });
 

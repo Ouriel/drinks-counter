@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { db, sessions, barMenus } from "@/lib/db";
 import { GET, POST } from "@/app/api/sessions/route";
+import { generateSlug } from "@/lib/slugs";
 import { jsonRequest, resetDb } from "./helpers/test-db";
 
 vi.mock("@/lib/db", async (importOriginal) => {
@@ -9,7 +10,15 @@ vi.mock("@/lib/db", async (importOriginal) => {
   return { ...real, db: await createTestDb(real) };
 });
 
+vi.mock("@/lib/slugs", async (importOriginal) => {
+  const real = await importOriginal<typeof import("@/lib/slugs")>();
+  return { ...real, generateSlug: vi.fn(real.generateSlug) };
+});
+
 const create = (body: unknown) => POST(jsonRequest("/api/sessions", "POST", body));
+const GENERATED = /^[a-z]+-[a-z-]+-[a-hj-np-z2-9]{4}$/;
+const seedSession = (slug: string) =>
+  db.insert(sessions).values({ slug, expiresAt: new Date(Date.now() + 3_600_000) });
 
 beforeEach(() => resetDb(db));
 afterEach(() => vi.useRealTimers());
@@ -39,6 +48,33 @@ describe("POST /api/sessions", () => {
       { name: "Mojito", category: "cocktail" },
       { name: "ipa", category: "beer" },
     ]);
+  });
+});
+
+describe("POST /api/sessions slugs", () => {
+  it("keeps a custom name exactly as typed", async () => {
+    expect(await (await create({ slug: "party" })).json()).toEqual({ slug: "party" });
+  });
+
+  it("falls back to a generated slug when the custom name is taken", async () => {
+    await seedSession("party");
+    const res = await create({ slug: "party" });
+    expect(res.status).toBe(200);
+    expect((await res.json()).slug).toMatch(GENERATED);
+  });
+
+  it("rejects a reserved name", async () => {
+    expect((await create({ slug: "admin" })).status).toBe(400);
+    expect(await db.select().from(sessions)).toHaveLength(0);
+  });
+
+  it("retries when a generated slug collides", async () => {
+    await seedSession("fizzy-pint-ab3k");
+    vi.mocked(generateSlug).mockReturnValueOnce("fizzy-pint-ab3k");
+    const res = await create({});
+    expect(res.status).toBe(200);
+    expect((await res.json()).slug).not.toBe("fizzy-pint-ab3k");
+    expect(await db.select().from(sessions)).toHaveLength(2);
   });
 });
 

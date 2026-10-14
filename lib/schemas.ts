@@ -20,11 +20,7 @@ export const createSessionSchema = z.object({
     )
     .max(200)
     .optional(),
-  slug: z
-    .string()
-    .max(50)
-    .regex(/^[a-z0-9-]+$/, "Invalid slug format")
-    .optional(),
+  slug: slugField.optional(),
 });
 
 export const addDrinkSchema = z.object({

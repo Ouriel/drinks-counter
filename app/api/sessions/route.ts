@@ -61,20 +61,13 @@ export async function POST(req: NextRequest) {
     : Array.from({ length: 5 }, () => generateSlug());
 
   for (const slug of slugsToTry) {
-    try {
-      const [session] = await db
-        .insert(sessions)
-        .values({ slug, barMenuId, expiresAt })
-        .returning();
-      return NextResponse.json({ slug: session.slug });
-    } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : "";
-      if (msg.includes("unique") || msg.includes("duplicate")) {
-        console.warn(`[sessions] Slug collision: "${slug}"`);
-        continue;
-      }
-      throw e;
-    }
+    const [session] = await db
+      .insert(sessions)
+      .values({ slug, barMenuId, expiresAt })
+      .onConflictDoNothing({ target: sessions.slug })
+      .returning();
+    if (session) return NextResponse.json({ slug: session.slug });
+    console.warn(`[sessions] Slug collision: "${slug}"`);
   }
 
   console.error(`[sessions] All ${slugsToTry.length} slug attempts failed`);

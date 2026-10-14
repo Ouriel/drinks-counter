@@ -1,3 +1,5 @@
+import { randomInt } from "crypto";
+
 const adjectives = [
   "fizzy",
   "golden",
@@ -147,7 +149,6 @@ const nouns = [
   "gin",
   "sake",
   "mead",
-  "porter",
   "saison",
   "gose",
   "lambic",
@@ -206,8 +207,12 @@ const nouns = [
   "falcon",
 ];
 
+// Table-code alphabet (no 0/1/i/o), lowercased.
+const SUFFIX_CHARS = "abcdefghjklmnpqrstuvwxyz23456789";
+const pick = (list: ArrayLike<string>) => list[randomInt(list.length)];
+
+// A generated slug is the session's only access key: 101 x 100 words x 32^4 suffixes ≈ 1e10 (33 bits).
 export function generateSlug(): string {
-  const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
-  const noun = nouns[Math.floor(Math.random() * nouns.length)];
-  return `${adj}-${noun}`;
+  const suffix = Array.from({ length: 4 }, () => pick(SUFFIX_CHARS)).join("");
+  return `${pick(adjectives)}-${pick(nouns)}-${suffix}`;
 }
