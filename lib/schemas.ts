@@ -1,6 +1,5 @@
 import { z } from "zod";
-
-const RESERVED_PATHS = ["admin", "stats", "api", "s", "health", "_next", "favicon.ico"];
+import { RESERVED_PATHS } from "@/lib/reserved-paths";
 
 const slugField = z
   .string()

@@ -12,6 +12,7 @@
   },
   "bar": {
     "whereAreYou": "Onde estás?",
+    "resumeSlug": "Nenhuma sessão ativa «{slug}». Escolhe o teu bar para iniciar uma nova.",
     "barName": "Nome do bar…",
     "items": "{count, plural, one {# item} other {# itens}}",
     "nearbyPlaces": "Locais próximos",

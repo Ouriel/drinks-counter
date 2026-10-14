@@ -12,6 +12,7 @@
   },
   "bar": {
     "whereAreYou": "On ets?",
+    "resumeSlug": "No hi ha cap sessió activa «{slug}». Tria el teu bar per començar-ne una de nova.",
     "barName": "Nom del bar…",
     "items": "{count, plural, one {# beguda} other {# begudes}}",
     "nearbyPlaces": "Llocs propers",
