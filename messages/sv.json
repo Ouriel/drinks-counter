@@ -24,7 +24,9 @@
     "creating": "Skapar…",
     "readingMenu": "Läser menyn…",
     "camera": "Fotografera menyn",
-    "skipManual": "Hoppa över — jag lägger till manuellt"
+    "skipManual": "Hoppa över — jag lägger till manuellt",
+    "noMenuYet": "Ingen meny än – fota den!",
+    "scanFirst": "Ingen har skannat den här barens meny än. Fota den så har nästa sällskap den direkt."
   },
   "review": {
     "title": "Granska menyalternativ",
@@ -90,7 +92,8 @@
     "alreadyOrdered": "Redan beställd · tryck för +1",
     "emptyTitle": "Skriv ett drinknamn ovan",
     "emptyHint": "för att söka eller lägga till",
-    "close": "Stäng"
+    "close": "Stäng",
+    "noMenuYet": "Ingen meny för den här baren än – skanna den så får alla här den"
   },
   "drinkCard": {
     "aria": "{name}, {count}. Tryck + för att lägga till, tryck − för att ta bort",

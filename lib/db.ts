@@ -15,12 +15,18 @@ export type { MenuItem } from "./menu-items";
 export { normalizeMenuItems } from "./menu-items";
 import type { MenuItem } from "./menu-items";
 
-export const barMenus = pgTable("bar_menus", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  barName: text("bar_name").notNull(),
-  items: jsonb("items").$type<MenuItem[]>().notNull().default([]),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+export const barMenus = pgTable(
+  "bar_menus",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    barName: text("bar_name").notNull(),
+    items: jsonb("items").$type<MenuItem[]>().notNull().default([]),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  // One row per sanitized bar name; POST /api/sessions inserts on conflict do nothing.
+  // A unique INDEX, like drinks_session_name_idx. Created in prod by hand (2026-10-14).
+  (table) => [uniqueIndex("bar_menus_bar_name_idx").on(table.barName)]
+);
 
 export const tables = pgTable("tables", {
   id: uuid("id").defaultRandom().primaryKey(),

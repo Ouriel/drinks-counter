@@ -25,19 +25,25 @@ export async function POST(req: NextRequest) {
     const cleanName = sanitizeBarName(barName);
     if (!cleanName) return NextResponse.json({ error: "Invalid bar name" }, { status: 400 });
 
-    const existing = await db
-      .select()
-      .from(barMenus)
-      .where(eq(barMenus.barName, cleanName))
-      .limit(1);
+    const incoming: MenuItem[] = (menuItems || []).map((item: MenuItem | string) =>
+      typeof item === "string" ? { name: item, category: "other" } : item
+    );
+    // Insert first: two first sessions of a new bar at once get one row (unique bar_name).
+    const [created] = await db
+      .insert(barMenus)
+      .values({ barName: cleanName, items: mergeMenuItems([], incoming) })
+      .onConflictDoNothing({ target: barMenus.barName })
+      .returning({ id: barMenus.id });
+    const existing = created
+      ? []
+      : await db.select().from(barMenus).where(eq(barMenus.barName, cleanName)).limit(1);
 
-    if (existing.length) {
+    if (created) {
+      barMenuId = created.id;
+    } else {
       barMenuId = existing[0].id;
-      if (menuItems?.length) {
+      if (incoming.length) {
         const currentItems = normalizeMenuItems(existing[0].items);
-        const incoming: MenuItem[] = menuItems.map((item: MenuItem | string) =>
-          typeof item === "string" ? { name: item, category: "other" } : item
-        );
         const newItems = mergeMenuItems(currentItems, incoming).slice(currentItems.length);
         if (newItems.length > 0) {
           // Atomic append: a concurrent append or an admin Empty since the read is never overwritten.
@@ -49,12 +55,6 @@ export async function POST(req: NextRequest) {
             );
         }
       }
-    } else {
-      const items: MenuItem[] = (menuItems || []).map((item: MenuItem | string) =>
-        typeof item === "string" ? { name: item, category: "other" } : item
-      );
-      const [menu] = await db.insert(barMenus).values({ barName: cleanName, items }).returning();
-      barMenuId = menu.id;
     }
   }
 

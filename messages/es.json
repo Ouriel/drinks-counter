@@ -24,7 +24,9 @@
     "creating": "Creando…",
     "readingMenu": "Leyendo menú…",
     "camera": "Fotografiar el menú",
-    "skipManual": "Saltar — añadiré manualmente"
+    "skipManual": "Saltar — añadiré manualmente",
+    "noMenuYet": "Aún no hay menú: ¡hazle una foto!",
+    "scanFirst": "Nadie ha escaneado todavía el menú de este bar. Hazle una foto y el próximo grupo ya lo tendrá."
   },
   "review": {
     "title": "Revisar bebidas",
@@ -90,7 +92,8 @@
     "alreadyOrdered": "Ya pedido · toca para +1",
     "emptyTitle": "Escribe un nombre de bebida arriba",
     "emptyHint": "para buscar o añadir",
-    "close": "Cerrar"
+    "close": "Cerrar",
+    "noMenuYet": "Aún no hay menú para este bar: escanéalo para que lo tengan todos aquí"
   },
   "drinkCard": {
     "aria": "{name}, {count}. Toca + para añadir, toca − para quitar",

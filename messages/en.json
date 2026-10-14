@@ -24,7 +24,9 @@
     "creating": "Creating…",
     "readingMenu": "Reading menu…",
     "camera": "Snap the menu",
-    "skipManual": "Skip — I'll add manually"
+    "skipManual": "Skip — I'll add manually",
+    "noMenuYet": "No menu yet — snap it!",
+    "scanFirst": "Nobody has scanned this bar's menu yet. Snap it and the next group starts with it."
   },
   "review": {
     "title": "Review menu items",
@@ -90,7 +92,8 @@
     "alreadyOrdered": "Already ordered · tap for +1",
     "emptyTitle": "Type a drink name above",
     "emptyHint": "to search or add it",
-    "close": "Close"
+    "close": "Close",
+    "noMenuYet": "No menu for this bar yet — scan it so everyone here gets it"
   },
   "drinkCard": {
     "aria": "{name}, {count}. Tap + to add, tap − to remove",
