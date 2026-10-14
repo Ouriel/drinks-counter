@@ -1,0 +1,84 @@
+name: Dependabot Auto-Merge
+
+on: pull_request
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  automerge:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.user.login == 'dependabot[bot]' && github.actor == 'dependabot[bot]'
+    steps:
+      - name: Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v3
+
+      # Repo variable AUTOMERGE_MANUAL: space-separated package-name patterns that are never auto-merged.
+      #   Set:   every update auto-merges on a green `ci` (majors included) unless a package matches.
+      #   Unset: minor/patch auto-merge, majors stay manual.
+      # A grouped PR stays manual if any of its packages matches. Missing metadata fails closed (manual).
+      - name: Decide
+        id: decide
+        env:
+          AUTOMERGE_MANUAL: ${{ vars.AUTOMERGE_MANUAL }}
+          DEPENDENCY_NAMES: ${{ steps.metadata.outputs.dependency-names }}
+          UPDATE_TYPE: ${{ steps.metadata.outputs.update-type }}
+        run: |
+          set -euo pipefail
+          set -f # patterns such as @heroui/* must not glob-expand against the workspace
+
+          decide() {
+            if [ -z "${DEPENDENCY_NAMES//[[:space:],]/}" ]; then
+              echo "manual: no dependency names in the metadata"
+              return 1
+            fi
+            if [ -z "${AUTOMERGE_MANUAL//[[:space:]]/}" ]; then
+              case "$UPDATE_TYPE" in
+                version-update:semver-minor | version-update:semver-patch)
+                  echo "auto: $UPDATE_TYPE (AUTOMERGE_MANUAL unset)"
+                  return 0 ;;
+                *)
+                  echo "manual: '$UPDATE_TYPE' with AUTOMERGE_MANUAL unset"
+                  return 1 ;;
+              esac
+            fi
+            local raw name pattern
+            IFS=',' read -r -a names <<< "$DEPENDENCY_NAMES"
+            for raw in "${names[@]}"; do
+              name="${raw#"${raw%%[![:space:]]*}"}"
+              name="${name%"${name##*[![:space:]]}"}"
+              [ -z "$name" ] && continue
+              for pattern in $AUTOMERGE_MANUAL; do
+                # Unquoted pattern on purpose: glob match, and `*` also matches `/`.
+                if [[ "$name" == $pattern ]]; then
+                  echo "manual: $name matches '$pattern'"
+                  return 1
+                fi
+              done
+            done
+            echo "auto: no package matches AUTOMERGE_MANUAL ($UPDATE_TYPE)"
+          }
+
+          if reason="$(decide)"; then arm=true; else arm=false; fi
+          echo "$reason"
+          echo "Auto-merge decision: $reason" >> "$GITHUB_STEP_SUMMARY"
+          echo "arm=$arm" >> "$GITHUB_OUTPUT"
+
+      # Arms GitHub's native auto-merge: GitHub merges only after the required `ci` check is green.
+      # Never use `gh pr merge --auto` here: when main has no required check it merges at once, even with red CI.
+      # If the main ruleset is ever removed, this call errors and nothing is merged.
+      - name: Enable auto-merge
+        if: steps.decide.outputs.arm == 'true'
+        run: |
+          gh api graphql -f query='
+            mutation($id: ID!, $sha: GitObjectID!) {
+              enablePullRequestAutoMerge(input: {pullRequestId: $id, expectedHeadOid: $sha, mergeMethod: SQUASH}) {
+                clientMutationId
+              }
+            }' -f id="$PR_ID" -f sha="$HEAD_SHA"
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_ID: ${{ github.event.pull_request.node_id }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
