@@ -2,51 +2,58 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, "feature/**"]
   pull_request:
     branches: [main]
+  # Bot merges (GITHUB_TOKEN) trigger no push run on main, so re-check main weekly.
+  # A failed scheduled run notifies whoever last edited this cron line (the owner).
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  # The job id `ci` is the required status check on main (repo ruleset). Do not rename it.
   ci:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write # allow the Dependabot lockfile-sync step to push back
     steps:
-      - uses: actions/checkout@v6
-        with:
-          # Check out the PR branch (not the detached merge ref) so the sync step can push.
-          ref: ${{ github.head_ref }}
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
-          node-version: 20
+          node-version: 24 # keep equal to Vercel > Settings > Node.js Version (24.x)
           cache: npm
 
-      # Dependabot's grouped updates sometimes leave package-lock.json out of sync with
-      # package.json (dropped transitive deps), which makes the `npm ci` below fail. For
-      # Dependabot PRs, regenerate the lockfile and push it back so the PR — and main after
-      # merge — stay installable with `npm ci`.
-      - name: Sync lockfile (Dependabot)
-        if: github.actor == 'dependabot[bot]'
-        run: |
-          npm install --package-lock-only --no-audit --no-fund
-          if ! git diff --quiet package-lock.json; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git commit -m "chore(deps): sync package-lock.json" package-lock.json
-            git push
-          fi
-
-      - run: npm ci
+      - name: Install Dependencies
+        run: npm ci # same as vercel.json installCommand; also fails on peer/lockfile drift
 
       - name: Lint
         run: npm run lint
 
-      - name: Format check
-        run: npm run format:check
+      - name: Typecheck & Build
+        run: npm run build
 
-      - name: Test
+      - name: Run Tests (Vitest)
         run: npm test
 
-      - name: Build
-        run: npm run build
+  # Runs triggered by Dependabot notify nobody, so ping the owner on the PR.
+  notify-dependabot-failure:
+    needs: ci
+    if: failure() && github.event.pull_request.user.login == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - run: |
+          gh pr comment "$PR_URL" --body "@$OWNER CI failed on this Dependabot PR, so it will not be merged. Logs: $RUN_URL"
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          OWNER: ${{ github.repository_owner }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}

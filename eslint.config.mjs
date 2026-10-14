@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Local, untracked plans and review artifacts.
+    ".agents/**",
   ]),
 ]);
 

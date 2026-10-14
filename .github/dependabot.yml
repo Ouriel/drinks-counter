@@ -7,32 +7,81 @@ updates:
       day: "monday"
     open-pull-requests-limit: 10
     groups:
-      # Minor and patch updates grouped together (safe to batch)
-      minor-patch:
+      # Same patterns as PupPace's heroui block.
+      # HeroUI + its React Aria peers must move in ONE PR. minor-and-patch excludes these patterns (group order alone is not reliable).
+      # No update-types on purpose: a HeroUI major arrives together with its peers. The PR stays manual when it carries a listed package (@heroui/*, react-aria*, @react-aria/*, react-stately, @react-stately/*).
+      heroui:
+        patterns:
+          - "@heroui/*"
+          - "react-aria"
+          - "react-aria-components"
+          - "react-stately"
+          - "@react-aria/*"
+          - "@react-stately/*"
+          - "@react-types/*"
+          - "@internationalized/*"
+      # React and its types move together (a major arrives as one PR).
+      react:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react"
+          - "@types/react-dom"
+      # drizzle-kit must match drizzle-orm.
+      drizzle:
+        patterns:
+          - "drizzle-orm"
+          - "drizzle-kit"
+      # TipsyTap-only coupled groups: these packages must change version together (majors included).
+      nextjs:
+        patterns: ["next", "eslint-config-next", "@next/*"]
+      ai-sdk:
+        patterns: ["ai", "@ai-sdk/*"]
+      vitest:
+        patterns: ["vitest", "@vitest/*"]
+      # TypeScript skips SemVer: a minor can leave typescript-eslint's peer range, so keep it out of the batch.
+      typescript:
+        patterns: ["typescript"]
+      minor-and-patch:
         update-types:
           - "minor"
           - "patch"
+        # Do not rely on group order (#23 and #29 both bumped eslint-config-next): exclude every pattern above.
         exclude-patterns:
-          - "typescript"
-          - "next"
-          - "@types/*"
-      # TypeScript gets its own PR (doesn't follow SemVer)
-      typescript:
-        patterns:
-          - "typescript"
-          - "@types/*"
-      # Next.js ecosystem together
-      nextjs:
-        patterns:
+          - "@heroui/*"
+          - "react-aria"
+          - "react-aria-components"
+          - "react-stately"
+          - "@react-aria/*"
+          - "@react-stately/*"
+          - "@react-types/*"
+          - "@internationalized/*"
+          - "react"
+          - "react-dom"
+          - "@types/react"
+          - "@types/react-dom"
+          - "drizzle-orm"
+          - "drizzle-kit"
           - "next"
           - "eslint-config-next"
           - "@next/*"
-    # Major versions always get individual PRs (not grouped)
+          - "ai"
+          - "@ai-sdk/*"
+          - "vitest"
+          - "@vitest/*"
+          - "typescript"
+    # Decision D2: typescript ignore is TipsyTap-only (typescript-eslint peer); @types/node rule shared with PupPace (D2 = a).
     ignore:
-      - dependency-name: "*"
+      # typescript-eslint accepts typescript <6.1.0 only; revisit when it supports TS 7.
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+      # Types follow the runtime (Node 24 on Vercel and in CI); bump together with the runtime.
+      - dependency-name: "@types/node"
         update-types: ["version-update:semver-major"]
 
+  # Shared with PupPace (verbatim).
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+      day: "monday"
