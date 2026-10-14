@@ -8,7 +8,10 @@
     "sessionCode": "Återuppta en session eller välj ett eget namn…",
     "goToSession": "Gå till session",
     "recentSessions": "Senaste sessioner",
-    "stats": "Statistik"
+    "stats": "Statistik",
+    "yourNights": "Dina kvällar",
+    "nightsOnPhone": "bara på den här telefonen",
+    "nightDrinks": "{count, plural, one {# drink} other {# drinkar}}"
   },
   "bar": {
     "whereAreYou": "Var är du?",

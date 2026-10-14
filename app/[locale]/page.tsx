@@ -12,6 +12,9 @@ import { CategoryIcon } from "@/lib/category-icon";
 import { useIsHydrated } from "@/lib/use-is-hydrated";
 import { RESERVED_PATHS } from "@/lib/reserved-paths";
 import { addRecentSession } from "@/lib/recent-sessions";
+import { loadNights } from "@/lib/nights";
+import { getPersonalBest } from "@/lib/gamification";
+import { titleCase } from "@/lib/sanitize";
 
 function loadRecentSessions(): { slug: string; barName: string; date: string }[] {
   try {
@@ -86,6 +89,8 @@ function HomeContent() {
   // Recent sessions live in localStorage (client-only). Read after hydration via a memo keyed on
   // `hydrated` so the first render matches the server ([]), with no setState-in-effect.
   const recentSessions = useMemo(() => (hydrated ? loadRecentSessions() : []), [hydrated]);
+  const nights = useMemo(() => (hydrated ? loadNights().slice(0, 10) : []), [hydrated]);
+  const personalBest = hydrated ? getPersonalBest() : 0;
   const cameraRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<NodeJS.Timeout>(null);
   // Bumped on every keystroke: a response that started before the latest keystroke is dropped.
@@ -292,6 +297,30 @@ function HomeContent() {
             </div>
           )}
         </div>
+        {nights.length > 0 && (
+          <div className="w-full max-w-sm">
+            <p className="text-xs text-default-500 mb-2">
+              {t("home.yourNights")} · {t("home.nightsOnPhone")}
+            </p>
+            <div className="space-y-1">
+              {nights.map((night) => (
+                <div key={night.slug} className="flex justify-between gap-2 text-sm px-3 py-1">
+                  <span className="truncate">
+                    {personalBest > 0 && night.total === personalBest && "🏅 "}
+                    {titleCase(night.barName)}
+                    <span className="text-default-500 text-xs ml-2">
+                      {new Date(night.date).toLocaleDateString()}
+                    </span>
+                  </span>
+                  <span className="text-default-500 shrink-0">
+                    {t("home.nightDrinks", { count: night.total })}
+                    {night.topDrink && ` · ${night.topDrink}`}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
         <Button variant="ghost" size="sm" className="gap-1" onPress={() => router.push("/stats")}>
           <ChartColumn className="w-4 h-4" />
           {t("home.stats")}

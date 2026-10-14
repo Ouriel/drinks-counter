@@ -8,7 +8,10 @@
     "sessionCode": "Hervat een sessie of kies een eigen naam…",
     "goToSession": "Ga naar sessie",
     "recentSessions": "Recente sessies",
-    "stats": "Statistieken"
+    "stats": "Statistieken",
+    "yourNights": "Jouw avonden",
+    "nightsOnPhone": "alleen op deze telefoon",
+    "nightDrinks": "{count, plural, one {# drankje} other {# drankjes}}"
   },
   "bar": {
     "whereAreYou": "Waar ben je?",

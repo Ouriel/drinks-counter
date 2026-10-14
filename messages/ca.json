@@ -8,7 +8,10 @@
     "sessionCode": "Reprendre una sessió o triar un nom…",
     "goToSession": "Anar a la sessió",
     "recentSessions": "Sessions recents",
-    "stats": "Stats"
+    "stats": "Stats",
+    "yourNights": "Les teves nits",
+    "nightsOnPhone": "només en aquest mòbil",
+    "nightDrinks": "{count, plural, one {# beguda} other {# begudes}}"
   },
   "bar": {
     "whereAreYou": "On ets?",

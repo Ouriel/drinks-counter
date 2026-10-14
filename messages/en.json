@@ -8,7 +8,10 @@
     "sessionCode": "Resume a session or pick a custom name…",
     "goToSession": "Go to session",
     "recentSessions": "Recent sessions",
-    "stats": "Stats"
+    "stats": "Stats",
+    "yourNights": "Your nights",
+    "nightsOnPhone": "on this phone only",
+    "nightDrinks": "{count, plural, one {# drink} other {# drinks}}"
   },
   "bar": {
     "whereAreYou": "Where are you?",

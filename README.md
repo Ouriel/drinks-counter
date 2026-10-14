@@ -44,6 +44,7 @@ Every menu you scan, and every new drink you add, joins the bar's **shared menu*
 ### Coming back, stats and admin
 
 - **Recent sessions**: the home screen lists the last 10 sessions started or opened on this device in the last 48 h, newest first.
+- **Your nights**: below them, your last 10 nights (date, bar, total, top drink, 🏅 on your record), kept on this phone even after the server deletes the sessions.
 - **Your session link** (`/s/<name>`) is your key. Generated names look like `velvet-negroni-x7k2` and are hard to guess. The home screen's session box opens `/s/<name>`: it resumes a live session with that name, or starts a new evening under it (lowercase letters, digits and dashes, up to 50). A custom name is only as private as it is hard to guess. An expired link brings you back home to start again under that name (or a generated one while the old session is still stored).
 - **Stats** (public): bars known (all time), then, over the sessions still stored (the last 2 to 3 days): sessions, drinks, active sessions, taps in the last 24 h, the split by category and top drinks; plus the bars with the biggest menus.
 - **Admin** (protected by a secret): edit, rename, re-scan, empty or delete bar menus; inspect and delete sessions and tables; a Guide tab explaining badges, pace, achievements and visual effects.
@@ -53,7 +54,7 @@ Every menu you scan, and every new drink you add, joins the bar's **shared menu*
 - No accounts and no personal data. Anyone who has a session link, or types its name, can edit that session, so keep it to yourself.
 - A session expires **48 h** after it starts. A daily cleanup (between 06:00 and 06:59 UTC on Vercel Hobby) then deletes it with its drinks, as well as tables nobody belongs to any more. So a session stays stored for 2 to 3 days in total.
 - Bar menus are shared and kept.
-- Recent sessions, your personal best and how many nickname re-rolls you used are stored in your browser only.
+- Recent sessions, your nights, your personal best and how many nickname re-rolls you used are stored in your browser only.
 - The app uses Vercel Analytics and Speed Insights.
 - There is no offline mode: a tap made without a network is rolled back.
 
