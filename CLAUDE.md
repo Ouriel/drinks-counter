@@ -2,12 +2,12 @@
 
 ## Quick Context
 
-Drinks counter PWA. Next.js 16 + HeroUI v3 + Neon Postgres + Gemini AI. Strict TypeScript, Zod everywhere.
+Drinks counter PWA. Next.js 16 + HeroUI v3 + Neon Postgres + Gemini AI. Strict TypeScript, Zod everywhere. Node 24 / npm 11 (`.nvmrc`), same as CI and Vercel.
 
 ## Before Making Changes
 
 1. `npx tsc --noEmit` — must pass clean
-2. `npm test` — 76 tests, all must pass
+2. `npm test` — all tests must pass
 3. `npx prettier --write` on every file you touch
 4. Check `lib/types.ts` before defining any type locally
 
@@ -45,9 +45,21 @@ Drinks counter PWA. Next.js 16 + HeroUI v3 + Neon Postgres + Gemini AI. Strict T
 
 ### Testing
 
+- Every bug fix starts with a failing test; a test that asserts buggy behaviour is rewritten, not kept
 - Every test must exercise real code — no placeholder assertions
-- Don't import `lib/db.ts` in tests (triggers DB connection)
-- Test pure functions: gamification, sanitize, schemas, slugs, auth, normalizeMenuItems
+- Route and query tests mock `@/lib/db` with in-memory PGlite (`createTestDb` + `resetDb` from `tests/helpers/test-db.ts`), so the real SQL runs
+- Hook and component tests start with `// @vitest-environment jsdom`; hooks use `renderHook` from `tests/helpers/render-hook.ts`
+
+### Database Changes
+
+- Migration first: a data-model change ships, in the same PR, with the migration that carries the existing prod data into the new shape. The PR states it in a **Prod data** line (or "none needed" and why). Legacy fields are dropped only once the migration is verified.
+- No `drizzle-kit push`: not in the build, and never by hand against prod (no preview, and it drops objects `lib/db.ts` does not declare)
+- Every prod DDL or data write is run by the owner: backup branch in Neon (`backup/pre-<phase>-<date>`), read-only preview `SELECT`s with counts, the exact SQL shown and OK'd, then the counts rerun to verify
+- Mirror every DDL in `lib/db.ts` in the same PR
+
+### Dependencies
+
+- Dependabot updates auto-merge once `ci` is green, except packages listed in the repo variable `AUTOMERGE_MANUAL`, which are merged by hand
 
 ## Key Files
 

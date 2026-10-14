@@ -15,7 +15,8 @@ Mobile-first web app to count drinks during a night out. Users snap a bar menu p
 - **Database**: Neon Postgres + Drizzle ORM
 - **AI**: Vercel AI SDK + Google Gemini 2.5 Flash Lite
 - **Deploy**: Vercel free tier
-- **Test**: Vitest (70 tests)
+- **Runtime**: Node 24 / npm 11 (`.nvmrc`)
+- **Test**: Vitest
 - **Lint**: ESLint + Prettier
 - **Pre-commit**: Husky + lint-staged
 
@@ -110,9 +111,10 @@ components/
 
 ### Testing
 
-- Test pure logic functions (gamification, sanitize, schemas, slugs, auth, normalizeMenuItems)
+- Every bug fix starts with a failing test; a test that asserts buggy behaviour is rewritten, not kept
 - Don't write placeholder tests that assert inline math — every test must exercise real code
-- Don't import `lib/db.ts` in tests (triggers DB connection)
+- Route and query tests mock `@/lib/db` with in-memory PGlite (`createTestDb` + `resetDb` from `tests/helpers/test-db.ts`), so the real SQL runs
+- Hook and component tests start with `// @vitest-environment jsdom`; hooks use `renderHook` from `tests/helpers/render-hook.ts`
 
 ## HeroUI v3 Conventions
 
@@ -132,23 +134,30 @@ components/
 - `tables`: shared group. 6-char code. Members get animal nicknames.
 - `MenuItem`: `{ name: string; category: string }` — categories: beer, cocktail, wine, spirit, shot, mocktail, soft, food, other
 
+## Database Changes
+
+- Migration first: a data-model change ships, in the same PR, with the migration that carries the existing prod data into the new shape. The PR states it in a **Prod data** line (or "none needed" and why). Legacy fields are dropped only once the migration is verified.
+- No `drizzle-kit push`: not in the build, and never by hand against prod (no preview, and it drops objects `lib/db.ts` does not declare)
+- Every prod DDL or data write is run by the owner: backup branch in Neon (`backup/pre-<phase>-<date>`), read-only preview `SELECT`s with counts, the exact SQL shown and OK'd, then the counts rerun to verify
+- Mirror every DDL in `lib/db.ts` in the same PR
+
 ## Commands
 
 ```bash
 npm run dev          # Local dev server
-npm run build        # Production build (needs POSTGRES_URL)
-npm test             # Run Vitest (70 tests)
+npm run build        # Production build (no DB needed)
+npm test             # i18n check + Vitest
 npm run lint         # ESLint
 npm run format:check # Prettier check
 npx tsc --noEmit    # Type check
-npx drizzle-kit push # Push schema to DB
 ```
 
 ## Production
 
 - **URL**: https://tipsy-tap.vercel.app
 - **Deploy**: Auto-deploy from `main` branch via Vercel
-- **Build command**: `npm run db:push && next build` (production), `next build` (preview)
+- **Build command**: `next build` (production and preview); the build never changes the DB schema
+- **Dependabot**: green updates auto-merge, except packages listed in the repo variable `AUTOMERGE_MANUAL` (merged by hand)
 - **Cron**: Daily cleanup at 06:00 UTC (`/api/cron/cleanup`)
 
 ## API Route Conventions
