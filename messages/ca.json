@@ -184,7 +184,7 @@
   "nudges": {
     "water": "Un got d'aigua?",
     "taxi": "Potser guarda el número del taxi",
-    "sleep": "El teu jo del futur t'agraeix parar aviat"
+    "sleep": "Ja vas plegant???"
   },
   "tableSummary": {
     "title": "Resum de la taula",
@@ -263,6 +263,7 @@
     "personalBest": "Rècord personal!",
     "personalBestDesc": "{count} begudes — nou rècord",
     "drinksImported": "{count} begudes importades",
-    "menuScanFailed": "No s'ha pogut llegir aquest menú: prova amb una altra foto."
+    "menuScanFailed": "No s'ha pogut llegir aquest menú: prova amb una altra foto.",
+    "tapFailed": "No s'ha desat: revisa la connexió"
   }
 }

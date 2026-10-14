@@ -7,7 +7,7 @@ import { api } from "@/lib/api";
 import { toast } from "@heroui/react";
 import type { Drink } from "@/lib/types";
 
-vi.mock("@heroui/react", () => ({ toast: vi.fn() }));
+vi.mock("@heroui/react", () => ({ toast: Object.assign(vi.fn(), { danger: vi.fn() }) }));
 vi.mock("@/lib/api", () => ({
   api: { addDrink: vi.fn(), patchDrink: vi.fn(), getDrinks: vi.fn() },
 }));
@@ -33,6 +33,7 @@ beforeEach(() => {
   vi.mocked(api.patchDrink).mockResolvedValue({ ok: true });
   vi.mocked(api.patchDrink).mockClear();
   vi.mocked(toast).mockClear();
+  vi.mocked(toast.danger).mockClear();
   localStorage.clear();
 });
 
@@ -100,7 +101,32 @@ describe("useOptimisticDrinks", () => {
   });
 });
 
+describe("failed taps", () => {
+  it("say so for 2 s when an add or a remove fails", async () => {
+    vi.mocked(api.addDrink).mockResolvedValue(null);
+    vi.mocked(api.patchDrink).mockResolvedValue(null);
+    const { tap, undo } = setup();
+    await tap();
+    await undo();
+    expect(vi.mocked(toast.danger).mock.calls).toEqual([
+      ["toast.tapFailed", { timeout: 2000 }],
+      ["toast.tapFailed", { timeout: 2000 }],
+    ]);
+  });
+});
+
 describe("personal best fires once per session", () => {
+  it("shows a record set on a badge tap inside the badge toast", async () => {
+    localStorage.setItem("tipsytap_personal_best", "4");
+    localStorage.setItem("tipsytap_personal_best_slug", "older-night");
+    await setup([{ ...beer, count: 4 }]).tap(); // 5 → "On a Roll" and a new record
+    const badge = vi
+      .mocked(toast)
+      .mock.calls.find(([title]) => String(title).includes("badges.onARoll"));
+    expect(badge?.[1]?.description).toContain("toast.personalBestDesc");
+    expect(toastTitles("personalBest")).toHaveLength(0); // one toast, not two
+  });
+
   it("celebrates beating the previous best once, then stays quiet", async () => {
     localStorage.setItem("tipsytap_personal_best", "3");
     const { tap, onBadge } = setup();

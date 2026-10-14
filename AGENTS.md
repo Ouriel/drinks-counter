@@ -64,7 +64,7 @@ Before you call work done, `lint`, `build` and `test` must all be green: CI runs
 ### UI
 
 - HeroUI v3: `Button` uses `onPress`; a native `<button>` (inside a `Card`, say) uses `onClick`. Long press comes from `useLongPress` in `react-aria`.
-- Show every notification with HeroUI `toast()` or `toast.danger()`, and `toast.update()` to settle a loading toast; never build a custom notification UI. Timeouts (owner decision): badges, nudges, personal best and copy confirmations pass `timeout: 10000`; errors and the re-scan result pass `timeout: 5000`. Without one HeroUI uses 4 s, and `toast.promise()` always does, so don't use it.
+- Show every notification with HeroUI `toast()` or `toast.danger()`, and `toast.update()` to settle a loading toast; never build a custom notification UI. Timeouts (owner decision): badges, nudges, personal best and copy confirmations pass `timeout: 10000`; errors and the re-scan result pass `timeout: 5000`; the failed-tap toast passes `timeout: 2000`. Without one HeroUI uses 4 s, and `toast.promise()` always does, so don't use it.
 - Category icons come from `lib/category-icon.tsx`: inside a `Chip` for tags, bare in list rows. Emoji (`CATEGORY_EMOJI`) are used only in the shared text recap.
 - The 9 categories are listed by hand in `lib/constants.ts`, `lib/category-icon.tsx`, the `z.enum` and prompt in `app/api/parse-menu/route.ts`, and `messages/*.json`. Change them together; only `CATEGORIES` against `en.json` is tested.
 - Accessibility: give icon-only buttons an `aria-label`, make new touch targets at least 44 px (`w-11 h-11`, like the drink card's ± buttons; the header's `size="sm"` icon buttons are smaller), and keep `<html lang={locale}>` and the `<main>` landmark.
@@ -138,7 +138,7 @@ Before you call work done, `lint`, `build` and `test` must all be green: CI runs
 - Sessions expire after 48 h, and the daily cron (06:00–06:59 UTC on Hobby) deletes expired sessions and empty tables. No soft deletes. Never click "Run" on the cron in Vercel: it executes the delete job.
 - Admin deletes and "Empty" are hard deletes behind a `confirm()`. Add no archive or history tables.
 - Pinch-zoom stays disabled (`maximumScale: 1`, `userScalable: false` in `app/layout.tsx`): the UI is sized for phones. Don't re-enable it.
-- Toasts sit at the bottom, at most 5, 10 s each (errors and scan results 5 s), and are never lifted above the Add button. With 0 drinks the "Add a drink" button is centered; the fixed bottom button appears from the first drink.
+- Toasts sit at the bottom, at most 5, 10 s each (errors and scan results 5 s, a failed tap 2 s), and are never lifted above the Add button. With 0 drinks the "Add a drink" button is centered; the fixed bottom button appears from the first drink.
 
 ### HeroUI overrides to keep
 

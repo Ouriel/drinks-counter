@@ -184,7 +184,7 @@
   "nudges": {
     "water": "Water break?",
     "taxi": "Maybe save that taxi number",
-    "sleep": "Future you says thanks for stopping soon"
+    "sleep": "Stopping soon???"
   },
   "tableSummary": {
     "title": "Table Summary",
@@ -263,6 +263,7 @@
     "personalBest": "Personal Best!",
     "personalBestDesc": "{count} drinks — new record",
     "drinksImported": "{count} drinks imported",
-    "menuScanFailed": "Couldn't read that menu — try another photo."
+    "menuScanFailed": "Couldn't read that menu — try another photo.",
+    "tapFailed": "Not saved — check your connection"
   }
 }

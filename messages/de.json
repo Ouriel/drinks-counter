@@ -184,7 +184,7 @@
   "nudges": {
     "water": "Ein Glas Wasser?",
     "taxi": "Vielleicht die Taxinummer speichern",
-    "sleep": "Dein zukünftiges Ich dankt dir fürs baldige Aufhören"
+    "sleep": "Bald Schluss???"
   },
   "tableSummary": {
     "title": "Tisch-Übersicht",
@@ -263,6 +263,7 @@
     "personalBest": "Persönlicher Rekord!",
     "personalBestDesc": "{count} Drinks — neuer Rekord",
     "drinksImported": "{count} Drinks importiert",
-    "menuScanFailed": "Diese Karte konnte nicht gelesen werden – versuch ein anderes Foto."
+    "menuScanFailed": "Diese Karte konnte nicht gelesen werden – versuch ein anderes Foto.",
+    "tapFailed": "Nicht gespeichert – prüf deine Verbindung"
   }
 }

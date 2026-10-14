@@ -184,7 +184,7 @@
   "nudges": {
     "water": "Un bicchiere d'acqua?",
     "taxi": "Forse salva il numero del taxi",
-    "sleep": "Il te del futuro ti ringrazia per fermarti presto"
+    "sleep": "Ci fermiamo presto???"
   },
   "tableSummary": {
     "title": "Riepilogo del tavolo",
@@ -263,6 +263,7 @@
     "personalBest": "Record personale!",
     "personalBestDesc": "{count} drink — nuovo record",
     "drinksImported": "{count} drink importati",
-    "menuScanFailed": "Impossibile leggere questo menu: prova con un'altra foto."
+    "menuScanFailed": "Impossibile leggere questo menu: prova con un'altra foto.",
+    "tapFailed": "Non salvato: controlla la connessione"
   }
 }

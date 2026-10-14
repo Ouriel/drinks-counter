@@ -359,6 +359,10 @@ export function getNudge(
   prevTotal: number,
   addedCategory?: string | null
 ): Nudge | null {
+  // At 12, a cheeky "stopping soon?" wins over the water break (12 is a multiple of 3).
+  if (total === 12 && prevTotal < 12) {
+    return { emoji: "👀", text: "Stopping soon???", type: "info" };
+  }
   // Water reminder every 3 drinks — skip it when the drink just added was already
   // non-alcoholic or food (no point nagging someone who is hydrating / eating).
   const justWentSoft = addedCategory != null && !isAlcoholic(addedCategory);
@@ -368,10 +372,6 @@ export function getNudge(
   // Taxi nudge at 8
   if (total === 8 && prevTotal < 8) {
     return { emoji: "🚕", text: "Maybe save that taxi number", type: "taxi" };
-  }
-  // At 12
-  if (total === 12 && prevTotal < 12) {
-    return { emoji: "🛏️", text: "Future you says thanks for stopping soon", type: "info" };
   }
   return null;
 }

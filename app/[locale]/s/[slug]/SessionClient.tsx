@@ -18,6 +18,7 @@ import { useOptimisticDrinks } from "@/lib/useOptimisticDrinks";
 import { useIsHydrated } from "@/lib/use-is-hydrated";
 import { api } from "@/lib/api";
 import { mergeMenuItems } from "@/lib/menu-items";
+import { addRecentSession } from "@/lib/recent-sessions";
 import type { Drink, MenuItem } from "@/lib/types";
 
 // Interaction-only components — not needed for first paint, so they're code-split out of the
@@ -45,11 +46,6 @@ function formatElapsed(drinks: Drink[]): string | null {
 // render identically at hydration time (avoids React #418 mismatch).
 function ElapsedTimer({ drinks }: { drinks: Drink[] }) {
   const hydrated = useIsHydrated();
-  const [, setTick] = useState(0);
-  useEffect(() => {
-    const id = setInterval(() => setTick((tick) => tick + 1), 60_000);
-    return () => clearInterval(id);
-  }, []);
   if (!hydrated) return null;
   const elapsed = formatElapsed(drinks);
   if (!elapsed) return null;
@@ -91,10 +87,32 @@ export function SessionClient({
     initialDrinks
   );
 
+  // Re-render every minute so the elapsed time and the pace stay current while idle.
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setTick((tick) => tick + 1), 60_000);
+    return () => clearInterval(id);
+  }, []);
+
   // Expired/unknown session → recover from the home screen (which can recreate it).
   useEffect(() => {
     if (notFound) router.replace(`/?slug=${slug}`);
   }, [notFound, router, slug]);
+
+  // Remember a session opened on this phone (home's recent list), dated from its first
+  // drink. An empty one waits for its first drink: its start date is unknown here.
+  useEffect(() => {
+    const started = initialDrinks
+      .map((drink) => drink.createdAt)
+      .filter(Boolean)
+      .sort()[0];
+    if (notFound || !started) return;
+    try {
+      const entry = { slug, barName: initialBarName || slug, date: started };
+      const updated = addRecentSession(localStorage.getItem("tipsytap_recent"), entry);
+      localStorage.setItem("tipsytap_recent", JSON.stringify(updated));
+    } catch {}
+  }, [notFound, slug, initialBarName, initialDrinks]);
 
   function handleAddDrink(name: string, category?: string) {
     setShowPicker(false);
