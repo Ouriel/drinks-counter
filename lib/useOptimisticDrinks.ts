@@ -24,19 +24,19 @@ function notifyGamification(
   if (badge) {
     toast(`${badge.emoji} ${translate(`badges.${badge.key}`)}`, {
       description: translate(`badges.${badge.key}Sub`),
-      timeout: 15000,
+      timeout: 10000,
     });
   }
   const isPersonalBest = checkPersonalBest(newTotal, slug);
   if (isPersonalBest && !badge) {
     toast(`🏅 ${translate("toast.personalBest")}`, {
       description: translate("toast.personalBestDesc", { count: newTotal }),
-      timeout: 15000,
+      timeout: 10000,
     });
   }
   const nudge = getNudge(newTotal, prevTotal, addedCategory);
   if (nudge) {
-    toast(`${nudge.emoji} ${translate(`nudges.${NUDGE_KEY[nudge.type]}`)}`, { timeout: 15000 });
+    toast(`${nudge.emoji} ${translate(`nudges.${NUDGE_KEY[nudge.type]}`)}`, { timeout: 10000 });
   }
   return !!badge || isPersonalBest;
 }

@@ -132,7 +132,7 @@ export function SummaryClient({
       navigator.share({ title: t("app.title"), text }).catch(() => {});
     } else {
       navigator.clipboard.writeText(text);
-      toast(t("summary.copied"), { timeout: 15000 });
+      toast(t("summary.copied"), { timeout: 10000 });
     }
   }
 

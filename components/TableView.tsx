@@ -68,7 +68,7 @@ export function TableView({
 
   function copyJoinLink() {
     navigator.clipboard.writeText(joinUrl);
-    toast(t("linkCopied"), { timeout: 15000 });
+    toast(t("linkCopied"), { timeout: 10000 });
   }
 
   const fetchRanking = useCallback(

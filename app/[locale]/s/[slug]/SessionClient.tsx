@@ -188,7 +188,7 @@ export function SessionClient({
                   navigator.share({ title: t("app.title"), text, url }).catch(() => {});
                 } else {
                   navigator.clipboard.writeText(url);
-                  toast(t("session.linkCopied"), { timeout: 15000 });
+                  toast(t("session.linkCopied"), { timeout: 10000 });
                 }
               }}
               aria-label={t("session.share")}
@@ -298,6 +298,10 @@ export function SessionClient({
         <div className="text-center text-default-500 mt-12">
           <p className="text-lg">{t("session.noDrinks")}</p>
           <p className="text-sm mt-2">{t("session.noDrinksHint")}</p>
+          {/* The only action sits here, not at the bottom edge where toasts land. */}
+          <Button variant="primary" size="lg" className="mt-6" onPress={() => setShowPicker(true)}>
+            {t("session.addDrink")}
+          </Button>
         </div>
       ) : (
         <>
@@ -354,12 +358,14 @@ export function SessionClient({
         onTableChange={setTableCode}
       />
 
-      {/* FAB */}
-      <div className="fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom))] left-0 right-0 flex justify-center">
-        <Button variant="primary" size="lg" onPress={() => setShowPicker(true)}>
-          {t("session.addDrink")}
-        </Button>
-      </div>
+      {/* FAB, from the first drink on (before that, the button is in the empty state) */}
+      {drinks.length > 0 && (
+        <div className="fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom))] left-0 right-0 flex justify-center">
+          <Button variant="primary" size="lg" onPress={() => setShowPicker(true)}>
+            {t("session.addDrink")}
+          </Button>
+        </div>
+      )}
 
       {/* Picker */}
       {showPicker && (
