@@ -6,6 +6,7 @@ import { Button, Input, Card, Modal, Popover, useOverlayState, toast } from "@he
 import { useTranslations } from "next-intl";
 import { api } from "@/lib/api";
 import { formatNickname } from "@/lib/nicknames";
+import { useIsHydrated } from "@/lib/use-is-hydrated";
 import { RefreshCw, QrCode as QrCodeIcon, Copy, Dices, Users } from "lucide-react";
 
 // The QR code pulls in qrcode-generator and only renders when the user opens the QR view,
@@ -37,10 +38,8 @@ export function TableView({
   const [error, setError] = useState("");
   const [showQr, setShowQr] = useState(false);
   const [selectedMember, setSelectedMember] = useState<string | null>(null);
-  const [rerollsUsed, setRerollsUsed] = useState<number>(() => {
-    if (typeof window === "undefined") return 0;
-    return parseInt(localStorage.getItem(`tipsytap_rerolls_${slug}`) || "0", 10) || 0;
-  });
+  const [rerollsSet, setRerollsUsed] = useState<number | null>(null);
+  const hydrated = useIsHydrated();
   const modalState = useOverlayState({
     onOpenChange: (open) => {
       if (!open) setSelectedMember(null);
@@ -48,6 +47,10 @@ export function TableView({
   });
   const t = useTranslations("table");
   const tAnimals = useTranslations("animals");
+  // Stored re-rolls are read after hydration only: the server can't see localStorage (#418).
+  const rerollsUsed =
+    rerollsSet ??
+    (hydrated ? parseInt(localStorage.getItem(`tipsytap_rerolls_${slug}`) || "0", 10) || 0 : 0);
 
   const MAX_REROLLS = 3;
   const joinUrl = `${typeof window !== "undefined" ? window.location.origin : ""}/join/${tableCode}`;
