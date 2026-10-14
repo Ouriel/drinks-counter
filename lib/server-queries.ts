@@ -8,6 +8,7 @@ import {
 } from "@/lib/db";
 import { eq, sql } from "drizzle-orm";
 import type { Drink, MenuItem } from "@/lib/types";
+import { getTableAwards, type TableAward } from "@/lib/gamification";
 
 // Server-only data access shared by the API routes AND the server-rendered pages,
 // so pages can fetch their data during the server render (no client fetch waterfall)
@@ -81,6 +82,7 @@ export type TableStats = {
   members: { nickname: string; total: number }[];
   byCategory: { category: string; count: number }[];
   topDrinks: { name: string; category: string | null; count: number }[];
+  awards: TableAward[];
 };
 
 /** Aggregated table stats, resolved from a public table code or a private session slug. */
@@ -111,6 +113,15 @@ export async function getTableStats(opts: {
       .select({
         nickname: sessions.nickname,
         total: sql<number>`COALESCE(SUM(${drinksTable.count}), 0)::int`,
+        distinct: sql<number>`COUNT(DISTINCT ${drinksTable.name})::int`,
+        alcoholFree: sql<number>`COALESCE(SUM(${drinksTable.count}) FILTER (WHERE ${drinksTable.category} IN ('soft', 'mocktail')), 0)::int`,
+        // Taps are ISO strings, so MIN/MAX on text give the first and last tap.
+        firstTap: sql<
+          string | null
+        >`(SELECT MIN(tap) FROM drinks AS tapped, jsonb_array_elements_text(tapped.tapped_at) AS tap WHERE tapped.session_id = ${sessions.id})`,
+        lastTap: sql<
+          string | null
+        >`(SELECT MAX(tap) FROM drinks AS tapped, jsonb_array_elements_text(tapped.tapped_at) AS tap WHERE tapped.session_id = ${sessions.id})`,
       })
       .from(sessions)
       .leftJoin(drinksTable, eq(drinksTable.sessionId, sessions.id))
@@ -157,5 +168,16 @@ export async function getTableStats(opts: {
       category: row.category,
       count: Number(row.count),
     })),
+    // Only the winners leave the server, not each member's tap times.
+    awards: getTableAwards(
+      statsMembers.map((member) => ({
+        nickname: member.nickname || "???",
+        total: Number(member.total),
+        distinct: Number(member.distinct),
+        alcoholFree: Number(member.alcoholFree),
+        firstTap: member.firstTap,
+        lastTap: member.lastTap,
+      }))
+    ),
   };
 }

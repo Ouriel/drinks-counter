@@ -74,7 +74,8 @@
     "copyLink": "Kopiera länk",
     "linkCopied": "Länk kopierad!",
     "reroll": "Nytt namn",
-    "youAre": "Du är {name}"
+    "youAre": "Du är {name}",
+    "milestone": "Bordet når {count} drinkar!"
   },
   "picker": {
     "category": "Kategori",
@@ -192,7 +193,13 @@
     "people": "{count, plural, one {# person} other {# personer}}",
     "ranking": "Rankning",
     "topDrinks": "Toppdrinkar",
-    "notInTable": "Du är inte med vid något bord än"
+    "notInTable": "Du är inte med vid något bord än",
+    "awards": "Utmärkelser",
+    "awardExplorer": "Upptäckare – flest olika drinkar",
+    "awardHydration": "Vätskehjälte – flest alkoholfria drinkar",
+    "awardPace": "Raket – snabbast tempo",
+    "awardNightOwl": "Nattuggla – sist med att dricka",
+    "awardFirstSip": "Första klunken – drog igång kvällen"
   },
   "animals": {
     "fox": "Räv",

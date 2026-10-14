@@ -78,6 +78,7 @@ export const TableStatsResponse = z.object({
   topDrinks: z.array(
     z.object({ name: z.string(), category: z.nullable(z.string()), count: z.number() })
   ),
+  awards: z.optional(z.array(z.object({ key: z.string(), nickname: z.string() }))),
 });
 
 export const MemberDrinksResponse = z.object({

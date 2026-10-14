@@ -74,7 +74,8 @@
     "copyLink": "Copier le lien",
     "linkCopied": "Lien copié !",
     "reroll": "Nouveau nom",
-    "youAre": "Tu es {name}"
+    "youAre": "Tu es {name}",
+    "milestone": "La table atteint {count} verres !"
   },
   "picker": {
     "category": "Catégorie",
@@ -192,7 +193,13 @@
     "people": "{count, plural, one {# personne} other {# personnes}}",
     "ranking": "Classement",
     "topDrinks": "Boissons favorites",
-    "notInTable": "Tu n'es pas encore dans une table"
+    "notInTable": "Tu n'es pas encore dans une table",
+    "awards": "Récompenses",
+    "awardExplorer": "Explorateur — le plus de boissons différentes",
+    "awardHydration": "Héros de l'hydratation — le plus de boissons sans alcool",
+    "awardPace": "Fusée — le rythme le plus rapide",
+    "awardNightOwl": "Oiseau de nuit — le dernier à boire",
+    "awardFirstSip": "Première gorgée — a lancé la soirée"
   },
   "animals": {
     "fox": "Renard",

@@ -74,7 +74,8 @@
     "copyLink": "Copy link",
     "linkCopied": "Link copied!",
     "reroll": "New name",
-    "youAre": "You're {name}"
+    "youAre": "You're {name}",
+    "milestone": "The table hits {count} drinks!"
   },
   "picker": {
     "category": "Category",
@@ -192,7 +193,13 @@
     "people": "{count, plural, one {# person} other {# people}}",
     "ranking": "Ranking",
     "topDrinks": "Top drinks",
-    "notInTable": "You're not part of a table yet"
+    "notInTable": "You're not part of a table yet",
+    "awards": "Awards",
+    "awardExplorer": "Explorer — most different drinks",
+    "awardHydration": "Hydration hero — most alcohol-free drinks",
+    "awardPace": "Speed demon — fastest pace",
+    "awardNightOwl": "Night owl — last one drinking",
+    "awardFirstSip": "First sip — started the night"
   },
   "animals": {
     "fox": "Fox",

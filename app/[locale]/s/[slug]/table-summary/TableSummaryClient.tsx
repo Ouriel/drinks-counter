@@ -7,16 +7,18 @@ import { useRouter } from "@/i18n/navigation";
 import { CategoryIcon } from "@/lib/category-icon";
 import { Users, Beer } from "lucide-react";
 import { formatNickname } from "@/lib/nicknames";
+import type { TableStats } from "@/lib/server-queries";
+import type { TableAwardKey } from "@/lib/gamification";
 
-type Stats = {
-  code: string;
-  total: number;
-  members: { nickname: string; total: number }[];
-  byCategory: { category: string; count: number }[];
-  topDrinks: { name: string; category: string | null; count: number }[];
+const AWARDS: Record<TableAwardKey, { emoji: string; label: string }> = {
+  explorer: { emoji: "🧭", label: "awardExplorer" },
+  hydration: { emoji: "💧", label: "awardHydration" },
+  pace: { emoji: "⚡", label: "awardPace" },
+  nightOwl: { emoji: "🌙", label: "awardNightOwl" },
+  firstSip: { emoji: "🐣", label: "awardFirstSip" },
 };
 
-export function TableSummaryClient({ slug, stats }: { slug: string; stats: Stats | null }) {
+export function TableSummaryClient({ slug, stats }: { slug: string; stats: TableStats | null }) {
   const router = useRouter();
   const t = useTranslations();
   const tCat = useTranslations("categories");
@@ -103,6 +105,25 @@ export function TableSummaryClient({ slug, stats }: { slug: string; stats: Stats
               </div>
             ))}
           </div>
+
+          {/* Awards */}
+          {stats.awards.length > 0 && (
+            <>
+              <h3 className="text-sm font-bold mb-2">{t("tableSummary.awards")}</h3>
+              <div className="space-y-1 mb-6">
+                {stats.awards.map((award) => (
+                  <div key={award.key} className="flex justify-between gap-2 text-sm px-2 py-1">
+                    <span>
+                      {AWARDS[award.key].emoji} {t(`tableSummary.${AWARDS[award.key].label}`)}
+                    </span>
+                    <span className="font-medium shrink-0">
+                      {formatNickname(award.nickname, tAnimals)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
 
           {/* Top drinks */}
           {stats.topDrinks.length > 0 && (

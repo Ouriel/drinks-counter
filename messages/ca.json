@@ -74,7 +74,8 @@
     "copyLink": "Copia l'enllaç",
     "linkCopied": "Enllaç copiat!",
     "reroll": "Nom nou",
-    "youAre": "Ets {name}"
+    "youAre": "Ets {name}",
+    "milestone": "La taula arriba a {count} begudes!"
   },
   "picker": {
     "category": "Categoria",
@@ -192,7 +193,13 @@
     "people": "{count, plural, one {# persona} other {# persones}}",
     "ranking": "Classificació",
     "topDrinks": "Begudes top",
-    "notInTable": "Encara no ets en cap taula"
+    "notInTable": "Encara no ets en cap taula",
+    "awards": "Premis",
+    "awardExplorer": "Explorador — més begudes diferents",
+    "awardHydration": "Heroi de la hidratació — més begudes sense alcohol",
+    "awardPace": "Coet — el ritme més ràpid",
+    "awardNightOwl": "Mussol nocturn — l'últim a beure",
+    "awardFirstSip": "Primer glop — va començar la nit"
   },
   "animals": {
     "fox": "Guineu",
