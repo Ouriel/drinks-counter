@@ -1,5 +1,7 @@
 # TipsyTap UI/UX Review Report
 
+> **Historical (2026-05-29).** A one-off UI/UX review report, kept for reference. Its 3 issues are fixed and several observations no longer match the app (9 locales, stats "Last 24h", lucide category icons, OpenStreetMap search on Enter). Current behaviour: `README.md`; rules: `AGENTS.md`.
+
 **Date**: 2026-05-29
 **Device**: 375×812 @1x (iPhone-like), mobile, touch
 **URL**: https://tipsy-tap.vercel.app
