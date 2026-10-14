@@ -116,7 +116,7 @@ describe("getNudge additional branches", () => {
   });
 });
 
-describe("getDrinkAchievements branches", () => {
+describe("getDrinkAchievements on legacy rows without tappedAt", () => {
   it("flags explorer at 5+ unique drinks", () => {
     const drinks = Array.from({ length: 5 }, (_, index) => ({
       id: String(index),
@@ -170,8 +170,9 @@ describe("getDrinkAchievements branches", () => {
 
   it("flags the speed round for 3+ drinks within 30 minutes", () => {
     const drinks = [
-      { id: "1", name: "beer", count: 2, category: "beer", createdAt: atHour(20, 0) },
-      { id: "2", name: "shot", count: 1, category: "shot", createdAt: atHour(20, 20) },
+      { id: "1", name: "beer", count: 1, category: "beer", createdAt: atHour(20, 0) },
+      { id: "2", name: "wine", count: 1, category: "wine", createdAt: atHour(20, 10) },
+      { id: "3", name: "shot", count: 1, category: "shot", createdAt: atHour(20, 20) },
     ];
     expect(getDrinkAchievements(drinks).some((item) => item.key === "speedRound")).toBe(true);
   });

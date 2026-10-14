@@ -174,7 +174,7 @@ export function SummaryClient({
 
           {/* Pace */}
           {(() => {
-            const pace = getPace(drinks);
+            const pace = lastTime ? getPace(drinks, new Date(lastTime).getTime()) : null;
             if (!pace) return null;
             return (
               <div className="text-center text-sm text-default-500 mb-4">

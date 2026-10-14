@@ -1,7 +1,18 @@
 import type { Drink } from "@/lib/types";
 import { isAlcoholic } from "@/lib/constants";
 
-type DrinkLike = Pick<Drink, "name" | "count" | "category" | "createdAt">;
+type DrinkLike = Pick<Drink, "name" | "count" | "category" | "createdAt" | "tappedAt">;
+
+// Every individual tap, oldest first. Legacy rows without tappedAt fall back to createdAt.
+function getTaps(drinks: DrinkLike[]): { time: string; category: string }[] {
+  return drinks
+    .flatMap((drink) =>
+      (drink.tappedAt?.length ? drink.tappedAt : drink.createdAt ? [drink.createdAt] : []).map(
+        (time) => ({ time, category: drink.category || "other" })
+      )
+    )
+    .sort((a, b) => a.time.localeCompare(b.time));
+}
 
 // === MILESTONE BADGES ===
 
@@ -123,16 +134,11 @@ export const PACE_LEVELS: { maxDph: number; emoji: string; label: string }[] = [
   { maxDph: Infinity, emoji: "☄️", label: "Send Help" },
 ];
 
-export function getPace(drinks: DrinkLike[]): Pace | null {
-  const firstDrink = drinks.reduce<string | null>(
-    (earliest, drink) =>
-      !earliest || (drink.createdAt && drink.createdAt < earliest)
-        ? drink.createdAt || earliest
-        : earliest,
-    null
-  );
-  if (!firstDrink) return null;
-  const hours = (Date.now() - new Date(firstDrink).getTime()) / 3_600_000;
+/** Pace from the first tap to `until` (live: now; summary: the last tap). */
+export function getPace(drinks: DrinkLike[], until = Date.now()): Pace | null {
+  const firstTap = getTaps(drinks)[0];
+  if (!firstTap) return null;
+  const hours = (until - new Date(firstTap.time).getTime()) / 3_600_000;
   if (hours < 0.08) return null; // less than 5 min
   const total = drinks.reduce((sum, drink) => sum + drink.count, 0);
   const dph = total / hours;
@@ -250,11 +256,14 @@ export function getDrinkAchievements(drinks: DrinkLike[]): Achievement[] {
     });
   }
 
-  // Escalation: started with beer, ended with spirit/cocktail
-  const sorted = [...drinks].sort((a, b) => (a.createdAt || "").localeCompare(b.createdAt || ""));
-  if (sorted.length >= 2) {
-    const firstCat = sorted[0].category || "other";
-    const lastCat = sorted[sorted.length - 1].category || "other";
+  const taps = getTaps(drinks);
+  const firstDrink = taps[0]?.time ?? null;
+  const lastDrink = taps[taps.length - 1]?.time ?? null;
+
+  // Escalation: first tap light (beer/soft), last tap strong (spirit/cocktail/shot)
+  if (taps.length >= 2) {
+    const firstCat = taps[0].category;
+    const lastCat = taps[taps.length - 1].category;
     if (
       (firstCat === "beer" || firstCat === "soft") &&
       (lastCat === "spirit" || lastCat === "cocktail" || lastCat === "shot")
@@ -266,20 +275,6 @@ export function getDrinkAchievements(drinks: DrinkLike[]): Achievement[] {
       });
     }
   }
-
-  // Time-based
-  const firstDrink = drinks.reduce<string | null>(
-    (earliest, drink) =>
-      !earliest || (drink.createdAt && drink.createdAt < earliest)
-        ? drink.createdAt || earliest
-        : earliest,
-    null
-  );
-  const lastDrink = drinks.reduce<string | null>(
-    (latest, drink) =>
-      !latest || (drink.createdAt && drink.createdAt > latest) ? drink.createdAt || latest : latest,
-    null
-  );
 
   if (lastDrink) {
     const lastHour = new Date(lastDrink).getHours();
@@ -338,19 +333,21 @@ export function getDrinkAchievements(drinks: DrinkLike[]): Achievement[] {
 // === PERSONAL BEST ===
 
 const PB_KEY = "tipsytap_personal_best";
+const PB_SLUG_KEY = "tipsytap_personal_best_slug"; // session that holds the record
 
 export function getPersonalBest(): number {
   if (typeof window === "undefined") return 0;
   return parseInt(localStorage.getItem(PB_KEY) || "0", 10);
 }
 
-export function checkPersonalBest(total: number): boolean {
+/** Records a new best; true only when `slug` takes the record from an earlier session. */
+export function checkPersonalBest(total: number, slug: string): boolean {
   const pb = getPersonalBest();
-  if (total > pb && total > 0) {
-    localStorage.setItem(PB_KEY, String(total));
-    return true;
-  }
-  return false;
+  if (total <= pb) return false;
+  localStorage.setItem(PB_KEY, String(total));
+  const holder = localStorage.getItem(PB_SLUG_KEY);
+  localStorage.setItem(PB_SLUG_KEY, slug);
+  return pb > 0 && holder !== slug;
 }
 
 // === LIGHTHEARTED NUDGES ===

@@ -97,8 +97,8 @@ async function apiFetch<T>(
   schema: z.ZodType<T>,
   init?: RequestInit
 ): Promise<T | null> {
-  const res = await fetch(url, init);
-  if (!res.ok) return null;
+  const res = await fetch(url, init).catch(() => null); // offline = failed request
+  if (!res?.ok) return null;
   const data = await res.json();
   return schema.parse(data);
 }

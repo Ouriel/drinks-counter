@@ -15,6 +15,7 @@ const NUDGE_KEY: Record<string, string> = { water: "water", taxi: "taxi", info: 
 
 function notifyGamification(
   translate: Translate,
+  slug: string,
   newTotal: number,
   prevTotal: number,
   addedCategory?: string | null
@@ -26,7 +27,7 @@ function notifyGamification(
       timeout: 15000,
     });
   }
-  const isPersonalBest = checkPersonalBest(newTotal);
+  const isPersonalBest = checkPersonalBest(newTotal, slug);
   if (isPersonalBest && !badge) {
     toast(`🏅 ${translate("toast.personalBest")}`, {
       description: translate("toast.personalBestDesc", { count: newTotal }),
@@ -47,7 +48,9 @@ export function useOptimisticDrinks(
   initialDrinks: Drink[] = []
 ) {
   const [drinks, setDrinks] = useState<Drink[]>(initialDrinks);
-  const totalRef = useRef(initialDrinks.reduce((sum, drink) => sum + drink.count, 0));
+  const initialTotal = initialDrinks.reduce((sum, drink) => sum + drink.count, 0);
+  const totalRef = useRef(initialTotal);
+  const peakRef = useRef(initialTotal); // highest total on this page
   const pendingOps = useRef(0);
 
   const fetchDrinks = useCallback(async () => {
@@ -56,7 +59,11 @@ export function useOptimisticDrinks(
   }, [slug]);
 
   function triggerGamification(newTotal: number, category?: string | null) {
-    const earned = notifyGamification(translate, newTotal, totalRef.current, category);
+    // Only a new high fires badges, nudges and the PB, so undo + re-tap stays quiet.
+    const earned =
+      newTotal > peakRef.current &&
+      notifyGamification(translate, slug, newTotal, peakRef.current, category);
+    peakRef.current = Math.max(peakRef.current, newTotal);
     totalRef.current = newTotal;
     if (earned && onBadge) onBadge();
   }
@@ -102,7 +109,13 @@ export function useOptimisticDrinks(
       const data = await api.addDrink({ slug, name, category });
       if (!data) {
         totalRef.current = Math.max(0, totalRef.current - 1);
-        fetchDrinks();
+        setDrinks((prev) =>
+          existing
+            ? prev.map((item) =>
+                item.id === existing.id ? { ...item, count: item.count - 1 } : item
+              )
+            : prev.filter((item) => !(item.id.startsWith("temp") && item.name === name))
+        );
         return;
       }
 
@@ -141,6 +154,9 @@ export function useOptimisticDrinks(
   }
 
   async function decrement(drink: Drink) {
+    // ponytail: undo is ignored until the add's POST returns the real id (PATCH needs a uuid).
+    // Queue the PATCH behind the pending add if a sub-second undo turns out to matter.
+    if (drink.id.startsWith("temp")) return;
     vibrate();
     const prevCount = drink.count;
     totalRef.current = Math.max(0, totalRef.current - 1);
@@ -156,7 +172,10 @@ export function useOptimisticDrinks(
 
     await withPendingOp(async () => {
       const data = await api.patchDrink({ slug, drinkId: drink.id, delta: -1 });
-      if (!data) rollback(drink, prevCount);
+      if (!data) {
+        totalRef.current += 1;
+        rollback(drink, prevCount);
+      }
     });
   }
 
