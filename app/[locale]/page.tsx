@@ -191,7 +191,7 @@ function HomeContent() {
       setMenuItems(allItems);
       setUserStep("review");
     } else if (failed === files.length) {
-      toast.danger(t("toast.menuScanFailed")); // stay on this step: retry or skip
+      toast.danger(t("toast.menuScanFailed"), { timeout: 5000 }); // stay on this step: retry or skip
     } else {
       createSession([]);
     }
@@ -221,7 +221,7 @@ function HomeContent() {
       router.push(`/s/${slug}`);
     } catch {
       setCreating(false);
-      toast.danger(t("session.couldNotCreate"));
+      toast.danger(t("session.couldNotCreate"), { timeout: 5000 });
     }
   };
 

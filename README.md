@@ -37,7 +37,7 @@ Every menu you scan, and every new drink you add, joins the bar's **shared menu*
 ### Tables (groups)
 
 - Create a **table** to count with friends: you get a 6-character code and a random animal nickname (🦊 Fox, 🐧 Penguin…). You can re-roll the nickname up to 3 times.
-- Friends join with the code, a `/join/CODE` link or a QR code. A join link reuses your latest session on that phone if it started less than 12 h ago, otherwise it starts a new one. Joining gives you the bar and menu of the table (after a reload when you type the code on your session page). Anyone can leave a table.
+- Friends join with the code, a `/join/CODE` link or a QR code. A join link reuses your latest session on that phone if it started less than 12 h ago, otherwise it starts a new one. Joining gives you the bar and menu of the table. Anyone can leave a table.
 - A live **leaderboard** refreshes every 30 s. Tap a member to see their drinks. The **Table Summary** page shows the group total, ranking, categories and top drinks.
 
 ### Coming back, stats and admin

@@ -15,6 +15,9 @@ vi.mock("@heroui/react", async (importOriginal) => {
   const real = await importOriginal<typeof import("@heroui/react")>();
   return { ...real, toast: Object.assign(vi.fn(), { danger: vi.fn() }) };
 });
+vi.mock("@/lib/api", () => ({
+  api: { createSession: vi.fn(async () => null), searchMenus: vi.fn(async () => ({ menus: [] })) },
+}));
 vi.mock("browser-image-compression", () => ({
   default: vi.fn(async () => {
     throw new Error("unsupported image"); // e.g. a HEIC photo
@@ -40,8 +43,39 @@ describe("home menu photo", () => {
       input.dispatchEvent(new Event("change", { bubbles: true }));
     });
     await act(() =>
-      vi.waitFor(() => expect(toast.danger).toHaveBeenCalledWith(messages.toast.menuScanFailed))
+      vi.waitFor(() =>
+        expect(toast.danger).toHaveBeenCalledWith(messages.toast.menuScanFailed, { timeout: 5000 })
+      )
     );
     expect(container.textContent).not.toContain("Reading menu…");
+  });
+
+  it("shows a failed session creation for 5 s", async () => {
+    window.history.replaceState(null, "", "/en?slug=fizzy-julep");
+    const container = document.createElement("div");
+    await act(async () => {
+      createRoot(container).render(
+        <NextIntlClientProvider locale="en" messages={messages}>
+          <Home />
+        </NextIntlClientProvider>
+      );
+    });
+    const input = container.querySelector<HTMLInputElement>('input:not([type="file"])')!;
+    const setValue = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!;
+    await act(async () => {
+      setValue.call(input, "le salon");
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    const skip = [...container.querySelectorAll("button")].find(
+      (button) => button.textContent === messages.bar.skipManual
+    )!;
+    await act(async () => skip.click());
+    await act(() =>
+      vi.waitFor(() =>
+        expect(toast.danger).toHaveBeenCalledWith(messages.session.couldNotCreate, {
+          timeout: 5000,
+        })
+      )
+    );
   });
 });

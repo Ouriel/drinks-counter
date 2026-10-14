@@ -122,7 +122,7 @@
     "noBars": "Noch keine Bars",
     "active": "Gerade aktiv",
     "last24h": "Letzte 24 Std.",
-    "retention": "Sessions und ihre Drinks werden 2 Tage nach dem Start gelöscht – diese Zahlen zeigen nur die letzten Abende.",
+    "retention": "Eine Session endet 48 Std. nach dem Start und wird mit ihren Drinks bei der nächsten täglichen Bereinigung gelöscht (insgesamt 2 bis 3 Tage). Außer den Bars zeigen diese Zahlen also nur die letzten 2 bis 3 Tage.",
     "avgPerSession": "~{avg} Getränke pro Sitzung im Durchschnitt"
   },
   "badges": {

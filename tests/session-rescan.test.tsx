@@ -14,9 +14,13 @@ vi.mock("@/i18n/navigation", () => ({
 }));
 vi.mock("@heroui/react", async (importOriginal) => {
   const real = await importOriginal<typeof import("@heroui/react")>();
-  // Like the real toast.promise, the mock observes the promise (no unhandled rejection).
-  const promise = vi.fn((scan: Promise<unknown>) => void scan.catch(() => {}));
-  return { ...real, toast: Object.assign(vi.fn(), { danger: vi.fn(), promise }) };
+  return {
+    ...real,
+    toast: Object.assign(
+      vi.fn(() => "scan-toast"),
+      { danger: vi.fn(), update: vi.fn() }
+    ),
+  };
 });
 vi.mock("@/lib/api", () => ({
   api: { parseMenu: vi.fn(), getDrinks: vi.fn(), getTableRanking: vi.fn() },
@@ -46,11 +50,15 @@ async function snapMenu() {
   await act(async () => {
     input.dispatchEvent(new Event("change", { bubbles: true }));
   });
-  const [scan, options] = vi.mocked(toast.promise).mock.calls[0] ?? [];
-  return { scan: scan as Promise<number>, options };
+  await act(() => vi.waitFor(() => expect(toast.update).toHaveBeenCalled()));
+  return {
+    loading: vi.mocked(toast).mock.calls[0],
+    settled: vi.mocked(toast.update).mock.calls[0],
+  };
 }
 
 // B7 — re-scanning the menu from a session: persist it, count only new drinks, show progress.
+// The result toast stays 5 s (toast.promise would hard-code HeroUI's 4 s).
 describe("session menu re-scan", () => {
   it("sends the slug so the server saves it, and counts only the new drinks", async () => {
     vi.mocked(api.parseMenu).mockResolvedValue({
@@ -59,16 +67,26 @@ describe("session menu re-scan", () => {
         { name: "spritz", category: "cocktail" },
       ],
     });
-    const { scan, options } = await snapMenu();
+    const { loading, settled } = await snapMenu();
     expect(vi.mocked(api.parseMenu).mock.calls[0][0].get("slug")).toBe("fizzy-julep");
-    expect(options).toMatchObject({ loading: expect.stringContaining("Reading menu") });
-    await expect(scan).resolves.toBe(1); // "1 drink imported", not 2
+    expect(loading).toEqual([
+      expect.stringContaining("Reading menu"),
+      { isLoading: true, timeout: 0 },
+    ]);
+    expect(settled).toEqual([
+      "scan-toast",
+      "📸 1 drinks imported", // 1, not 2: beer was already on the menu
+      { isLoading: false, timeout: 5000, variant: "success" },
+    ]);
   });
 
   it("surfaces a failed scan instead of doing nothing", async () => {
     vi.mocked(api.parseMenu).mockResolvedValue(null);
-    const { scan, options } = await snapMenu();
-    await expect(scan).rejects.toThrow();
-    expect(options).toMatchObject({ error: messages.toast.menuScanFailed });
+    const { settled } = await snapMenu();
+    expect(settled).toEqual([
+      "scan-toast",
+      messages.toast.menuScanFailed,
+      { isLoading: false, timeout: 5000, variant: "danger" },
+    ]);
   });
 });

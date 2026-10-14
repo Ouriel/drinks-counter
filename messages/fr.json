@@ -122,7 +122,7 @@
     "noBars": "Pas encore de bars",
     "active": "Actives maintenant",
     "last24h": "Dernières 24 h",
-    "retention": "Les sessions et leurs boissons sont supprimées 2 jours après leur début : ces chiffres ne couvrent que les dernières soirées.",
+    "retention": "Une session se termine 48 h après son début, puis elle est supprimée avec ses boissons au nettoyage quotidien suivant (2 à 3 jours en tout). Hormis les bars, ces chiffres ne couvrent donc que les 2 à 3 derniers jours.",
     "avgPerSession": "~{avg} verres par session en moyenne"
   },
   "badges": {
