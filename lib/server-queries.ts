@@ -63,7 +63,8 @@ export async function getSessionDrinks(slug: string): Promise<Drink[]> {
     .select({ drink: drinksTable })
     .from(drinksTable)
     .innerJoin(sessions, eq(drinksTable.sessionId, sessions.id))
-    .where(eq(sessions.slug, slug));
+    .where(eq(sessions.slug, slug))
+    .orderBy(drinksTable.createdAt, drinksTable.id);
   return rows.map((row) => ({
     id: row.drink.id,
     name: row.drink.name,

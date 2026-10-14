@@ -16,7 +16,11 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Session expired or not found" }, { status: 404 });
   }
 
-  const items = await db.select().from(drinks).where(eq(drinks.sessionId, session.id));
+  const items = await db
+    .select()
+    .from(drinks)
+    .where(eq(drinks.sessionId, session.id))
+    .orderBy(drinks.createdAt, drinks.id);
 
   return NextResponse.json({ drinks: items, sessionId: session.id });
 }
@@ -42,25 +46,24 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Session expired" }, { status: 404 });
   }
 
-  // Atomic upsert: increment if exists, insert if not
+  // Atomic upsert on (session_id, name): concurrent first taps can't create duplicate rows.
+  // Names are stored lowercased by sanitizeDrinkName.
   const now = new Date().toISOString();
-  const [existing] = await db
-    .update(drinks)
-    .set({
-      count: sql`${drinks.count} + 1`,
-      tappedAt: sql`${drinks.tappedAt} || ${JSON.stringify([now])}::jsonb`,
-    })
-    .where(and(eq(drinks.sessionId, session.id), sql`lower(${drinks.name}) = ${cleanName}`))
-    .returning();
-
-  if (existing) {
-    return NextResponse.json({ count: existing.count });
-  }
-
   const [drink] = await db
     .insert(drinks)
     .values({ sessionId: session.id, name: cleanName, category: category || null, tappedAt: [now] })
+    .onConflictDoUpdate({
+      target: [drinks.sessionId, drinks.name],
+      set: {
+        count: sql`${drinks.count} + 1`,
+        tappedAt: sql`${drinks.tappedAt} || ${JSON.stringify([now])}::jsonb`,
+      },
+    })
     .returning();
+
+  if (drink.count > 1) {
+    return NextResponse.json({ count: drink.count });
+  }
 
   // Add to bar menu if session has one and item isn't already in it
   if (session.barMenuId) {
