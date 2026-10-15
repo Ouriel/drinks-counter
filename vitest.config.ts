@@ -5,7 +5,7 @@ export default defineConfig({
   test: {
     environment: "node",
     // .agents holds local, untracked plans and review artifacts.
-    exclude: [...configDefaults.exclude, ".agents/**"],
+    exclude: [...configDefaults.exclude, ".agents/**", "e2e/**"],
     restoreMocks: true,
     unstubEnvs: true,
     unstubGlobals: true,
