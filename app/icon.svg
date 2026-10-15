@@ -1,13 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="100%" height="100%">
-  <rect width="192" height="192" rx="42" fill="#030712"/>
+  <rect width="192" height="192" rx="42" fill="#060607"/>
   <!-- A tipsy pint: tilted glass, foam, bubbles, and two wobble lines -->
   <g transform="rotate(-14 96 104)">
-    <path d="M60 54L132 54L123 154Q122 162 114 162L78 162Q70 162 69 154Z" fill="#f59e0b"/>
+    <path d="M60 54L132 54L123 154Q122 162 114 162L78 162Q70 162 69 154Z" fill="#fe9a00"/>
     <path d="M56 58Q58 38 78 42Q90 30 106 38Q122 30 134 44Q142 48 138 58Z" fill="#fff7e6"/>
     <circle cx="86" cy="112" r="6" fill="#fff7e6" opacity="0.85"/>
     <circle cx="104" cy="92" r="4.5" fill="#fff7e6" opacity="0.85"/>
     <circle cx="100" cy="134" r="3.5" fill="#fff7e6" opacity="0.85"/>
   </g>
-  <path d="M146 66Q156 76 150 90" fill="none" stroke="#f59e0b" stroke-width="5" stroke-linecap="round" opacity="0.6"/>
-  <path d="M158 56Q172 74 162 96" fill="none" stroke="#f59e0b" stroke-width="5" stroke-linecap="round" opacity="0.35"/>
+  <path d="M146 66Q156 76 150 90" fill="none" stroke="#fe9a00" stroke-width="5" stroke-linecap="round" opacity="0.85"/>
+  <path d="M158 56Q172 74 162 96" fill="none" stroke="#fe9a00" stroke-width="5" stroke-linecap="round" opacity="0.5"/>
 </svg>

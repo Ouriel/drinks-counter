@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { Button, Card, Chip, Popover, toast } from "@heroui/react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { Share2, Info, Medal, Clock } from "lucide-react";
 import { CATEGORY_EMOJI } from "@/lib/constants";
 import { CategoryIcon } from "@/lib/category-icon";
+import { Logo } from "@/components/Logo";
 import { titleCase } from "@/lib/sanitize";
 import {
   getAllEarnedBadges,
@@ -173,7 +173,7 @@ export function SummaryClient({
 
           {/* Header */}
           <div className="text-center mb-6">
-            <Image src="/icon.svg" alt="" width={48} height={48} className="mx-auto mb-2" />
+            <Logo size={48} className="mx-auto mb-2" />
             <h1 className="text-2xl font-bold">{t("summary.title")}</h1>
             {barName && <p className="text-foreground/70 mt-1">{titleCase(barName)}</p>}
             {firstDrink && (
