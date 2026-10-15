@@ -128,7 +128,7 @@ Before you call work done, `lint`, `build` and `test` must all be green: CI runs
 
 ### Security and privacy
 
-- The session slug is the only write key. Never put a session URL or slug in a share, invite or share image (Share sends `/join/<CODE>` or the app origin; the image cards in `lib/share-card.ts` carry neither the slug nor the table's join code), and add no log line with a slug. Known exception: `POST /api/sessions` logs a colliding slug.
+- The session slug is the only write key. Never put a session URL or slug in a share, invite or share image (Share sends `/join/<CODE>` or the app origin; the image cards in `lib/share-card.ts` carry neither the slug nor the table's join code), and add no log line with a slug (a slug collision logs the attempt number only).
 - Generated slugs are `<adjective>-<noun>-<4 chars>` via `crypto.randomInt`; a noun can contain a dash (`mai-tai`). By owner decision, custom names get no suffix: they stay as typed, lowercased. A taken name falls back to a generated slug.
 - Protected routes (admin, cron) check the secret with `verifySecret()` from `lib/auth.ts` (constant time) before any other logic.
 - Keep the headers in `next.config.ts`: `frame-ancestors 'none'; base-uri 'self'; object-src 'none'; form-action 'self'` and `nosniff`. Add no `script-src` without nonces, because Next inlines scripts.
