@@ -53,4 +53,20 @@ describe("share card", () => {
     expect(fitFont(ctx, "x".repeat(60), 40, 400)).toBeLessThan(40);
     expect(fitFont(ctx, "le salon", 40, 400)).toBe(40);
   });
+
+  it("fits a table's 3 ranking lines and 5 awards when there are no badges", () => {
+    const { ctx, drawn } = fakeContext();
+    const lines = [
+      "👑 Fox · 6",
+      "2. Owl · 4",
+      "3. Bee · 0",
+      "🧭 a",
+      "💧 b",
+      "⚡ c",
+      "🌙 d",
+      "🐣 e",
+    ];
+    drawShareCard(ctx, { ...card, lines, emojis: [] });
+    expect(drawn.map((entry) => entry.text)).toEqual(expect.arrayContaining(lines));
+  });
 });

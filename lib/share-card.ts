@@ -8,7 +8,7 @@ export type ShareCard = {
   total: number;
   totalLabel: string; // "drinks total"
   detail: string; // "⏱ 3h45m", or ""
-  lines: string[]; // top drinks, or ranking and awards (6 at most)
+  lines: string[]; // top drinks, or ranking and awards (6 at most, 8 without emojis)
   emojis: string[]; // badges earned (10 at most)
   tint: string; // the session colour at this total, see getSessionHue
 };
@@ -54,9 +54,12 @@ export function drawShareCard(ctx: CanvasRenderingContext2D, card: ShareCard) {
   write(String(card.total), 590, 300, AMBER, 800);
   write(card.totalLabel, 670, 48, "#ffffff", 600);
   if (card.detail) write(card.detail, 740, 40, "rgba(255,255,255,0.7)");
-  card.lines
-    .slice(0, 6)
-    .forEach((line, index) => write(line, 850 + index * 62, 44, "#ffffff", 500));
+  // Without a badge row (table cards) there is room for 8 lines: 3 ranking + 5 awards.
+  const lines = card.lines.slice(0, card.emojis.length ? 6 : 8);
+  const spacing = lines.length > 6 ? 52 : 62;
+  lines.forEach((line, index) =>
+    write(line, 850 + index * spacing, lines.length > 6 ? 40 : 44, "#ffffff", 500)
+  );
   if (card.emojis.length) write(card.emojis.slice(0, 10).join(" "), 1240, 64, "#ffffff");
   write("tipsy-tap.vercel.app", 1310, 30, "rgba(255,255,255,0.5)");
 }
