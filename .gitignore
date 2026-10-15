@@ -9,3 +9,7 @@ out/
 next-env.d.ts
 perf-artifacts/
 coverage/
+
+# Playwright output
+/test-results/
+/playwright-report/

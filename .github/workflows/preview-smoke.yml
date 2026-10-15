@@ -1,0 +1,46 @@
+# Smoke test of every successful Vercel preview deployment (Neon `preview` branch, never
+# prod). Informational, not a required check. Needs the repo secret
+# VERCEL_AUTOMATION_BYPASS_SECRET (Vercel > Settings > Deployment Protection >
+# Protection Bypass for Automation); without it the job skips with a notice.
+name: preview-smoke
+
+on:
+  deployment_status:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    if: >-
+      github.event.deployment_status.state == 'success' &&
+      github.event.deployment_status.environment == 'Preview'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      VERCEL_PREVIEW_URL: ${{ github.event.deployment_status.target_url }}
+      VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+    steps:
+      - id: secret
+        run: |
+          if [ -z "$VERCEL_AUTOMATION_BYPASS_SECRET" ]; then
+            echo "::notice::VERCEL_AUTOMATION_BYPASS_SECRET is not set: preview smoke test skipped."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.secret.outputs.ready == 'true'
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.deployment.sha }}
+      - if: steps.secret.outputs.ready == 'true'
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - if: steps.secret.outputs.ready == 'true'
+        run: npm ci
+      - if: steps.secret.outputs.ready == 'true'
+        run: npx playwright install --with-deps chromium
+      - if: steps.secret.outputs.ready == 'true'
+        run: npm run test:e2e
