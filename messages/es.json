@@ -5,7 +5,7 @@
   },
   "home": {
     "startCounting": "Empezar a contar",
-    "sessionCode": "Retomar una sesión o elegir un nombre…",
+    "sessionCode": "Retoma o nombra una sesión…",
     "goToSession": "Ir a la sesión",
     "recentSessions": "Sesiones recientes",
     "stats": "Stats",

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Button, Card, Chip, Popover, toast } from "@heroui/react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { Share2, Info, Medal, Clock } from "lucide-react";
 import { CATEGORY_EMOJI } from "@/lib/constants";
@@ -16,6 +16,7 @@ import {
   getPersonalBest,
 } from "@/lib/gamification";
 import { useIsHydrated } from "@/lib/use-is-hydrated";
+import { formatNightDate } from "@/lib/dates";
 import type { Drink } from "@/lib/types";
 
 export function SummaryClient({
@@ -31,6 +32,7 @@ export function SummaryClient({
 }) {
   const router = useRouter();
   const t = useTranslations();
+  const locale = useLocale();
   const tCat = useTranslations("categories");
   const [showTimeline, setShowTimeline] = useState(false);
   // localStorage (personal best) and the viewer's time zone/locale (date, hour-based
@@ -157,7 +159,7 @@ export function SummaryClient({
             {barName && <p className="text-foreground/70 mt-1">{titleCase(barName)}</p>}
             {firstDrink && (
               <p className="text-sm text-default-500 mt-1">
-                {hydrated && `${new Date(firstDrink).toLocaleDateString()} · `}
+                {hydrated && `${formatNightDate(firstDrink, locale)} · `}
                 {durationStr}
               </p>
             )}

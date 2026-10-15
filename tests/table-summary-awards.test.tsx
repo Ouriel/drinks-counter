@@ -30,9 +30,14 @@ describe("table summary awards", () => {
         />
       </NextIntlClientProvider>
     );
-    expect(html).toContain(messages.tableSummary.awardExplorer);
-    expect(html).toContain(messages.tableSummary.awardNightOwl);
+    // Cards show "Explorer" and "most different drinks" on separate lines (design review L8).
+    for (const part of [
+      ...messages.tableSummary.awardExplorer.split(" — "),
+      ...messages.tableSummary.awardNightOwl.split(" — "),
+    ]) {
+      expect(html).toContain(part);
+    }
     expect(html).toContain("Fox");
-    expect(html).not.toContain(messages.tableSummary.awardPace);
+    expect(html).not.toContain(messages.tableSummary.awardPace.split(" — ")[0]);
   });
 });

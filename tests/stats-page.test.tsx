@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderToString } from "react-dom/server";
-import { db, sessions, drinks } from "@/lib/db";
+import { db, sessions, drinks, barMenus } from "@/lib/db";
 import StatsPage from "@/app/[locale]/stats/page";
 import { resetDb } from "./helpers/test-db";
 
@@ -43,5 +43,18 @@ describe("B8: stats page is honest about its window", () => {
     expect(tile(html, "last24h")).toBe("1");
     expect(html).toContain("[stats.retention]");
     expect(html).not.toContain("[stats.thisWeek]"); // always equal to the total: dropped
+  });
+});
+
+// Design review B5: "Top bars" listed bars that have no menu yet ("0 items").
+describe("stats top bars", () => {
+  it("leaves out bars with an empty menu", async () => {
+    await db.insert(barMenus).values([
+      { barName: "le salon", items: [{ name: "ipa", category: "beer" }] },
+      { barName: "kenavo", items: [] },
+    ]);
+    const html = renderToString(await StatsPage());
+    expect(html).toContain("le salon");
+    expect(html).not.toContain("kenavo");
   });
 });

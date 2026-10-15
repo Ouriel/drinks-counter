@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { Button, Popover, Spinner, toast } from "@heroui/react";
 import { useTranslations } from "next-intl";
-import { useTheme } from "next-themes";
 import { Home, Share2, ChartColumn, Users, Info } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
 import { ThemeSwitch } from "@/lib/theme-switch";
@@ -187,14 +186,14 @@ export function SessionClient({
 
   const total = drinks.reduce((sum, drink) => sum + drink.count, 0);
   const pace = getPace(drinks);
-  const { resolvedTheme } = useTheme();
-  // Until hydrated, assume the dark default theme (matches `defaultTheme="dark"` and the
-  // server-rendered <html class="dark">). Reading resolvedTheme during SSR/first render
-  // would yield light colors and mismatch the client → React #418.
-  const isDark = mounted ? resolvedTheme === "dark" : true;
-  const bgColor = getSessionHue(total, isDark);
-  const tipsyStyle = getTipsyStyle(total);
-  const iconColor = getIconColor(total, isDark);
+  // Both themes' colours go out as CSS variables and globals.css picks one with .dark/.light,
+  // so the server HTML is right in either theme (no dark flash in light mode, no #418).
+  const sessionColors = {
+    "--session-bg-dark": getSessionHue(total, true),
+    "--session-bg-light": getSessionHue(total, false),
+    "--tipsy-icon-dark": getIconColor(total, true),
+    "--tipsy-icon-light": getIconColor(total, false),
+  } as React.CSSProperties;
 
   if (notFound) {
     return (
@@ -206,14 +205,8 @@ export function SessionClient({
 
   return (
     <div
-      className={`min-h-screen p-4 pb-[calc(6rem+env(safe-area-inset-bottom))] transition-all duration-1000 text-foreground ${total >= 15 ? "tipsy-vignette" : ""}`}
-      style={
-        {
-          backgroundColor: bgColor,
-          ...tipsyStyle,
-          "--tipsy-icon": iconColor,
-        } as React.CSSProperties
-      }
+      className={`session-colors min-h-screen p-4 pb-[calc(6rem+env(safe-area-inset-bottom))] transition-all duration-1000 text-foreground ${total >= 15 ? "tipsy-vignette" : ""}`}
+      style={sessionColors}
     >
       {/* Header */}
       <div className="mb-6 relative">
@@ -362,7 +355,12 @@ export function SessionClient({
         </div>
       ) : (
         <>
-          <div className="space-y-3">
+          {/* Only the drink list gets tipsy: header, picker and the Add button stay put. */}
+          <div
+            className="space-y-3 transition-transform duration-1000"
+            style={getTipsyStyle(total)}
+            data-drink-list
+          >
             {(() => {
               const maxCount =
                 drinks.length > 1 ? Math.max(...drinks.map((item) => item.count)) : 0;

@@ -561,10 +561,10 @@ export default function AdminPage() {
           <section>
             <h2 className="text-lg font-bold mb-3">Color &amp; motion (by total drinks)</h2>
             <p className="text-xs text-default-500 mb-3">
-              The session screen reacts to how many drinks have been logged: the background and icon
-              tint shift from cool/amber to warm (capped at 20 drinks), and the page tilts more as
-              the count climbs (full tilt at 12, switching side with each drink from 7+; the text
-              shadow keeps growing).
+              The session screen reacts to how many drinks have been logged: the background goes
+              from night blue through violet to amber and the icon tint warms (capped at 20 drinks),
+              and the drink list tilts more as the count climbs (full tilt at 12, switching side
+              with each drink from 7+).
             </p>
             <div className="flex gap-2 mb-4">
               {[0, 5, 10, 15, 20].map((count) => (
@@ -583,7 +583,7 @@ export default function AdminPage() {
               {[
                 {
                   name: "Background hue",
-                  how: "Cool blue → warm amber as drinks go from 0 to 20.",
+                  how: "Night blue → violet → amber as drinks go from 0 to 20.",
                 },
                 {
                   name: "Icon tint",
@@ -591,11 +591,11 @@ export default function AdminPage() {
                 },
                 {
                   name: "Tilt & shadow",
-                  how: "Page tilts after 3 drinks, more at 7+ and 12+; a text shadow grows from 7+.",
+                  how: "The drink list tilts after 3 drinks, more at 7+ and 12+; a light text shadow from 7+.",
                 },
                 {
                   name: "Vignette",
-                  how: "A pulsing dark vignette frames the page at 15+ (it tilts and scrolls with it).",
+                  how: "A pulsing dark vignette frames the screen at 15+.",
                 },
               ].map((effect) => (
                 <div

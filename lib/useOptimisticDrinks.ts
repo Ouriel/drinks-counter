@@ -29,17 +29,22 @@ function notifyGamification(
         .filter(Boolean)
         .join(" · "),
       timeout: 10000,
+      indicator: null, // the emoji is the icon
     });
   }
   if (isPersonalBest && !badge) {
     toast(`🏅 ${translate("toast.personalBest")}`, {
       description: translate("toast.personalBestDesc", { count: newTotal }),
       timeout: 10000,
+      indicator: null,
     });
   }
   const nudge = getNudge(newTotal, prevTotal, addedCategory);
   if (nudge) {
-    toast(`${nudge.emoji} ${translate(`nudges.${NUDGE_KEY[nudge.type]}`)}`, { timeout: 10000 });
+    toast(`${nudge.emoji} ${translate(`nudges.${NUDGE_KEY[nudge.type]}`)}`, {
+      timeout: 10000,
+      indicator: null,
+    });
   }
   return !!badge || isPersonalBest;
 }

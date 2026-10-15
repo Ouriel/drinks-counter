@@ -5,7 +5,7 @@
   },
   "home": {
     "startCounting": "Start counting",
-    "sessionCode": "Resume a session or pick a custom name…",
+    "sessionCode": "Resume or name a session…",
     "goToSession": "Go to session",
     "recentSessions": "Recent sessions",
     "stats": "Stats",

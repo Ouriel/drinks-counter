@@ -18,6 +18,9 @@ vi.mock("@/lib/api", () => ({
 
 const NOW = Date.parse("2026-10-14T22:00:00Z");
 const minutesAgo = (minutes: number) => new Date(NOW - minutes * 60_000).toISOString();
+const nine: Drink[] = [
+  { id: "d1", name: "ipa", count: 9, category: "beer", createdAt: minutesAgo(90) },
+];
 
 async function open(initialDrinks: Drink[], notFound = false) {
   const container = document.createElement("div");
@@ -70,5 +73,23 @@ describe("opening a session", () => {
       vi.advanceTimersByTime(2 * 60_000);
     });
     expect(container.textContent).toContain("☄️"); // 1 drink in 6 min → "Send Help"
+  });
+
+  it("sets both theme colours as CSS variables, so light mode never flashes dark", async () => {
+    const container = await open(nine);
+    const root = container.firstElementChild as HTMLElement;
+    expect(root.style.backgroundColor).toBe("");
+    expect(root.style.getPropertyValue("--session-bg-light")).toContain("hsl(");
+    expect(root.style.getPropertyValue("--session-bg-dark")).toContain("hsl(");
+  });
+
+  it("tilts only the drink list, not the page, the picker or the Add button", async () => {
+    const container = await open(nine);
+    const root = container.firstElementChild as HTMLElement;
+    const list = container
+      .querySelector(`[aria-label="${messages.drinkCard.add}"]`)!
+      .closest("[data-drink-list]") as HTMLElement;
+    expect(root.style.transform).toBe("");
+    expect(list.style.transform).toContain("rotate");
   });
 });

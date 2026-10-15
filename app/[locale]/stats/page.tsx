@@ -47,6 +47,7 @@ export default async function StatsPage() {
     db
       .select()
       .from(barMenus)
+      .where(sql`jsonb_array_length(${barMenus.items}) > 0`) // a bar with no menu yet isn't a "top bar"
       .orderBy(desc(sql`jsonb_array_length(${barMenus.items})`))
       .limit(10),
   ]);

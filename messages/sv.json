@@ -5,7 +5,7 @@
   },
   "home": {
     "startCounting": "Börja räkna",
-    "sessionCode": "Återuppta en session eller välj ett eget namn…",
+    "sessionCode": "Fortsätt eller namnge en session…",
     "goToSession": "Gå till session",
     "recentSessions": "Senaste sessioner",
     "stats": "Statistik",

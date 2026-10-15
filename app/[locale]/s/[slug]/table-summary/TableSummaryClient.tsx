@@ -110,17 +110,23 @@ export function TableSummaryClient({ slug, stats }: { slug: string; stats: Table
           {stats.awards.length > 0 && (
             <>
               <h3 className="text-sm font-bold mb-2">{t("tableSummary.awards")}</h3>
-              <div className="space-y-1 mb-6">
-                {stats.awards.map((award) => (
-                  <div key={award.key} className="flex justify-between gap-2 text-sm px-2 py-1">
-                    <span>
-                      {AWARDS[award.key].emoji} {t(`tableSummary.${AWARDS[award.key].label}`)}
-                    </span>
-                    <span className="font-medium shrink-0">
-                      {formatNickname(award.nickname, tAnimals)}
-                    </span>
-                  </div>
-                ))}
+              <div className="grid grid-cols-2 gap-2 mb-6">
+                {stats.awards.map((award) => {
+                  // "Explorer — most different drinks": title, then what it's for.
+                  const [title, detail] = t(`tableSummary.${AWARDS[award.key].label}`).split(
+                    /\s[—–]\s/
+                  );
+                  return (
+                    <div key={award.key} className="bg-default-100 rounded-xl p-3 text-center">
+                      <p className="text-3xl leading-none mb-1">{AWARDS[award.key].emoji}</p>
+                      <p className="text-sm font-semibold">{title}</p>
+                      {detail && <p className="text-xs text-default-500">{detail}</p>}
+                      <p className="text-sm font-medium mt-1">
+                        {formatNickname(award.nickname, tAnimals)}
+                      </p>
+                    </div>
+                  );
+                })}
               </div>
             </>
           )}

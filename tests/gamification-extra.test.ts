@@ -51,6 +51,16 @@ describe("getSessionHue", () => {
   });
 });
 
+describe("getSessionHue journey (design review L1)", () => {
+  it("warms from night blue through violet to amber, never through green", () => {
+    const hues = Array.from({ length: 21 }, (_, total) =>
+      Number(getSessionHue(total).match(/^hsl\((\d+)/)![1])
+    );
+    expect(hues.filter((hue) => hue >= 60 && hue <= 180)).toEqual([]);
+    expect(getSessionHue(10)).toBe("hsl(300, 55%, 12.5%)");
+  });
+});
+
 describe("getIconColor", () => {
   it("goes from amber to deep orange per theme and clamps at 20", () => {
     expect(getIconColor(0)).toBe("hsl(45, 90%, 58%)");
