@@ -1,10 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import { Button, Card, Chip } from "@heroui/react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { CategoryIcon } from "@/lib/category-icon";
+import { Logo } from "@/components/Logo";
 import { Users, Beer, Share2 } from "lucide-react";
 import { formatNickname } from "@/lib/nicknames";
 import type { TableStats } from "@/lib/server-queries";
@@ -89,7 +89,7 @@ export function TableSummaryClient({ slug, stats }: { slug: string; stats: Table
 
           {/* Header */}
           <div className="text-center mb-6">
-            <Image src="/icon.svg" alt="" width={48} height={48} className="mx-auto mb-2" />
+            <Logo size={64} className="mx-auto mb-2" />
             <h1 className="text-2xl font-bold">{t("tableSummary.title")}</h1>
             <p className="text-sm text-default-500 mt-1 font-mono">{stats.code}</p>
           </div>

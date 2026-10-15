@@ -4,8 +4,8 @@
   "description": "Tap to track the tipsy",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#030712",
-  "theme_color": "#f59e0b",
+  "background_color": "#060607",
+  "theme_color": "#fe9a00",
   "icons": [
     {
       "src": "/icon.svg",
