@@ -137,6 +137,7 @@ Before you call work done, `lint`, `build` and `test` must all be green: CI runs
 
 - Sessions expire after 48 h, and the daily cron (06:00–06:59 UTC on Hobby) deletes expired sessions and empty tables. No soft deletes. Never click "Run" on the cron in Vercel: it executes the delete job.
 - Admin deletes and "Empty" are hard deletes behind a `confirm()`. Add no archive or history tables.
+- The theme follows the phone's light/dark setting until the user taps the theme button (next-themes stores that choice). Don't force dark.
 - Pinch-zoom stays disabled (`maximumScale: 1`, `userScalable: false` in `app/layout.tsx`): the UI is sized for phones. Don't re-enable it.
 - Toasts sit at the bottom, at most 5, 10 s each (errors and scan results 5 s, a failed tap 2 s), and are never lifted above the Add button. With 0 drinks the "Add a drink" button is centered; the fixed bottom button appears from the first drink.
 

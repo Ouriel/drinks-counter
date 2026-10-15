@@ -2,7 +2,7 @@
 
 A mobile-first web app that counts your drinks during a night out. Pick your bar, snap its menu, then tap a card each time you order. No account, no install: the session link is all you need.
 
-Live at **https://tipsy-tap.vercel.app** (9 languages, dark and light themes, installable as a PWA).
+Live at **https://tipsy-tap.vercel.app** (9 languages, dark and light themes that follow the phone's setting, installable as a PWA).
 
 ## What it does
 

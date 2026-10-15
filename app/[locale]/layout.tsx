@@ -28,7 +28,7 @@ export default async function LocaleLayout({ children, params }: Props) {
   return (
     <html lang={locale} suppressHydrationWarning>
       <body className="bg-background text-foreground antialiased touch-manipulation min-h-screen">
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+        <ThemeProvider attribute="class" enableSystem>
           <NextIntlClientProvider>
             <main>{children}</main>
             <PwaInstallPrompt />
