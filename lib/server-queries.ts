@@ -6,7 +6,7 @@ import {
   drinks as drinksTable,
   normalizeMenuItems,
 } from "@/lib/db";
-import { eq, sql } from "drizzle-orm";
+import { and, eq, gte, sql } from "drizzle-orm";
 import type { Drink, MenuItem } from "@/lib/types";
 import { getTableAwards, type TableAward } from "@/lib/gamification";
 
@@ -102,7 +102,7 @@ export async function getTableStats(opts: {
       .select()
       .from(sessions)
       .innerJoin(tables, eq(sessions.tableId, tables.id))
-      .where(eq(sessions.slug, opts.slug))
+      .where(and(eq(sessions.slug, opts.slug), gte(sessions.expiresAt, new Date()))) // expired = not found
       .limit(1);
     table = rows[0]?.tables;
   }

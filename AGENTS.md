@@ -40,7 +40,7 @@ Before you call work done, `lint`, `build` and `test` must all be green: CI runs
 ### Types and validation
 
 - Import `Drink` and `MenuItem` from `lib/types.ts`, and reuse exported types such as `SessionView` and `TableStats` (`import type` is safe in client code). Never redefine them in new code; the home page, `TableView` and `TableSummaryClient` still hold local copies.
-- Client calls go through `lib/api.ts`. Never `fetch().json()` without validation in components. Known exception: the admin page still uses raw `fetch`.
+- Client calls go through `lib/api.ts`. Never `fetch().json()` without validation in components.
 - The client uses `zod/mini` only. Full `zod` stays on the server (`lib/schemas.ts`, routes), because it adds about 54 KB gzipped to the first load.
 - Validate JSON bodies with `parseBody()` from `lib/schemas.ts`, and put new body schemas there (`tables` and admin `DELETE` still declare theirs inline). Wrap `await req.json()` in try/catch and return 400. Multipart and query-param routes validate by hand.
 - Prefer one atomic statement (upsert, guarded update) over check-then-act, which races. Don't copy the existing check-then-act spots: nickname picks in `/api/tables`, the admin rename check.

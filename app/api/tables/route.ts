@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db, tables, sessions, drinks } from "@/lib/db";
-import { eq, sql, and, isNotNull } from "drizzle-orm";
+import { eq, sql, and, gte, isNotNull } from "drizzle-orm";
 import { randomInt } from "crypto";
 import { z } from "zod";
 import { pickUniqueNickname } from "@/lib/nicknames";
@@ -161,7 +161,13 @@ export async function GET(req: NextRequest) {
     const [session] = await db
       .select()
       .from(sessions)
-      .where(and(eq(sessions.tableId, table.id), eq(sessions.nickname, memberNickname)))
+      .where(
+        and(
+          eq(sessions.tableId, table.id),
+          eq(sessions.nickname, memberNickname),
+          gte(sessions.expiresAt, new Date())
+        )
+      )
       .limit(1);
     if (!session) return NextResponse.json({ drinks: [] });
     const memberDrinks = await db
@@ -179,7 +185,8 @@ export async function GET(req: NextRequest) {
     })
     .from(sessions)
     .leftJoin(drinks, eq(drinks.sessionId, sessions.id))
-    .where(eq(sessions.tableId, table.id))
+    // Expired members leave the live leaderboard; the cron deletes them later.
+    .where(and(eq(sessions.tableId, table.id), gte(sessions.expiresAt, new Date())))
     .groupBy(sessions.id, sessions.nickname)
     .orderBy(sql`COALESCE(SUM(${drinks.count}), 0) DESC`, sessions.nickname);
 

@@ -9,19 +9,15 @@ import { CategoryIcon } from "@/lib/category-icon";
 import { Camera, Wine, ClipboardList, Users, BookOpen, Beer } from "lucide-react";
 import { MILESTONES, PACE_LEVELS, getSessionHue, getIconColor } from "@/lib/gamification";
 import type { MenuItem } from "@/lib/types";
-
-type BarMenu = { id: string; barName: string; items: MenuItem[]; createdAt: string };
-type Session = {
-  id: string;
-  slug: string;
-  nickname: string | null;
-  drinkCount: number;
-  createdAt: string;
-  expiresAt: string;
-};
-type Table = { id: string; code: string; memberCount: number; createdAt: string };
-type DrinkRow = { name: string; count: number; category: string | null };
-type MemberRow = { nickname: string; slug: string; total: number };
+import {
+  api,
+  adminApi,
+  type AdminBarMenu,
+  type AdminDrink,
+  type AdminMember,
+  type AdminSession,
+  type AdminTable,
+} from "@/lib/api";
 type Tab = "bars" | "sessions" | "tables" | "guide";
 
 // Reference for the admin Guide tab (admin UI is English-only by convention).
@@ -57,19 +53,17 @@ export default function AdminPage() {
   });
   const [authed, setAuthed] = useState(false);
   const [tab, setTab] = useState<Tab>("bars");
-  const [menus, setMenus] = useState<BarMenu[]>([]);
-  const [sessionsList, setSessionsList] = useState<Session[]>([]);
-  const [tablesList, setTablesList] = useState<Table[]>([]);
+  const [menus, setMenus] = useState<AdminBarMenu[]>([]);
+  const [sessionsList, setSessionsList] = useState<AdminSession[]>([]);
+  const [tablesList, setTablesList] = useState<AdminTable[]>([]);
   const [editing, setEditing] = useState<string | null>(null);
   const [editBarName, setEditBarName] = useState("");
   const [editRows, setEditRows] = useState<MenuItem[]>([]);
   const [openId, setOpenId] = useState<string | null>(null);
-  const [openDrinks, setOpenDrinks] = useState<DrinkRow[]>([]);
-  const [openMembers, setOpenMembers] = useState<MemberRow[]>([]);
+  const [openDrinks, setOpenDrinks] = useState<AdminDrink[]>([]);
+  const [openMembers, setOpenMembers] = useState<AdminMember[]>([]);
   const [rescanning, setRescanning] = useState(false);
   const rescanRef = useRef<HTMLInputElement>(null);
-
-  const headers = { Authorization: `Bearer ${secret}` };
 
   async function handleRescan(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -84,12 +78,11 @@ export default function AdminPage() {
       });
       const formData = new FormData();
       formData.append("photo", compressed);
-      const res = await fetch("/api/parse-menu", { method: "POST", body: formData });
-      if (res.ok) {
-        const data = await res.json();
+      const data = await api.parseMenu(formData);
+      if (data) {
         const seen = new Set(editRows.map((row) => row.name.toLowerCase()));
         const merged = [...editRows];
-        for (const item of (data.items || []) as MenuItem[]) {
+        for (const item of data.items) {
           if (!seen.has(item.name.toLowerCase())) {
             merged.push({ name: item.name, category: item.category });
             seen.add(item.name.toLowerCase());
@@ -108,12 +101,11 @@ export default function AdminPage() {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function login(s: string) {
-    const res = await fetch("/api/admin?tab=bars", { headers: { Authorization: `Bearer ${s}` } });
-    if (!res.ok) {
+    const data = await adminApi.bars(s);
+    if (!data) {
       setAuthed(false);
       return;
     }
-    const data = await res.json();
     setMenus(data.menus);
     setAuthed(true);
     sessionStorage.setItem("admin-secret", s);
@@ -123,12 +115,16 @@ export default function AdminPage() {
     setTab(t);
     setOpenId(null);
     if (t === "guide") return; // reference content, no data to fetch
-    const res = await fetch(`/api/admin?tab=${t}`, { headers });
-    if (!res.ok) return;
-    const data = await res.json();
-    if (t === "bars") setMenus(data.menus);
-    if (t === "sessions") setSessionsList(data.sessions);
-    if (t === "tables") setTablesList(data.tables);
+    if (t === "bars") {
+      const data = await adminApi.bars(secret);
+      if (data) setMenus(data.menus);
+    } else if (t === "sessions") {
+      const data = await adminApi.sessions(secret);
+      if (data) setSessionsList(data.sessions);
+    } else {
+      const data = await adminApi.tables(secret);
+      if (data) setTablesList(data.tables);
+    }
   }
 
   async function toggleSession(id: string) {
@@ -136,9 +132,8 @@ export default function AdminPage() {
       setOpenId(null);
       return;
     }
-    const res = await fetch(`/api/admin?tab=session-detail&id=${id}`, { headers });
-    if (!res.ok) return;
-    const data = await res.json();
+    const data = await adminApi.sessionDrinks(secret, id);
+    if (!data) return;
     setOpenDrinks(data.drinks);
     setOpenId(id);
   }
@@ -148,30 +143,21 @@ export default function AdminPage() {
       setOpenId(null);
       return;
     }
-    const res = await fetch(`/api/admin?tab=table-detail&id=${id}`, { headers });
-    if (!res.ok) return;
-    const data = await res.json();
+    const data = await adminApi.tableMembers(secret, id);
+    if (!data) return;
     setOpenMembers(data.members);
     setOpenId(id);
   }
 
-  async function deleteItem(type: string, id: string) {
+  async function deleteItem(type: "session" | "table" | "bar", id: string) {
     if (!confirm(`Delete this ${type}?`)) return;
-    await fetch("/api/admin", {
-      method: "DELETE",
-      headers: { ...headers, "Content-Type": "application/json" },
-      body: JSON.stringify({ type, id }),
-    });
+    await adminApi.remove(secret, type, id);
     loadTab(tab);
   }
 
   async function saveItems(id: string) {
     const items = editRows.filter((row) => row.name.trim());
-    await fetch("/api/admin", {
-      method: "PATCH",
-      headers: { ...headers, "Content-Type": "application/json" },
-      body: JSON.stringify({ id, items, barName: editBarName.trim() }),
-    });
+    await adminApi.updateBar(secret, { id, items, barName: editBarName.trim() });
     setEditing(null);
     loadTab("bars");
   }
@@ -180,11 +166,7 @@ export default function AdminPage() {
     if (!confirm("Empty this bar's menu? All drink items will be removed (the bar is kept).")) {
       return;
     }
-    await fetch("/api/admin", {
-      method: "PATCH",
-      headers: { ...headers, "Content-Type": "application/json" },
-      body: JSON.stringify({ id, items: [] }),
-    });
+    await adminApi.updateBar(secret, { id, items: [] });
     if (editing === id) setEditing(null);
     loadTab("bars");
   }
