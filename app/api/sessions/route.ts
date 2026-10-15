@@ -63,14 +63,15 @@ export async function POST(req: NextRequest) {
     ? [preferredSlug, ...Array.from({ length: 4 }, () => generateSlug())]
     : Array.from({ length: 5 }, () => generateSlug());
 
-  for (const slug of slugsToTry) {
+  for (const [attempt, slug] of slugsToTry.entries()) {
     const [session] = await db
       .insert(sessions)
       .values({ slug, barMenuId, expiresAt })
       .onConflictDoNothing({ target: sessions.slug })
       .returning();
     if (session) return NextResponse.json({ slug: session.slug });
-    console.warn(`[sessions] Slug collision: "${slug}"`);
+    // Never log the slug: it is a live session's write key.
+    console.warn(`[sessions] Slug collision (attempt ${attempt + 1} of ${slugsToTry.length})`);
   }
 
   console.error(`[sessions] All ${slugsToTry.length} slug attempts failed`);

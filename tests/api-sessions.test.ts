@@ -112,9 +112,13 @@ describe("POST /api/sessions slugs", () => {
 
   it("falls back to a generated slug when the custom name is taken", async () => {
     await seedSession("party");
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
     const res = await create({ slug: "party" });
     expect(res.status).toBe(200);
     expect((await res.json()).slug).toMatch(GENERATED);
+    // The taken name is someone's write key: it never goes to the logs.
+    expect(warn).toHaveBeenCalled();
+    expect(JSON.stringify(warn.mock.calls)).not.toContain("party");
   });
 
   it("rejects a reserved name", async () => {
