@@ -1,5 +1,10 @@
 {
   "installCommand": "npm ci",
+  "git": {
+    "deploymentEnabled": {
+      "dependabot/**": false
+    }
+  },
   "crons": [
     {
       "path": "/api/cron/cleanup",
