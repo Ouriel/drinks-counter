@@ -173,7 +173,7 @@ export function SummaryClient({
 
           {/* Header */}
           <div className="text-center mb-6">
-            <Logo size={48} className="mx-auto mb-2" />
+            <Logo size={64} className="mx-auto mb-2" />
             <h1 className="text-2xl font-bold">{t("summary.title")}</h1>
             {barName && <p className="text-foreground/70 mt-1">{titleCase(barName)}</p>}
             {firstDrink && (

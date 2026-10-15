@@ -89,7 +89,7 @@ export function TableSummaryClient({ slug, stats }: { slug: string; stats: Table
 
           {/* Header */}
           <div className="text-center mb-6">
-            <Logo size={48} className="mx-auto mb-2" />
+            <Logo size={64} className="mx-auto mb-2" />
             <h1 className="text-2xl font-bold">{t("tableSummary.title")}</h1>
             <p className="text-sm text-default-500 mt-1 font-mono">{stats.code}</p>
           </div>
