@@ -91,6 +91,39 @@ export const ParseMenuResponse = z.object({
   items: z.array(z.object({ name: z.string(), category: z.string() })),
 });
 
+// Admin (English-only page; every call sends the admin secret).
+const adminMenuSchema = z.object({
+  id: z.string(),
+  barName: z.string(),
+  items: z.array(z.object({ name: z.string(), category: z.string() })),
+  createdAt: z.string(),
+});
+const adminSessionSchema = z.object({
+  id: z.string(),
+  slug: z.string(),
+  nickname: z.nullable(z.string()),
+  drinkCount: z.number(),
+  createdAt: z.string(),
+  expiresAt: z.string(),
+});
+const adminTableSchema = z.object({
+  id: z.string(),
+  code: z.string(),
+  memberCount: z.number(),
+  createdAt: z.string(),
+});
+const adminDrinkSchema = z.object({
+  name: z.string(),
+  count: z.number(),
+  category: z.nullable(z.string()),
+});
+const adminMemberSchema = z.object({ nickname: z.string(), slug: z.string(), total: z.number() });
+export type AdminBarMenu = z.infer<typeof adminMenuSchema>;
+export type AdminSession = z.infer<typeof adminSessionSchema>;
+export type AdminTable = z.infer<typeof adminTableSchema>;
+export type AdminDrink = z.infer<typeof adminDrinkSchema>;
+export type AdminMember = z.infer<typeof adminMemberSchema>;
+
 // === Typed Fetch Helper ===
 
 async function apiFetch<T>(
@@ -200,5 +233,62 @@ export const api = {
 
   parseMenu(formData: FormData) {
     return apiFetch("/api/parse-menu", ParseMenuResponse, { method: "POST", body: formData });
+  },
+};
+
+function adminInit(secret: string, method?: string, body?: unknown): RequestInit {
+  return {
+    method,
+    headers: {
+      Authorization: `Bearer ${secret}`,
+      ...(body !== undefined && { "Content-Type": "application/json" }),
+    },
+    body: body === undefined ? undefined : JSON.stringify(body),
+  };
+}
+
+const adminOk = z.object({ ok: z.literal(true) });
+
+export const adminApi = {
+  bars(secret: string) {
+    return apiFetch(
+      "/api/admin?tab=bars",
+      z.object({ menus: z.array(adminMenuSchema) }),
+      adminInit(secret)
+    );
+  },
+  sessions(secret: string) {
+    return apiFetch(
+      "/api/admin?tab=sessions",
+      z.object({ sessions: z.array(adminSessionSchema) }),
+      adminInit(secret)
+    );
+  },
+  tables(secret: string) {
+    return apiFetch(
+      "/api/admin?tab=tables",
+      z.object({ tables: z.array(adminTableSchema) }),
+      adminInit(secret)
+    );
+  },
+  sessionDrinks(secret: string, id: string) {
+    return apiFetch(
+      `/api/admin?tab=session-detail&id=${encodeURIComponent(id)}`,
+      z.object({ drinks: z.array(adminDrinkSchema) }),
+      adminInit(secret)
+    );
+  },
+  tableMembers(secret: string, id: string) {
+    return apiFetch(
+      `/api/admin?tab=table-detail&id=${encodeURIComponent(id)}`,
+      z.object({ members: z.array(adminMemberSchema) }),
+      adminInit(secret)
+    );
+  },
+  updateBar(secret: string, body: { id: string; items?: MenuItem[]; barName?: string }) {
+    return apiFetch("/api/admin", adminOk, adminInit(secret, "PATCH", body));
+  },
+  remove(secret: string, type: "session" | "table" | "bar", id: string) {
+    return apiFetch("/api/admin", adminOk, adminInit(secret, "DELETE", { type, id }));
   },
 };

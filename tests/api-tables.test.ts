@@ -163,6 +163,20 @@ describe("tables: expired sessions", () => {
     expect(await db.select().from(sessions).orderBy(sessions.slug)).toEqual(before);
     expect(await db.select().from(tables)).toHaveLength(1);
   });
+
+  it("leaves expired members off the live leaderboard and their drinks", async () => {
+    const ranking = await (await GET(jsonRequest("/api/tables?code=ABC234", "GET"))).json();
+    expect(ranking.members.map((member: { nickname: string }) => member.nickname)).toEqual(["fox"]);
+    const owl = await (
+      await GET(jsonRequest("/api/tables?code=ABC234&nickname=owl", "GET"))
+    ).json();
+    expect(owl.drinks).toEqual([]);
+  });
+
+  it("has no table summary for an expired session", async () => {
+    expect(await getTableStats({ slug: "member-slug" })).toBeNull();
+    expect(await getTableStats({ slug: "host-slug" })).not.toBeNull();
+  });
 });
 
 describe("server-queries", () => {
