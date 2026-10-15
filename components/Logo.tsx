@@ -14,29 +14,29 @@ export function Logo({ size = 160, className, label }: LogoProps) {
       {...(label ? { role: "img", "aria-label": label } : { "aria-hidden": true })}
     >
       <rect width="192" height="192" rx="42" fill="#030712" />
+      <g transform="rotate(-14 96 104)">
+        <path d="M60 54L132 54L123 154Q122 162 114 162L78 162Q70 162 69 154Z" fill="#f59e0b" />
+        <path d="M56 58Q58 38 78 42Q90 30 106 38Q122 30 134 44Q142 48 138 58Z" fill="#fff7e6" />
+        <circle cx="86" cy="112" r="6" fill="#fff7e6" opacity="0.85" />
+        <circle cx="104" cy="92" r="4.5" fill="#fff7e6" opacity="0.85" />
+        <circle cx="100" cy="134" r="3.5" fill="#fff7e6" opacity="0.85" />
+      </g>
       <path
-        d="M 60 48 Q 96 44 132 48 L 124 150 C 123 154 119 157 114 157 L 78 157 C 73 157 69 154 68 150 Z"
+        d="M146 66Q156 76 150 90"
         fill="none"
         stroke="#f59e0b"
-        strokeWidth="4"
-        strokeLinejoin="round"
+        strokeWidth="5"
+        strokeLinecap="round"
+        opacity="0.6"
       />
-      <path d="M 60 48 Q 72 38 85 43 Q 100 38 115 45 Q 125 40 132 48 Z" fill="#f59e0b" />
       <path
-        d="M 65 60 L 127 60 L 120 148 C 119.5 151 117 152 114 152 L 78 152 C 75 152 72.5 151 72 148 Z"
-        fill="#f59e0b"
+        d="M158 56Q172 74 162 96"
+        fill="none"
+        stroke="#f59e0b"
+        strokeWidth="5"
+        strokeLinecap="round"
+        opacity="0.35"
       />
-      <text
-        x="96"
-        y="130"
-        textAnchor="middle"
-        fontFamily="Arial, sans-serif"
-        fontSize="64"
-        fontWeight="900"
-        fill="#030712"
-      >
-        ?
-      </text>
     </svg>
   );
 }
