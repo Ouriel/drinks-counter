@@ -148,3 +148,6 @@ Before you call work done, `lint`, `build` and `test` must all be green: CI runs
 ## Working style
 
 - When asked to research, present options and wait for the owner's choice. Don't write or commit code.
+- Long multi-agent runs: background agents die when the Mac sleeps, so keep it awake for the run. Retry a dead agent up to 3 times, and never apply fixes from an incomplete review.
+- Scratch copies of the repo: `git worktree add` then `npm ci`. Never copy `node_modules`: the copy loads React twice and tests fail for no real reason (PupPace saw 79 false failures).
+- Give each reviewing agent its own scratch folder.
