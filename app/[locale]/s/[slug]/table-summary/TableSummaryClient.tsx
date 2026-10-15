@@ -5,10 +5,11 @@ import { Button, Card, Chip } from "@heroui/react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { CategoryIcon } from "@/lib/category-icon";
-import { Users, Beer } from "lucide-react";
+import { Users, Beer, Share2 } from "lucide-react";
 import { formatNickname } from "@/lib/nicknames";
 import type { TableStats } from "@/lib/server-queries";
-import type { TableAwardKey } from "@/lib/gamification";
+import { getSessionHue, type TableAwardKey } from "@/lib/gamification";
+import { cardFile, downloadFile, shareFile } from "@/lib/share-card";
 
 const AWARDS: Record<TableAwardKey, { emoji: string; label: string }> = {
   explorer: { emoji: "🧭", label: "awardExplorer" },
@@ -41,6 +42,37 @@ export function TableSummaryClient({ slug, stats }: { slug: string; stats: Table
   }
 
   const topScore = stats.members.length > 0 ? stats.members[0].total : 0;
+  const awardTitle = (key: TableAwardKey) =>
+    t(`tableSummary.${AWARDS[key].label}`).split(/\s[—–]\s/);
+
+  function shareTable() {
+    if (!stats) return;
+    // Nicknames only: never a session slug, nor the table's join code.
+    const ranking = stats.members
+      .slice(0, 3)
+      .map(
+        (member, index) =>
+          `${index === 0 && topScore > 0 ? "👑" : `${index + 1}.`} ${formatNickname(member.nickname, tAnimals)} · ${member.total}`
+      );
+    const awards = stats.awards.map(
+      (award) =>
+        `${AWARDS[award.key].emoji} ${awardTitle(award.key)[0]} · ${formatNickname(award.nickname, tAnimals)}`
+    );
+    const file = cardFile(
+      {
+        title: t("tableSummary.title"),
+        subtitle: t("tableSummary.people", { count: stats.members.length }),
+        total: stats.total,
+        totalLabel: t("tableSummary.drinksTotal", { count: stats.total }),
+        detail: "",
+        lines: [...ranking, ...awards],
+        emojis: [],
+        tint: getSessionHue(stats.total),
+      },
+      "tipsytap-table.png"
+    );
+    if (file && !shareFile(file, t("app.title"))) downloadFile(file);
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-background text-foreground">
@@ -113,9 +145,7 @@ export function TableSummaryClient({ slug, stats }: { slug: string; stats: Table
               <div className="grid grid-cols-2 gap-2 mb-6">
                 {stats.awards.map((award) => {
                   // "Explorer — most different drinks": title, then what it's for.
-                  const [title, detail] = t(`tableSummary.${AWARDS[award.key].label}`).split(
-                    /\s[—–]\s/
-                  );
+                  const [title, detail] = awardTitle(award.key);
                   return (
                     <div key={award.key} className="bg-default-100 rounded-xl p-3 text-center">
                       <p className="text-3xl leading-none mb-1">{AWARDS[award.key].emoji}</p>
@@ -154,6 +184,13 @@ export function TableSummaryClient({ slug, stats }: { slug: string; stats: Table
               </div>
             </>
           )}
+
+          <div className="text-center mt-6">
+            <Button variant="primary" className="gap-1" onPress={shareTable}>
+              <Share2 className="w-4 h-4" />
+              {t("summary.share")}
+            </Button>
+          </div>
         </div>
       </Card>
     </div>
