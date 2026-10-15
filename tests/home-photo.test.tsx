@@ -6,6 +6,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { toast } from "@heroui/react";
 import messages from "@/messages/en.json";
 import Home from "@/app/[locale]/page";
+import { api } from "@/lib/api";
 
 vi.mock("@/i18n/navigation", () => ({
   useRouter: () => ({ push: vi.fn(), replace: vi.fn() }),
@@ -66,6 +67,8 @@ describe("home menu photo", () => {
       setValue.call(input, "le salon");
       input.dispatchEvent(new Event("input", { bubbles: true }));
     });
+    // Let the 300 ms bar search land inside act: a late update would log during teardown.
+    await act(() => vi.waitFor(() => expect(api.searchMenus).toHaveBeenCalled()));
     const skip = [...container.querySelectorAll("button")].find(
       (button) => button.textContent === messages.bar.skipManual
     )!;

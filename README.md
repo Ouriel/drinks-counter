@@ -31,7 +31,7 @@ Every menu you scan, and every new drink you add, joins the bar's **shared menu*
 ### Summary and sharing
 
 - **My Summary** shows the total, date and duration, pace, categories, the badges earned, **achievements** from a set of 17 ("Past midnight and proud", "Speedrun, any% — 3 in 30 min", "Lined the stomach"…), a timeline of every tap and your top drinks.
-- **Share** sends a playful text recap (in English) through the device's share sheet, or copies it when the browser can't share.
+- **Share** sends a picture of your night (bar, date, total, top drinks, badges) through the device's share sheet. Where the browser can't share images, it sends a playful text recap (in English), or copies it.
 - On the session page, Share sends the table invite (or the app link). It **never** sends your session link, because that link is what lets you edit your count.
 
 ### Tables (groups)
@@ -39,7 +39,7 @@ Every menu you scan, and every new drink you add, joins the bar's **shared menu*
 - Create a **table** to count with friends: you get a 6-character code and a random animal nickname (🦊 Fox, 🐧 Penguin…). You can re-roll the nickname up to 3 times.
 - Friends join with the code, a `/join/CODE` link or a QR code. A join link reuses your latest session on that phone if it started less than 12 h ago, otherwise it starts a new one. Joining gives you the bar and menu of the table. Anyone can leave a table.
 - A live **leaderboard** refreshes every 30 s and shows who moved up ("+2"). Tap a member to see their drinks. When the group passes 10, 25, 50, 100, 150 or 200 drinks, everyone at the table gets a toast and confetti.
-- The **Table Summary** page shows the group total, ranking, categories, top drinks and **awards**: 🧭 Explorer (most different drinks), 💧 Hydration hero (most alcohol-free drinks), ⚡ Speed demon (fastest pace), 🌙 Night owl (last one drinking) and 🐣 First sip (started the night). Ties win nothing.
+- The **Table Summary** page shows the group total, ranking, categories, top drinks and **awards**: 🧭 Explorer (most different drinks), 💧 Hydration hero (most alcohol-free drinks), ⚡ Speed demon (fastest pace), 🌙 Night owl (last one drinking) and 🐣 First sip (started the night). Ties win nothing. Its **Share** button sends the table as a picture (ranking and awards, never the join code).
 
 ### Coming back, stats and admin
 

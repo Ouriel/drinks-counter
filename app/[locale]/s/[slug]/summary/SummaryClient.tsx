@@ -14,9 +14,11 @@ import {
   getDrinkAchievements,
   getPace,
   getPersonalBest,
+  getSessionHue,
 } from "@/lib/gamification";
 import { useIsHydrated } from "@/lib/use-is-hydrated";
 import { formatNightDate } from "@/lib/dates";
+import { cardFile, shareFile } from "@/lib/share-card";
 import type { Drink } from "@/lib/types";
 
 export function SummaryClient({
@@ -126,9 +128,26 @@ export function SummaryClient({
   }
 
   function shareSummary() {
-    // Privacy: share the text recap (which includes the public site URL) only —
-    // never the private session slug. On desktop without the Web Share API, fall
-    // back to copying the text to the clipboard.
+    // A picture of the night first (never the session slug or URL); where files can't be
+    // shared, the text recap (public site URL only), or a copy on desktop.
+    const file = cardFile(
+      {
+        title: t("summary.title"),
+        subtitle: [titleCase(barName), firstDrink && formatNightDate(firstDrink, locale)]
+          .filter(Boolean)
+          .join(" · "),
+        total,
+        totalLabel: t("summary.drinksTotal", { count: total }),
+        detail: durationMins > 0 ? `⏱ ${durationStr}` : "",
+        lines: [...drinks]
+          .sort((left, right) => right.count - left.count)
+          .map((drink) => `${drink.name} ×${drink.count}`),
+        emojis: getAllEarnedBadges(total).map((badge) => badge.emoji),
+        tint: getSessionHue(total),
+      },
+      "tipsytap-night.png"
+    );
+    if (file && shareFile(file, t("app.title"))) return;
     const text = buildSummaryText();
     if (navigator.share) {
       navigator.share({ title: t("app.title"), text }).catch(() => {});

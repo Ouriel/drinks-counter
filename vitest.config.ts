@@ -14,7 +14,7 @@ export default defineConfig({
       include: ["lib/**/*.ts", "app/api/**/*.ts"],
       reporter: ["text-summary"],
       // Floor, not goal: raise it when a PR adds tests (never lower it to make CI pass).
-      thresholds: { statements: 78, branches: 73, functions: 83, lines: 80 },
+      thresholds: { statements: 82, branches: 77, functions: 87, lines: 84 },
     },
   },
   resolve: {
