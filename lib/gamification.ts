@@ -78,9 +78,10 @@ export function getAllEarnedBadges(total: number): Badge[] {
 // === COLOR SHIFT ===
 
 export function getSessionHue(total: number, isDark = true): string {
-  // Cool (blue 210) → warm (amber 30) as drinks increase, capped at 20
+  // Night blue (210) → violet → magenta → amber (30), capped at 20 drinks. Going up the hue
+  // wheel avoids the green/khaki that 210 → 30 the short way passed through.
   const t = Math.min(total, 20) / 20;
-  const hue = Math.round(210 - t * 180); // 210 → 30
+  const hue = Math.round(210 + t * 180) % 360; // 210 → 300 → 30
   const saturation = Math.round(30 + t * 50); // 30% → 80%
   const lightness = isDark ? 10 + t * 5 : 94 - t * 6; // dark: 10→15%, light: 94→88%
   return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
@@ -109,10 +110,10 @@ export function getTipsyStyle(total: number): React.CSSProperties {
       textShadow: `${offset}px ${offset * 0.5}px 0 rgba(128,128,128,0.25)`,
     };
   }
-  const offset = 1.5 + (total - 11) * 0.3;
+  const offset = Math.min(1.5 + (total - 11) * 0.15, 2.5); // capped: text stays readable
   return {
     transform: `rotate(${total % 2 === 0 ? 1.8 : -1.8}deg)`,
-    textShadow: `${offset}px ${offset * 0.5}px 0 rgba(128,128,128,0.35)`,
+    textShadow: `${offset}px ${offset * 0.5}px 0 rgba(128,128,128,0.25)`,
   };
 }
 

@@ -26,7 +26,7 @@ Every menu you scan, and every new drink you add, joins the bar's **shared menu*
 - **11 milestone badges** (1, 2, 3, 5, 7, 10, 13, 15, 20, 25 and 30 drinks), each with a toast and confetti.
 - A **personal best** per device: beat your record from an earlier night and you get a 🏅 toast (inside the badge toast when both land on the same tap).
 - **Nudges**: a water break every 3rd drink (skipped when that drink was alcohol-free), a taxi reminder at 8 drinks, and a cheeky "👀 Stopping soon???" at 12.
-- The screen **gets tipsy with you**: the background warms from cool blue to amber, the page starts to tilt after 3 drinks, the text gets a shadow from 7, and a pulsing vignette appears from 15.
+- The screen **gets tipsy with you**: the background goes from night blue through violet to amber, the drink list starts to tilt after 3 drinks, the text gets a shadow from 7, and a pulsing vignette appears from 15.
 
 ### Summary and sharing
 

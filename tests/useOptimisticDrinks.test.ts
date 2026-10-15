@@ -124,6 +124,7 @@ describe("personal best fires once per session", () => {
       .mocked(toast)
       .mock.calls.find(([title]) => String(title).includes("badges.onARoll"));
     expect(badge?.[1]?.description).toContain("toast.personalBestDesc");
+    expect(badge?.[1]).toMatchObject({ indicator: null }); // the emoji is the icon (design review B4)
     expect(toastTitles("personalBest")).toHaveLength(0); // one toast, not two
   });
 

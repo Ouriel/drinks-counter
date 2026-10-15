@@ -96,7 +96,7 @@ export function TableView({
       lastMembers.current = data.members;
       setMembers(data.members);
       if (milestone) {
-        toast(`🎉 ${t("milestone", { count: milestone })}`, { timeout: 10000 });
+        toast(`🎉 ${t("milestone", { count: milestone })}`, { timeout: 10000, indicator: null });
         onCelebrateRef.current?.();
       }
     },

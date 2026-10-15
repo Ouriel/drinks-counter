@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useMemo, useSyncExternalStore } from "react";
 import { Button, Input, Card, Chip, Spinner, toast } from "@heroui/react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { ChartColumn, MapPin, Camera, Beer } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
 import { ThemeSwitch } from "@/lib/theme-switch";
@@ -15,6 +15,7 @@ import { addRecentSession } from "@/lib/recent-sessions";
 import { loadNights } from "@/lib/nights";
 import { getPersonalBest } from "@/lib/gamification";
 import { titleCase } from "@/lib/sanitize";
+import { formatNightDate } from "@/lib/dates";
 
 function loadRecentSessions(): { slug: string; barName: string; date: string }[] {
   try {
@@ -60,6 +61,7 @@ export default function Home() {
 function HomeContent() {
   const router = useRouter();
   const t = useTranslations();
+  const locale = useLocale();
   const hydrated = useIsHydrated();
   // ?slug= "resume" flow (an expired/unknown session bounced back here). The server snapshot is
   // "" so the start hero stays prerendered (useSearchParams() would deopt the route to CSR).
@@ -241,93 +243,102 @@ function HomeContent() {
   // === START SCREEN ===
   if (step === "start") {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-6 gap-8 relative">
-        <div className="absolute right-4 top-4 flex items-center gap-2">
+      <div className="min-h-screen flex flex-col items-center p-6 gap-8">
+        {/* In the page flow, not absolute: a long page (recents, nights) used to slide the
+            logo under these controls. */}
+        <div className="w-full flex justify-end items-center gap-2 -mb-6">
           <LocaleSwitcher />
           <ThemeSwitch />
         </div>
-        <div className="text-center">
-          <Logo size={160} label="TipsyTap" className="mx-auto mb-4" />
-          <h1 className="text-4xl font-bold">{t("app.title")}</h1>
-          <p className="text-default-500 mt-2">{t("app.tagline")}</p>
-        </div>
-        <div className="w-full max-w-xs space-y-3">
-          <Button variant="primary" size="lg" className="w-full" onPress={() => setUserStep("bar")}>
-            {t("home.startCounting")}
-          </Button>
-          <form
-            onSubmit={(event) => {
-              event.preventDefault();
-              if (slugInput.trim()) router.push(`/s/${slugInput.trim().toLowerCase()}`);
-            }}
-            className="relative"
-          >
-            <Input
+        <div className="my-auto w-full flex flex-col items-center gap-8">
+          <div className="text-center">
+            <Logo size={160} label="TipsyTap" className="mx-auto mb-4" />
+            <h1 className="text-4xl font-bold">{t("app.title")}</h1>
+            <p className="text-default-500 mt-2">{t("app.tagline")}</p>
+          </div>
+          <div className="w-full max-w-xs space-y-3">
+            <Button
+              variant="primary"
+              size="lg"
               className="w-full"
-              placeholder={t("home.sessionCode")}
-              value={slugInput}
-              onChange={(event) => setSlugInput(event.target.value)}
-            />
-            {slugInput.trim() && (
-              <button
-                type="submit"
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-accent font-bold text-lg"
-                aria-label={t("home.goToSession")}
-              >
-                →
-              </button>
+              onPress={() => setUserStep("bar")}
+            >
+              {t("home.startCounting")}
+            </Button>
+            <form
+              onSubmit={(event) => {
+                event.preventDefault();
+                if (slugInput.trim()) router.push(`/s/${slugInput.trim().toLowerCase()}`);
+              }}
+              className="relative"
+            >
+              <Input
+                className="w-full"
+                placeholder={t("home.sessionCode")}
+                value={slugInput}
+                onChange={(event) => setSlugInput(event.target.value)}
+              />
+              {slugInput.trim() && (
+                <button
+                  type="submit"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-accent font-bold text-lg"
+                  aria-label={t("home.goToSession")}
+                >
+                  →
+                </button>
+              )}
+            </form>
+            {recentSessions.length > 0 && (
+              <div className="pt-2">
+                <p className="text-xs text-default-500 mb-2">{t("home.recentSessions")}</p>
+                <div className="space-y-1">
+                  {recentSessions.map((session) => (
+                    <Card key={session.slug}>
+                      <button
+                        type="button"
+                        onClick={() => router.push(`/s/${session.slug}`)}
+                        className="w-full text-left px-3 py-2 cursor-pointer"
+                      >
+                        <span className="font-medium text-sm">{session.barName}</span>
+                        <span className="text-default-500 text-xs ml-2">
+                          {formatNightDate(session.date, locale, true)}
+                        </span>
+                      </button>
+                    </Card>
+                  ))}
+                </div>
+              </div>
             )}
-          </form>
-          {recentSessions.length > 0 && (
-            <div className="pt-2">
-              <p className="text-xs text-default-500 mb-2">{t("home.recentSessions")}</p>
+          </div>
+          {nights.length > 0 && (
+            <div className="w-full max-w-sm">
+              <p className="text-xs text-default-500 mb-2">
+                {t("home.yourNights")} · {t("home.nightsOnPhone")}
+              </p>
               <div className="space-y-1">
-                {recentSessions.map((session) => (
-                  <Card key={session.slug}>
-                    <button
-                      type="button"
-                      onClick={() => router.push(`/s/${session.slug}`)}
-                      className="w-full text-left px-3 py-2 cursor-pointer"
-                    >
-                      <span className="font-medium text-sm">{session.barName}</span>
+                {nights.map((night) => (
+                  <div key={night.slug} className="flex justify-between gap-2 text-sm px-3 py-1">
+                    <span className="truncate">
+                      {personalBest > 0 && night.total === personalBest && "🏅 "}
+                      {titleCase(night.barName)}
                       <span className="text-default-500 text-xs ml-2">
-                        {new Date(session.date).toLocaleDateString()}
+                        {formatNightDate(night.date, locale)}
                       </span>
-                    </button>
-                  </Card>
+                    </span>
+                    <span className="text-default-500 shrink-0">
+                      {t("home.nightDrinks", { count: night.total })}
+                      {night.topDrink && ` · ${night.topDrink}`}
+                    </span>
+                  </div>
                 ))}
               </div>
             </div>
           )}
+          <Button variant="ghost" size="sm" className="gap-1" onPress={() => router.push("/stats")}>
+            <ChartColumn className="w-4 h-4" />
+            {t("home.stats")}
+          </Button>
         </div>
-        {nights.length > 0 && (
-          <div className="w-full max-w-sm">
-            <p className="text-xs text-default-500 mb-2">
-              {t("home.yourNights")} · {t("home.nightsOnPhone")}
-            </p>
-            <div className="space-y-1">
-              {nights.map((night) => (
-                <div key={night.slug} className="flex justify-between gap-2 text-sm px-3 py-1">
-                  <span className="truncate">
-                    {personalBest > 0 && night.total === personalBest && "🏅 "}
-                    {titleCase(night.barName)}
-                    <span className="text-default-500 text-xs ml-2">
-                      {new Date(night.date).toLocaleDateString()}
-                    </span>
-                  </span>
-                  <span className="text-default-500 shrink-0">
-                    {t("home.nightDrinks", { count: night.total })}
-                    {night.topDrink && ` · ${night.topDrink}`}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-        <Button variant="ghost" size="sm" className="gap-1" onPress={() => router.push("/stats")}>
-          <ChartColumn className="w-4 h-4" />
-          {t("home.stats")}
-        </Button>
       </div>
     );
   }

@@ -31,6 +31,19 @@
   --tipsy-icon: hsl(45, 90%, 58%);
 }
 
+/* Session page colours: SessionClient sets both themes' values as variables; the theme class
+   picks one, so the server-rendered page is right before hydration. */
+@layer components {
+  .session-colors {
+    background-color: var(--session-bg-light);
+    --tipsy-icon: var(--tipsy-icon-light);
+  }
+  .dark .session-colors {
+    background-color: var(--session-bg-dark);
+    --tipsy-icon: var(--tipsy-icon-dark);
+  }
+}
+
 /* Tint all lucide icons amber by default; the session page overrides --tipsy-icon
    per drink count so the tint shifts warmer as the night goes on. Kept in the
    components layer so an explicit text-* utility on an icon can still override it. */

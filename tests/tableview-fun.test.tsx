@@ -53,6 +53,7 @@ describe("TableView leaderboard fun", () => {
     );
     expect(container.textContent).toContain("+2");
     expect(vi.mocked(toast).mock.calls[0]?.[0]).toContain("10");
+    expect(vi.mocked(toast).mock.calls[0]?.[1]).toMatchObject({ indicator: null });
     expect(onCelebrate).toHaveBeenCalledTimes(1);
   });
 });
