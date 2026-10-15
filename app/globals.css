@@ -53,9 +53,10 @@
   }
 }
 
-/* Ensure primary buttons meet WCAG AA contrast (4.5:1) */
-.dark [data-slot="button"].button--primary,
-.dark button[class*="bg-primary"] {
+/* Black text on the amber primary colour in both themes: white on amber is ~2:1, black ~10:1
+   (WCAG AA needs 4.5:1). */
+[data-slot="button"].button--primary,
+button[class*="bg-primary"] {
   color: #000;
   font-weight: 600;
 }
