@@ -39,9 +39,9 @@ export function DrinkCard({
   };
 
   return (
-    <Card>
+    <Card className="p-0">
       <div
-        className="w-full pl-3 pr-2 py-2 flex items-center gap-2 select-none"
+        className="w-full pl-3 pr-2 py-2.5 flex items-center gap-2 select-none"
         aria-label={t("aria", { name: drink.name, count: drink.count })}
       >
         <Chip size="sm" className="shrink-0">
