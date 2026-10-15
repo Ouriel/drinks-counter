@@ -218,7 +218,6 @@ export function TableView({
                   >
                     <span className={`text-base ${isMe ? "font-bold text-primary" : ""}`}>
                       {isTied && "👑 "}
-                      {isMe && "👉 "}
                       {formatNickname(member.nickname, tAnimals)}
                     </span>
                     <span
