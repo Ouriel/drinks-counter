@@ -24,7 +24,7 @@
     ]
   },
   "dependencies": {
-    "@ai-sdk/google": "^4.0.99",
+    "@ai-sdk/google": "^4.0.104",
     "@heroui/react": "^3.2.6",
     "@heroui/styles": "^3.2.6",
     "@internationalized/date": "^3.12.4",
@@ -33,7 +33,7 @@
     "@react-aria/utils": "^3.34.1",
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
-    "ai": "^7.0.143",
+    "ai": "^7.0.150",
     "browser-image-compression": "^2.0.2",
     "drizzle-orm": "^0.45.4",
     "lucide-react": "1.61.0",
