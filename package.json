@@ -36,7 +36,7 @@
     "ai": "^7.0.143",
     "browser-image-compression": "^2.0.2",
     "drizzle-orm": "^0.45.4",
-    "lucide-react": "1.61.0",
+    "lucide-react": "1.65.0",
     "next": "16.4.2",
     "next-intl": "^4.14.9",
     "next-themes": "^0.4.6",
@@ -50,7 +50,7 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
-    "@electric-sql/pglite": "^0.5.11",
+    "@electric-sql/pglite": "^0.5.13",
     "@playwright/test": "^1.64.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^24.19.2",
