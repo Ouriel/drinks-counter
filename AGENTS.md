@@ -127,6 +127,8 @@ Before you call work done, `lint`, `build` and `test` must all be green: CI runs
 
 - **Gemini.** `/api/parse-menu` stays public by decision. Billing stays disabled on the Google project, so abuse can only exhaust the free quota for a day, never cost money. Keep the in-memory 5-per-minute-per-IP limiter.
 
+- **Neon CLI.** Never run `neon link`, `neon checkout`, `neon init` or `neon env pull` without the owner's OK: they overwrite `POSTGRES_URL` in `.env` / `.env.local`. Never run `neon mcp` or `neon init -y`: the Neon MCP is the owner's claude.ai connector, and these add a duplicate server with an API key in `~/.claude.json`.
+
 ### Security and privacy
 
 - The session slug is the only write key. Never put a session URL or slug in a share, invite or share image (Share sends `/join/<CODE>` or the app origin; the image cards in `lib/share-card.ts` carry neither the slug nor the table's join code), and add no log line with a slug (a slug collision logs the attempt number only).
