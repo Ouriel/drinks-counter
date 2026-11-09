@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "@ai-sdk/google": "^4.0.99",
-    "@heroui/react": "^3.2.6",
+    "@heroui/react": "^3.2.7",
     "@heroui/styles": "^3.2.6",
     "@internationalized/date": "^3.12.4",
     "@neondatabase/serverless": "^1.2.0",
